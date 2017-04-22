@@ -1,0 +1,11 @@
+add everything to git
+setup lint
+setup watcher
+setup basic player
+design UI
+setup test suite
+create webpack bundle for libraries
+learn to read mp3 embedded data
+autogenerate music file
+learn how manifests work
+try out different ways of ensuring the music is caches
