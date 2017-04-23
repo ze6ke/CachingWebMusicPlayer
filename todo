@@ -2,7 +2,7 @@
 //setup lint
 
 
-setup watcher
+setup watcher (do I need gulp?)
 setup basic player
 design UI
 setup test suite

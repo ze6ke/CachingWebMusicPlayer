@@ -16,14 +16,18 @@ module.exports = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['es2015'
-//            ,'react'
-          ]
+            presets: ['es2015']//could add 'react' here
             ,plugins: ['inferno']
           }
         }
       }
     ]
+  },
+  //watch: false,
+  watchOptions:{
+    ignored: 'node_modules',
+    aggregateTimeout: 300,
+    poll: 1000
   },
   plugins: [
     new HtmlWebpackPlugin({

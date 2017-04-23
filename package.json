@@ -7,7 +7,7 @@
     "build": "./node_modules/.bin/webpack",
     "lint": "./node_modules/.bin/eslint",
     "lintall": "./node_modules/.bin/eslint client/ server.js",
-    "start": "./node_modules/.bin/babel-node server.js && open 'http://localhost:8888/'"
+    "start": "./node_modules/.bin/babel-node server.js"
   },
   "author": "zeke wander",
   "license": "ISC",
