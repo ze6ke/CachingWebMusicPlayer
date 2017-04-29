@@ -1,11 +1,29 @@
-var path=require('path')
-var HtmlWebpackPlugin = require('html-webpack-plugin')
+const path=require('path')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const common=require('./webpack.config.common.js')
 
+module.exports = Object.assign({}, common,{
+  entry: './client/app/index.js',
+  output: {
+    filename: 'bundle.js',
+    path: path.resolve(__dirname, 'dist/public'),
+    sourceMapFilename: 'bundle.map'
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: 'client/index.html',
+      filename: 'index.html',
+      inject: 'body' //options are true/body, head, and false
+    })
+  ]
+})
+//module.exports.module.rules[0].use.options.plugins = ['inferno']
+/*
 module.exports = {
   entry: './client/app/index.js',
   output: {
     filename: 'bundle.js',
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, 'dist/public'),
     sourceMapFilename: 'bundle.map'
   },
   devtool: '#source-map',
@@ -36,5 +54,5 @@ module.exports = {
       inject: 'body' //options are true/body, head, and false
     })
   ]
-
 }
+*/

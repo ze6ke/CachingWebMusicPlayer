@@ -5,7 +5,7 @@ module.exports = {
         "es6": true,
         "node": true
     },
-    "extends": "eslint:recommended",
+    "extends": ["eslint:recommended", "plugin:inferno/recommended"],
     "parserOptions": {
         "ecmaFeatures": {
             "experimentalObjectRestSpread": true,
@@ -14,7 +14,7 @@ module.exports = {
         "sourceType": "module"
     },
     "plugins": [
-        "react"
+        "inferno"
     ],
     "rules": {
         "no-console": [

@@ -1,13 +1,28 @@
 //add everything to git
 //setup lint
+//setup watcher (do I need gulp)
+//nodemon not restarting with server webpack execution (http://jlongster.com/Backend-Apps-with-Webpack--Part-II)
+//watch task and lint tasks are doing both client and server
+//setup basic player
+//setup unit test suite
 
-
-setup watcher (do I need gulp?)
-setup basic player
+run it on my phone
+lint errors don't kill gulp task and leave nodemon running
+disallow downloads
+turn on autoplay
+play next song
 design UI
-setup test suite
+shuffle
+filter
+make it look good
+setup integration test suite
+setup other type of test suite
+how does karma compare to my gulpfile?
 create webpack bundle for libraries
 learn to read mp3 embedded data
-autogenerate music file
+autogen library.json
 learn how manifests work
 try out different ways of ensuring the music is caches
+move to nginx
+make atom trigger watchers (or get a new text editor)
+optimize how the long list is displayed (if necessary)
