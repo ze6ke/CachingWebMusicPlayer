@@ -4,8 +4,10 @@ import React from 'react'
 import {render} from 'react-dom'
 
 import $ from 'jquery'
-import App from './app.js'
+import App from './views/app.js'
+import Model from './models/model.js'
 
+let model = new Model()
 window.React = React
 
 const getData = () => {
@@ -15,24 +17,32 @@ const getData = () => {
       alert('failure: ' + xhr.responseText)
     },
     success: (data) => {
-      songlist = data
-      renderApp()
+      model.setSonglist(data)
+      //songlist =  data
+      renderApp(model)
     }
   })
 }
 
 getData()
 
-let songlist = []
-let current = null
-
 const changeCurrentSong = (song) => {
-  current = song
-  renderApp()
+  model.changeCurrentSong(song)
+  renderApp(model)
 }
 
-const renderApp = () => {
-  render(<App songs={songlist} current={current} changeCurrentSong={changeCurrentSong}/>,
+const changeFilter = (e) => {
+  model.changeFilter(e.target.value)
+  renderApp(model)
+}
+
+const songEnded = () => {
+  changeCurrentSong(model.getNextSong())
+}
+
+const renderApp = (model) => {
+  render(<App songs={model.getFilteredSonglist()} current={model.getCurrentSong}
+    changeCurrentSong={changeCurrentSong} songEnded={songEnded} changeFilter={changeFilter}/>,
     document.getElementById('app-container'))
 
 }

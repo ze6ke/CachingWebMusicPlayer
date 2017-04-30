@@ -1,12 +1,12 @@
 /*global describe, it */
 //import {expect} from 'chai'
-import Song from '../app/song.js'
+import Song from '../../app/views/song.js'
 import {shallow} from 'enzyme'
 
 describe('song', () => {
   const aSong = {
-    "name":"Sous Les Jupes Des Filles",
-    "file": "11 Sous Les Jupes Des Filles.mp3"
+    'name':'Sous Les Jupes Des Filles',
+    'file': '11 Sous Les Jupes Des Filles.mp3'
   }
   const changeCurrentSong = (x)=>x
 

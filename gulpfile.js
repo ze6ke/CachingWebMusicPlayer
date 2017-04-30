@@ -11,11 +11,11 @@ const del = require('del')
 const mocha = require('gulp-mocha')
 
 function handleError(err) {
-  console.log(err)
+  //console.log(err)
   this.emit('end')
 }
-gulp.task('testclient', () => {
-  gulp.src('client/tests/*test.js').
+gulp.task('testclient', ['lintclient'], () => {
+  gulp.src('client/tests/**/*test.js').
   pipe(mocha({require: ['babel-core/register', 'client/tests/setup.js']}))
   .on('error', handleError)
   /*.once('end', cb)
@@ -23,8 +23,8 @@ gulp.task('testclient', () => {
   //the tests have fully run
 })
 
-gulp.task('testserver', () => {
-  gulp.src('server/tests/*test.js').
+gulp.task('testserver', ['lintserver'], () => {
+  gulp.src('server/tests/**/*test.js').
   pipe(mocha({require: ['babel-core/register', 'client/tests/setup.js']}))
   .on('error', handleError)
   /*.once('end', cb)
@@ -34,10 +34,13 @@ gulp.task('testserver', () => {
 
 gulp.task('test', ['testclient', 'testserver'])
 
-gulp.task('copydata', ['cleandata'], () => {
+gulp.task('copydataandfiles', ['cleandata'], () => {
   gulp.src('client/data/**')
   .pipe(gulp.dest('dist/public/data'))
+  gulp.src('client/resources/**')
+  .pipe(gulp.dest('dist/public/'))
 })
+
 
 gulp.task('cleandata', () => {
   let paths = del.sync(['dist/public/data/**', 'dist/public/data'])
@@ -80,17 +83,17 @@ gulp.task('lintclient', () => {
       .pipe(eslint.format())
       // To have the process exit with an error code (1) on
       // lint error, return the stream and pipe to failAfterError last.
-      .pipe(eslint.failAfterError())
+//      .pipe(eslint.failAfterError())
       .pipe(clientFileCache.cache())
 })
 
 let serverFileCache = new FileCache
 gulp.task('lintserver', () => {
-  return gulp.src(['server/*.js','!node_modules/**'])
+  return gulp.src(['server/**/*.js','!node_modules/**'])
       .pipe(serverFileCache.filter())
       .pipe(eslint())
       .pipe(eslint.format())
-      .pipe(eslint.failAfterError())
+      //.pipe(eslint.failAfterError())
       .pipe(serverFileCache.cache())
 })
 
@@ -98,16 +101,20 @@ gulp.task('lint', ['lintclient', 'lintserver'])
 
 gulp.task('watch', () => {
   watch(['client/**/*','!node_modules/**'], () => {
-    gulp.start(['lintclient', 'webpackclient'])
+    gulp.start(['clearscreen', 'lintclient', 'webpackclient'])
   })
   watch(['dist/public/*'], () => {
     browsersynch.reload({stream: false})
   })
-  watch(['client/public/**'], ['copydata'])
+  watch(['client/public/**'], ['copydataandfiles'])
 })
 
+gulp.task('clearscreen', () => {
+  console.log('\n'.repeat(10))
+  console.log('='.repeat(40))
+})
 
-gulp.task('serve', ['webpack','watch'], (cb) => {
+gulp.task('serve', ['webpack','lint','watch', 'copydataandfiles'], (cb) => {
   var called = false
   return nodemon({
     script: 'dist/server/server.js',
