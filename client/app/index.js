@@ -20,6 +20,7 @@ const getData = () => {
       model.setSonglist(data)
       //songlist =  data
       renderApp(model)
+      //songEnded()
     }
   })
 }
@@ -41,7 +42,7 @@ const songEnded = () => {
 }
 
 const renderApp = (model) => {
-  render(<App songs={model.getFilteredSonglist()} current={model.getCurrentSong}
+  render(<App songs={model.getFilteredSonglist()} current={model.getCurrentSong()}
     changeCurrentSong={changeCurrentSong} songEnded={songEnded} changeFilter={changeFilter}/>,
     document.getElementById('app-container'))
 

@@ -4,9 +4,9 @@ import {expect} from 'chai'
 
 describe('model', () => {
   const songlist = [
-    {name: 'this is a name'},
-    {name: 'this is a name', genre: 'a genre'},
-    {name: 'song 3', genre: 'genre'}
+    {name: 'this is a name', file: '1'},
+    {name: 'this is a name', genre: 'a genre', file: '2'},
+    {name: 'song 3', genre: 'genre', file: '3'}
   ]
 
   it('identifies strings correctly', () => {
@@ -62,10 +62,34 @@ describe('model', () => {
     let model = new Model()
     model.setSonglist(songlist)
     model.changeFilter('s')
-//    expect(model.getFilteredSonglist()).to.have.lengthOf(3)
+    expect(model.getFilteredSonglist()).to.have.lengthOf(3)
     model.changeFilter('genre')
     expect(model.getFilteredSonglist()).to.have.lengthOf(2)
     model.changeFilter('name genre')
     expect(model.getFilteredSonglist()).to.have.lengthOf(1)
+  })
+
+  it('getNextSong works correctly with unfiltered list', () => {
+    let model = new Model()
+    model.setSonglist(songlist)
+    model.changeCurrentSong(model.getNextSong())
+    expect(model.getCurrentSong()).to.deep.equal(songlist[1])
+    model.changeCurrentSong(model.getNextSong())
+    expect(model.getCurrentSong()).to.deep.equal(songlist[2])
+    model.changeCurrentSong(model.getNextSong())
+    expect(model.getCurrentSong()).to.deep.equal(songlist[0])
+  })
+
+  it('getNextSong works correctly with filtered list', () => {
+    let model = new Model()
+    model.setSonglist(songlist)
+    model.changeFilter('song')
+    model.changeCurrentSong(model.getNextSong())
+    expect(model.getCurrentSong()).to.deep.equal(songlist[2])
+    model.changeCurrentSong(model.getNextSong())
+    expect(model.getCurrentSong()).to.deep.equal(songlist[2])
+    model.changeFilter('genre')
+    model.changeCurrentSong(model.getNextSong())
+    expect(model.getCurrentSong()).to.deep.equal(songlist[1])
   })
 })
