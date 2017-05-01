@@ -19,6 +19,9 @@ module.exports = Object.assign({}, common, {
     path: path.resolve(__dirname, 'dist/server'),
     sourceMapFilename: 'server.map'
   },
+  node: {
+    __dirname: false
+  },
   externals: nodeModules,
   plugins: [
     //new webpack.IgnorePlugin(/\.(css|less)$/),

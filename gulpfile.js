@@ -44,7 +44,7 @@ gulp.task('copydataandfiles', ['cleandata'], () => {
 
 gulp.task('cleandata', () => {
   let paths = del.sync(['dist/public/data/**', 'dist/public/data'])
-  console.log('deleted: \n' + paths.join('\n'))
+  //console.log('deleted: \n' + paths.join('\n'))
 })
 
 function runwebpack(configFile, desc, cb) {
