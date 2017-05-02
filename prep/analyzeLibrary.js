@@ -1,20 +1,17 @@
 const ffmetadata = require('ffmetadata')
-//const fs = require('fs')
+const fs = require('fs')
 const path = require('path')
 const walk = require('walk')
 
-const startingPath = process.argv[2] ? process.argv[2] : '.'
-
-//console.log(startingPath)
+const startingPath = process.argv[2] ? process.argv[2] : 'music' //music should be maintained as a soft link in this
+//folder and point to the correct target
 
 let walker = walk.walk(startingPath, {followLinks: false})
 let fileList = []
 walker.on('file', (root, filestats, next) => {
   const fullPath = path.join(root, filestats.name)
   readMetaData(fullPath).then((metadata)=>{
-    //fileList.push(Object.assign({},filestats, metadata, {fullPath}))
     fileList.push({filestats, metadata, fullPath})
-    //console.log(path.join(root, filestats.name))
     next()
   })
 })
@@ -31,18 +28,34 @@ function keepGoodFields (fileList) {
   })
 }
 
+function writeFiles(library) {
+  fs.writeFile('shortLibrary.json', prettify(library.slice(0, 10)))
+  fs.writeFile('library.json', prettify(library))
+  fs.writeFile('shortManifest', prepFileListForManifest(library.slice(0,10)))
+  fs.writeFile('manifest', prepFileListForManifest(library))
+}
+
 
 walker.on('end', () => {
   let library = keepGoodFields(keepGoodFiles(fileList))
-  console.log(prettify(library))
+  //console.log(prettify(library))
+  writeFiles(library)
 })
 
 walker.on('error', console.log)
 function fixFilePath(path) {
-  return path.substring(15)
+  return path.substring(6)
 }
 function prettify(arr) {
   return '[\n' + arr.map((el) => JSON.stringify(el)).join(',\n') + '\n]'
+}
+function prepFileListForManifest(fileList) {
+  return fileList.reduce((retval, file) => {
+    return retval + '\n' + prepFileForManifest(file)
+  }, '')
+}
+function prepFileForManifest(file) {
+  return encodeURI('data/' + file.file)
 }
 
 function readMetaData(filepath) {
@@ -61,44 +74,6 @@ function readMetaData(filepath) {
   })
 }
 
-/*let fileList = []
 
-function handleUnknownType()
-
-function handleFile(file)
-
-function handleDirectory(filepath) {
-  fs.readdir(filepath, (err, files) => {
-    files.map((file) => {
-      determineType(path.join(filepath, file), handleDirectory, handleFile)
-    })
-  })
-}
-
-function determineType(file, cbForDirectory, cbForFile) {
-  fs.stat(file, (err, stats) => {
-    if(stats.isDirectory()) {
-      cbForDirectory(file)
-    } else {
-      cbForFile(file)
-    }
-  })
-}
-
-https://git.daplie.com/Daplie/node-walk
-
-function processFolder(fileList, filepath) {
-
-}
-
-fs.readdir('.', (err, files) => {
-  files.map((file)=>{
-    fs.stat(file, (err, stats) => {
-      //console.log(JSON.stringify(stats))
-      console.log(stats.isDirectory())
-    })
-  })
-})
-*/
 
 module.exports = {keepGoodFields,keepGoodFiles, fixFilePath}

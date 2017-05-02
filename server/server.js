@@ -15,7 +15,12 @@ app.use(morgan(':date :method :status :response-time[1]ms\t:url\t\tsize-:res[con
   res.type('text/cache-manifest').sendFile(path.join(__dirname + '/cache.appcache'))
 })*/
 
-app.use(express.static('dist/public'))
+app.use(express.static('dist/public'))//host application files
+app.use('/data', express.static('music')) //host the music files (this is my full music library)
+app.use((req, res) => {
+  res.status(404).send('something didn\'t work right')
+})
+
 const port=8000
 app.listen(port, () => {
   console.log(`listening on port ${port}`)

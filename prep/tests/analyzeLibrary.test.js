@@ -4,15 +4,15 @@ const analyzeLibrary = require('../analyzeLibrary.js')
 
 describe('analyzeLibrary', function() {
   const fileList = [
-    {removeMe: 'value', Me2: 'value', metadata: {genre:'Electronica/Dance',title:'In the Club vs Closer'},fullPath:'1234567890123456/closer'},
-    {metadata: {artist:'Alain Souchon',genre:'Pop',title:'Sous Les Jupes Des Filles',album:'Collection'},fullPath:'1234567890123456/jupes'},
-    {metadata: {error:'coulnt find metadata'},fullPath:'1234567890123456/badfile'}
+    {removeMe: 'value', Me2: 'value', metadata: {genre:'Electronica/Dance',title:'In the Club vs Closer'},fullPath:'music/closer'},
+    {metadata: {artist:'Alain Souchon',genre:'Pop',title:'Sous Les Jupes Des Filles',album:'Collection'},fullPath:'music/jupes'},
+    {metadata: {error:'coulnt find metadata'},fullPath:'music/badfile'}
   ]
 
   const goodFileList = [fileList[0], fileList[1]]
   const goodFieldsOnGoodFiles = [
-    {genre:'Electronica/Dance',title:'In the Club vs Closer',file:'6/closer'},
-    {artist:'Alain Souchon',genre:'Pop',title:'Sous Les Jupes Des Filles',album:'Collection', file:'6/jupes'},
+    {genre:'Electronica/Dance',title:'In the Club vs Closer',file:'closer'},
+    {artist:'Alain Souchon',genre:'Pop',title:'Sous Les Jupes Des Filles',album:'Collection', file:'jupes'},
   ]
 
   it('fixesFilePath as expect', function() {

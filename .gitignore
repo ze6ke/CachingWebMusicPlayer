@@ -3,3 +3,8 @@ dist/
 .gulp-cache
 **/f.txt
 music/
+smallMusic/
+prep/*.json
+prep/music
+prep/manifest
+prep/shortManifest

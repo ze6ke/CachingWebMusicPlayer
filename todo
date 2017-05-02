@@ -13,13 +13,15 @@
 //play next song
 //learn how manifests work
 //get phone app to run in background
-//test on dolphin--plays in background and goes to next song
+//test on dolphin--plays in background and goes to next song, needs to be open during download, a little finicky about partial downloads
 //test on safari--doesn't play in background
 //better express logger
+//learn to read mp3 embedded data
+//host music files directly from library
+//autogen library.json
+//autogen manifest file
 
-learn to read mp3 embedded data
-autogen library.json
-test in background for 1+ hours
+test in background for 1+ hours (started at 22:22)
 test effect on battery life
 make it look good
 
@@ -36,3 +38,5 @@ create webpack bundle for libraries
 try out different ways of ensuring the music caches
 move to nginx
 optimize how the long list is displayed (if necessary)
+handle ogg files better (metadata doesn't work)
+dynamically grow manifest to assist in page load?
