@@ -1,10 +1,4 @@
 [
-  {
-    "name":"Sous Les Jupes Des Filles",
-    "file": "11 Sous Les Jupes Des Filles.mp3"
-  },
-  {
-    "name":"In the Club v Closer",
-    "file": "01 In the Club vs Closer.mp3"
-  }
+{"artist":"50 cent vs. NIN","genre":"Electronica/Dance","title":"In the Club vs Closer","album":"Brian's Friend's Album","file":"01 In the Club vs Closer.mp3"},
+{"artist":"Alain Souchon","genre":"Pop","title":"Sous Les Jupes Des Filles","album":"Collection","file":"11 Sous Les Jupes Des Filles.mp3"}
 ]

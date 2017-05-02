@@ -25,14 +25,20 @@ gulp.task('testclient', ['lintclient'], () => {
 
 gulp.task('testserver', ['lintserver'], () => {
   gulp.src('server/tests/**/*test.js').
-  pipe(mocha({require: ['babel-core/register', 'client/tests/setup.js']}))
+  pipe(mocha({require: ['babel-core/register', 'server/tests/setup.js']}))
   .on('error', handleError)
   /*.once('end', cb)
   .once('error', cb)*/ //for whatever reason, the pipe never seems to finish, so it's hard to identify when
   //the tests have fully run
 })
 
-gulp.task('test', ['testclient', 'testserver'])
+gulp.task('testprep', ['lintprep'], () => {
+  gulp.src('prep/tests/**/*test.js').
+  pipe(mocha({require: ['babel-core/register']}))
+  .on('error', handleError)
+})
+
+gulp.task('test', ['testclient', 'testserver', 'testprep'])
 
 gulp.task('copydataandfiles', ['cleandata'], () => {
   gulp.src('client/data/**')
@@ -89,7 +95,7 @@ gulp.task('lintclient', () => {
 
 let serverFileCache = new FileCache
 gulp.task('lintserver', () => {
-  return gulp.src(['server/**/*.js','!node_modules/**'])
+  return gulp.src(['server/**/*.js','!**/node_modules/**'])
       .pipe(serverFileCache.filter())
       .pipe(eslint())
       .pipe(eslint.format())
@@ -97,7 +103,17 @@ gulp.task('lintserver', () => {
       .pipe(serverFileCache.cache())
 })
 
-gulp.task('lint', ['lintclient', 'lintserver'])
+let prepFileCache = new FileCache
+gulp.task('lintprep', () => {
+  return gulp.src(['prep/**/*.js','!**/node_modules/**'])
+      .pipe(prepFileCache.filter())
+      .pipe(eslint())
+      .pipe(eslint.format())
+      //.pipe(eslint.failAfterError())
+      .pipe(prepFileCache.cache())
+})
+
+gulp.task('lint', ['lintclient', 'lintserver', 'lintprep'])
 
 gulp.task('watch', () => {
   watch(['client/**/*','!node_modules/**'], () => {

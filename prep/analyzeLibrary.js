@@ -1,5 +1,5 @@
 const ffmetadata = require('ffmetadata')
-const fs = require('fs')
+//const fs = require('fs')
 const path = require('path')
 const walk = require('walk')
 
@@ -18,13 +18,35 @@ walker.on('file', (root, filestats, next) => {
     next()
   })
 })
+function keepGoodFiles (fileList) {
+  return fileList.filter((file) =>
+    file.metadata && Object.keys(file.metadata).length>=2)
+}
+function keepGoodFields (fileList) {
+  return fileList.map((file) => {
+    let retval = ['artist', 'genre', 'title', 'album'].filter((field) => file.metadata[field])
+    .reduce((obj, field) => Object.assign(obj, {[field]: file.metadata[field]}), {})
+    retval.file = fixFilePath(file.fullPath)
+    return retval
+  })
+}
+
 
 walker.on('end', () => {
-  console.log(fileList)
+  let library = keepGoodFields(keepGoodFiles(fileList))
+  console.log(prettify(library))
 })
 
+walker.on('error', console.log)
+function fixFilePath(path) {
+  return path.substring(15)
+}
+function prettify(arr) {
+  return '[\n' + arr.map((el) => JSON.stringify(el)).join(',\n') + '\n]'
+}
+
 function readMetaData(filepath) {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     ffmetadata.read(filepath, (err, data) => {
       if (err) {
 /*        console.error('Error reading metadata, possibly sudo apt-get install ffmetadata will fix it')
@@ -78,3 +100,5 @@ fs.readdir('.', (err, files) => {
   })
 })
 */
+
+module.exports = {keepGoodFields,keepGoodFiles, fixFilePath}
