@@ -20,9 +20,11 @@
 //host music files directly from library
 //autogen library.json
 //autogen manifest file
+//test in background for 1+ hours (started at 22:22) --nice results in dolphin
+//test effect on battery life --nice results in dolphin
 
-test in background for 1+ hours (started at 22:22)
-test effect on battery life
+use react lint and not inferno lint
+
 make it look good
 
 test on chrome
@@ -39,4 +41,5 @@ try out different ways of ensuring the music caches
 move to nginx
 optimize how the long list is displayed (if necessary)
 handle ogg files better (metadata doesn't work)
-dynamically grow manifest to assist in page load?
+make initial load better (dynamically grow manifest to assist in page load?)
+come up with good stylelint rules

@@ -1,7 +1,12 @@
-const Filter = ({changeFilter}) => (
-  <form onSubmit={(e)=>{e.preventDefault()}}>
-    <input type="text" onChange={changeFilter} placeholder="filter"/>
-  </form>
+const Filter = ({changeFilter, songs}) => (
+  <span className="filter-span">
+    <form onSubmit={(e)=>{e.preventDefault()}}>
+      <span className="filter">
+        <input type="text" className="filter-box" onChange={changeFilter} placeholder="filter"/>
+        <span className="filter-icon fa fa-search" aria-hidden="true"></span>
+      </span>Songs: {songs.length}
+    </form>
+  </span>
 )
 
 export default Filter

@@ -9,6 +9,27 @@ const webpack = require('webpack')
 const FileCache = require('gulp-file-cache')
 const del = require('del')
 const mocha = require('gulp-mocha')
+const stylus = require('gulp-stylus')
+const styleLint = require('gulp-stylelint')
+
+gulp.task('stylus', () => {
+  gulp.src('client/styles/playerStyle.styl')
+  .pipe(stylus())
+  .pipe(gulp.dest('dist/public'))
+  .on('error', handleError)
+})
+
+gulp.task('lintcss', ['stylus'], () => {
+  gulp.src('dist/public/playerStyle.css')
+  .pipe(styleLint({
+    reporters: [
+      {formatter: 'string', console: true}
+    ]
+  }))
+})
+
+
+
 
 function handleError(err) {
   //console.log(err)
@@ -71,7 +92,7 @@ gulp.task('webpackserver', (cb) => {
   runwebpack('./webpack.config.server.js', 'webpackserver', cb)
 })
 
-gulp.task('webpack', ['webpackclient', 'webpackserver'])
+gulp.task('webpack', ['webpackclient', 'webpackserver', 'stylus'])
 
 let clientFileCache = new FileCache //used to limit linting to files that have changed
 gulp.task('lintclient', () => {
@@ -113,16 +134,17 @@ gulp.task('lintprep', () => {
       .pipe(prepFileCache.cache())
 })
 
-gulp.task('lint', ['lintclient', 'lintserver', 'lintprep'])
+gulp.task('lint', ['lintclient', 'lintserver', 'lintprep', 'lintcss'])
 
 gulp.task('watch', () => {
-  watch(['client/**/*','!node_modules/**'], () => {
+  watch(['client/styles/**/*'], () => gulp.start(['stylus']))
+  watch(['client/app/**/*','client/index.html','!node_modules/**'], () => {
     gulp.start(['clearscreen', 'lintclient', 'webpackclient'])
   })
   watch(['dist/public/*'], () => {
     browsersynch.reload({stream: false})
   })
-  watch(['client/public/**'], ['copydataandfiles'])
+  watch(['client/resources/**'], () => gulp.start(['copydataandfiles']))
 })
 
 gulp.task('clearscreen', () => {
