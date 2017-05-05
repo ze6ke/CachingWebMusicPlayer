@@ -14,7 +14,8 @@ module.exports = {
         "sourceType": "module"
     },
     "plugins": [
-        "inferno"
+        /*"inferno"*/
+        "react"
     ],
     "rules": {
         "no-console": [
