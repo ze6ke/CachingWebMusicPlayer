@@ -10,7 +10,7 @@ import functionalityTest from './functionalityTest.js'
 
 functionalityTest()
 
-let model = new Model()
+let model = new Model(renderApp)
 window.React = React
 
 const getData = () => {
@@ -56,7 +56,7 @@ const songEnded = () => {
   changeCurrentSong(model.getNextSong())
 }
 
-const renderApp = (model) => {
+function renderApp (model) {
   render(<App songs={model.getFilteredSonglist()} current={model.getCurrentSong()}
     changeCurrentSong={changeCurrentSong} songEnded={songEnded} changeFilter={changeFilter}/>,
     document.getElementById('app-container'))

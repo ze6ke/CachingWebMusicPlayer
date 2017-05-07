@@ -3,10 +3,11 @@ import $ from 'jquery'
 const MP3Type = 'audio/mpeg'
 
 class Model {
-  constructor() {
+  constructor(renderApp) {
     this.songlist = null
     this.filter = ''
     this.current = null
+    this.renderApp = function () {renderApp(this)}
   }
 
   /*this version works on the desktop, but not in safari or chrome on the iphone
@@ -80,7 +81,7 @@ class Model {
   }
 
   fetchAllSongs() {
-    this.songlist.forEach((song)=>this.fetchSong(song, ()=>{}))
+    this.songlist.forEach((song)=>this.fetchSong(song, ()=>{this.renderApp()}))
     //this.fetchSong(this.songlist[0], () => {  })
   }
 
@@ -142,6 +143,10 @@ class Model {
   }
 
   static songMatchesFilter (song, filter) {
+    //always filter songs that don't have loaded data
+    if(!song.data) {
+      return false
+    }
     let ands = filter.toUpperCase().split(/\s/)
     return ands.every((filter) => {
       return Object.keys(song).some((field) => {
