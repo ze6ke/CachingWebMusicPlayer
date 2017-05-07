@@ -25,21 +25,24 @@
 //make it look good
 //use react lint and not inferno lint
 
-
-test on chrome
-test on firefox
-test on other browsers
+cache to filesystemapi
+cache to localstorage
+cache to indexedDB
+make initial load better (dynamically grow manifest to assist in page load?)
 sorting
-make watch and eslint work in text editor
 shuffle
 setup integration test suite
 setup other type of test suite
 how does karma compare to my gulpfile?
+
+
+test on chrome
+test on firefox
+test on other browsers
+make watch and eslint work in text editor
 create webpack bundle for libraries
-try out different ways of ensuring the music caches
 move to nginx
 really make it look good (colors and stuff)
 optimize how the long list is displayed (if necessary)
 handle ogg files better (metadata doesn't work)
-make initial load better (dynamically grow manifest to assist in page load?)
 come up with good stylelint rules

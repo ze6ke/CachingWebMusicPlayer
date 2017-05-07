@@ -23,7 +23,10 @@ module.exports = {
         ],
         "indent": [
             "error",
-            2
+            2,
+            {
+              "SwitchCase": 1
+            }
         ],
         "linebreak-style": [
             "error",
@@ -36,6 +39,13 @@ module.exports = {
         "semi": [
             "error",
             "never"
+        ],
+        "no-unused-vars": [
+          "error", {
+            "vars": "all",
+            "args": "none",
+            "caughtErrors": "none"
+          }
         ]
     }
 };

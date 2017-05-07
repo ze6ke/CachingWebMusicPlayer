@@ -3,15 +3,30 @@
 import React from 'react'
 import {render} from 'react-dom'
 
-import $ from 'jquery'
+//import $ from 'jquery'
 import App from './views/app.js'
 import Model from './models/model.js'
+import functionalityTest from './functionalityTest.js'
+
+functionalityTest()
 
 let model = new Model()
 window.React = React
 
 const getData = () => {
-  $.ajax({
+  fetch('data/library.json')
+  .then((response) => {
+    if(response.ok) {
+      response.json().then((data) => {
+        model.setSonglist(data)
+        renderApp(model)
+      })
+    } else {
+      alert(response.statusText)
+    }
+  }, (response) => {alert('fetch failed: ' + response)})
+
+/*  $.ajax({
     url:'data/library.json',
     error: (xhr) => {
       alert('failure: ' + xhr.responseText)
@@ -22,7 +37,7 @@ const getData = () => {
       renderApp(model)
       //songEnded()
     }
-  })
+  })*/
 }
 
 getData()
