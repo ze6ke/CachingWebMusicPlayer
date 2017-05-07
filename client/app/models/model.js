@@ -10,6 +10,25 @@ class Model {
     this.renderApp = function () {renderApp(this)}
   }
 
+  static storeSongData(song, data) {
+    song.isReady = true
+    song.data = data
+  }
+  static resetSong(song) {
+    if(!song) {
+      return
+    }
+    if(song.URL) {
+      window.URL.revokeObjectURL(song.URL)
+      song.URL = undefined
+    }
+  }
+
+  static prepareSong(song) {
+    song.URL = window.URL.createObjectURL(song.data)
+  }
+  
+
   /*this version works on the desktop, but not in safari or chrome on the iphone
   */
   fetchSongWithFetch(song, cb) {
@@ -18,7 +37,8 @@ class Model {
       if(response.ok) {
         response.blob()
         .then((data)=>{
-          song.data = data.slice(0, data.size, MP3Type)
+          //song.data = data.slice(0, data.size, MP3Type)
+          Model.storeSongData(song, data)
           cb()
         }, (err) => {cb(err)})
       } else {
@@ -39,7 +59,8 @@ class Model {
       if(jqXHR.responseType !== 'blob') { //this doesn't seem to exist
         alert('jqXHR.responseType: ' + jqXHR.responseType)
       }
-      song.data = new Blob(data.split(''), {type:'MP3Type'})
+      Model.storeSongData(song, new Blob(data.split(''), {type:MP3Type}))
+      //song.data = new Blob(data.split(''), {type:'MP3Type'})
       cb()
     })
     .fail((jqXHR, textStatus) => {
@@ -58,7 +79,8 @@ class Model {
         if(xhr.responseType !== 'blob') {
           alert('xhr.responseType: ' + xhr.responseType)
         }
-        song.data = this.response
+        Model.storeSongData(song, this.response)
+        //song.data = this.response
         cb()
       }
     }
@@ -90,18 +112,14 @@ class Model {
     //this.changeCurrentSong(songlist[0])
     this.fetchAllSongs()
   }
+
+
   changeCurrentSong (song) {
-    //revoke any previously active URLs
-    if(this.current) {
-      window.URL.revokeObjectURL(this.current.URL)
-      this.current.URL = undefined
-    }
+    Model.resetSong(this.current)
 
     this.current = song
-    this.current.URL = window.URL.createObjectURL(song.data)
-    //alert('data: ' + (song.data))
-    //alert('datalength: ' + (song.data && song.data.size))
-    //alert('type: ' + song.data.type)
+
+    Model.prepareSong(song)
   }
   getCurrentSong () {
     return this.current
@@ -144,7 +162,7 @@ class Model {
 
   static songMatchesFilter (song, filter) {
     //always filter songs that don't have loaded data
-    if(!song.data) {
+    if(!song.isReady) {
       return false
     }
     let ands = filter.toUpperCase().split(/\s/)
