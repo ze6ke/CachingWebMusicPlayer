@@ -26,18 +26,6 @@ const getData = () => {
     }
   }, (response) => {alert('fetch failed: ' + response)})
 
-/*  $.ajax({
-    url:'data/library.json',
-    error: (xhr) => {
-      alert('failure: ' + xhr.responseText)
-    },
-    success: (data) => {
-      model.setSonglist(data)
-      //songlist =  data
-      renderApp(model)
-      //songEnded()
-    }
-  })*/
 }
 
 getData()
@@ -58,7 +46,7 @@ const songEnded = () => {
 
 function renderApp (model) {
   render(<App songs={model.getFilteredSonglist()} current={model.getCurrentSong()}
-    changeCurrentSong={changeCurrentSong} songEnded={songEnded} changeFilter={changeFilter}/>,
+    changeCurrentSong={changeCurrentSong} songEnded={songEnded} changeFilter={changeFilter}
+    clearCachedData={model.clearCachedData} showDataUsage={model.showDataUsage}/>,
     document.getElementById('app-container'))
-
 }
