@@ -5,12 +5,14 @@ let app = express()
 //const path = require('path')
 const morgan = require('morgan')
 
+
 //add routes and middelware
 //an extra comment
 
 //app.use(morgan('dev'))
-app.use(morgan(':date :method :status :response-time[1]ms\t:url\t\tsize-:res[content-length]\ttype-:res[content-type]'))
-
+if(process.env.NODE_ENV !== 'unittest') {
+  app.use(morgan(':date :method :status :response-time[1]ms\t:url\t\tsize-:res[content-length]\ttype-:res[content-type]'))
+}
 /*app.get('/cache.manifest', function (req, res) {
   res.type('text/cache-manifest').sendFile(path.join(__dirname + '/cache.appcache'))
 })*/
@@ -25,3 +27,6 @@ const port=8000
 app.listen(port, () => {
   console.log(`listening on port ${port}`)
 })
+
+export default app
+module.exports = app

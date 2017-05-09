@@ -43,9 +43,11 @@
     "react-test-renderer": "^15.5.4",
     "stylelint": "^7.10.1",
     "stylus": "^0.54.5",
+    "supertest": "^3.0.0",
     "webpack": "^2.4.1"
   },
   "dependencies": {
+    "blob-util": "^1.2.1",
     "express": "^4.15.2",
     "ffmetadata": "^1.4.0",
     "inferno": "^3.0.5",
