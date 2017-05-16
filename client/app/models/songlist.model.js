@@ -5,7 +5,9 @@ class Songlist {
     this.songlist = null
     this.filter = ''
     this.current = null
-    this.renderApp = function () {renderApp(this)}
+    this.renderApp = () => {
+      renderApp(this)
+    }
     this.fake = fake
   }
 
@@ -26,8 +28,8 @@ class Songlist {
 
 
   fetchAllSongs() {
-    this.songlist.forEach((song)=>song.fetchData(()=>{this.renderApp()}))
-    //this.fetchSong(this.songlist[0], () => {  })
+    //this.songlist.forEach((song)=>song.fetchData(()=>{this.renderApp()}))
+    this.songlist.forEach((song)=>song.fetchData().then(this.renderApp))
   }
 
   setSonglist (songlist) {
@@ -43,7 +45,7 @@ class Songlist {
     this.current = song
 
     if(!this.fake) {
-      return new Promise((resolve, reject) => {song.prepare(resolve)})
+      return song.prepare()
     } else {
       return undefined
     }

@@ -151,7 +151,7 @@ gulp.task('watchkarma', () => {
   runKarma((f)=>f, false)
 })
 
-gulp.task('watch', ['watchkarma'], () => {
+gulp.task('watch', () => {
   watch(['client/styles/**/*'], () => gulp.start(['stylus']))
   watch(['client/app/**/*','client/index.html','!node_modules/**'], () => {
     gulp.start(['clearscreen', 'lintclient', 'webpackclient'])

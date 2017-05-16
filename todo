@@ -28,9 +28,9 @@
 //Move unit tests to karma
 //fix unit test on prep sub-project (should it have a second package.json?)
 //make watch and eslint work in text editor
+//remove blob-util
+//cache to localstorage (breakup files) (gives quota errors on all browsers that I tested, but stores the smallest song)
 
-remove blob-util
-cache to localstorage (breakup files)
 cache to filesystemapi
 cache to indexedDB
 sorting
