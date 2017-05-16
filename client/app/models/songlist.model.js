@@ -1,19 +1,27 @@
 import Song from './song.model.js'
 
 class Songlist {
-  constructor(renderApp) {
+  constructor(renderApp, fake=false) {
     this.songlist = null
     this.filter = ''
     this.current = null
     this.renderApp = function () {renderApp(this)}
+    this.fake = fake
   }
 
   clearCachedData() {
+    localStorage.clear()
+    sessionStorage.clear()
     alert('clearCachedData called')
   }
 
+  getLocalStorageUsage() {
+    return Object.keys(localStorage).reduce((acc, val) => {
+      return acc += localStorage.getItem(val).length * 2
+    }, 0)/1024/1024
+  }
   showDataUsage() {
-    alert('showDataUsage called')
+    alert('localStorage: ' + this.getLocalStorageUsage().toFixed(2) + 'MB')
   }
 
 
@@ -23,18 +31,22 @@ class Songlist {
   }
 
   setSonglist (songlist) {
-    this.songlist = songlist.map((raw) => new Song(raw))
-    //this.changeCurrentSong(songlist[0])
+    this.songlist = songlist.map((raw) => new Song(raw, this.fake))
+    this.changeCurrentSong(this.songlist[0])
     this.fetchAllSongs()
   }
 
 
   changeCurrentSong (song) {
-    this.current && this.current.resetSong()
+    this.current && this.current.reset()
 
     this.current = song
 
-    song.prepare()
+    if(!this.fake) {
+      return new Promise((resolve, reject) => {song.prepare(resolve)})
+    } else {
+      return undefined
+    }
   }
 
   getCurrentSong () {

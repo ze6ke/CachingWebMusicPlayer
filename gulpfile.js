@@ -11,6 +11,7 @@ const del = require('del')
 const mocha = require('gulp-mocha')
 const stylus = require('gulp-stylus')
 const styleLint = require('gulp-stylelint')
+const karma = require('karma')
 
 gulp.task('stylus', () => {
   gulp.src('client/styles/playerStyle.styl')
@@ -35,14 +36,23 @@ function handleError(err) {
   //console.log(err)
   this.emit('end')
 }
-gulp.task('testclient', ['lintclient'], () => {
-  gulp.src('client/tests/**/*test.js').
-  pipe(mocha({require: ['babel-core/register', 'client/tests/setup.js']}))
-  .on('error', handleError)
+
+const runKarma = (done, singleRun=true) => {
+  new karma.Server({
+    configFile: __dirname + '/karma.conf.js',
+    singleRun: singleRun
+  }, done).start()
+}
+
+
+gulp.task('testclient', ['lintclient'], runKarma)
+  //gulp.src('client/tests/**/*test.js').
+  //pipe(mocha({require: ['babel-core/register', 'client/tests/setup.js']}))
+  //.on('error', handleError)
   /*.once('end', cb)
   .once('error', cb)*/ //for whatever reason, the pipe never seems to finish, so it's hard to identify when
   //the tests have fully run
-})
+
 
 gulp.task('testserver', ['lintserver'], () => {
   gulp.src('server/tests/**/*test.js').
@@ -70,7 +80,8 @@ gulp.task('copydataandfiles', ['cleandata'], () => {
 
 
 gulp.task('cleandata', () => {
-  let paths = del.sync(['dist/public/data/**', 'dist/public/data'])
+  //let paths =
+  del.sync(['dist/public/data/**', 'dist/public/data'])
   //console.log('deleted: \n' + paths.join('\n'))
 })
 
@@ -136,7 +147,11 @@ gulp.task('lintprep', () => {
 
 gulp.task('lint', ['lintclient', 'lintserver', 'lintprep', 'lintcss'])
 
-gulp.task('watch', () => {
+gulp.task('watchkarma', () => {
+  runKarma((f)=>f, false)
+})
+
+gulp.task('watch', ['watchkarma'], () => {
   watch(['client/styles/**/*'], () => gulp.start(['stylus']))
   watch(['client/app/**/*','client/index.html','!node_modules/**'], () => {
     gulp.start(['clearscreen', 'lintclient', 'webpackclient'])
@@ -145,6 +160,7 @@ gulp.task('watch', () => {
     browsersynch.reload({stream: false})
   })
   watch(['client/resources/**'], () => gulp.start(['copydataandfiles']))
+
 })
 
 gulp.task('clearscreen', () => {

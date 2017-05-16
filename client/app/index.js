@@ -31,8 +31,8 @@ const getData = () => {
 getData()
 
 const changeCurrentSong = (song) => {
-  model.changeCurrentSong(song)
-  renderApp(model)
+  model.changeCurrentSong(song).then(()=>renderApp(model))
+  //renderApp(model)
 }
 
 const changeFilter = (e) => {
@@ -44,9 +44,17 @@ const songEnded = () => {
   changeCurrentSong(model.getNextSong())
 }
 
+const clearCachedData = () => {
+  return model.clearCachedData()
+}
+
+const showDataUsage = () => {
+  return model.showDataUsage()
+}
+
 function renderApp (model) {
   render(<App songs={model.getFilteredSonglist()} current={model.getCurrentSong()}
     changeCurrentSong={changeCurrentSong} songEnded={songEnded} changeFilter={changeFilter}
-    clearCachedData={model.clearCachedData} showDataUsage={model.showDataUsage}/>,
+    clearCachedData={clearCachedData} showDataUsage={showDataUsage}/>,
     document.getElementById('app-container'))
 }

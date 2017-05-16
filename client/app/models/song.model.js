@@ -1,30 +1,114 @@
-import {isString} from '../utils/utils.js'
+import {isString} from '../utils/util.js'
+//import blobUtil from 'blob-util'
+import util from '../utils/util.js'
+import 'babel-polyfill'
+
+const FETCH_TOOL = 'XHR'  //'fetch' 'none'
+//sessionStorage doesn't work in firefox or chrome on the desktop giving errors about quota exceeded
+//localStorage doesn't work in firefox or chrome on the desktop giving errors about quota exceeded
+const STORAGE_TOOL = 'sessionStorage'//'sessionStorage', 'volatile', 'indexedDB', 'fileSystem'
+//const MP3Type = 'audio/mpeg'
+const storage = STORAGE_TOOL === 'sessionStorage' ? sessionStorage : STORAGE_TOOL === 'localStorage' ? localStorage  : null
 
 class Song {
-  constructor(raw)
+  constructor(raw, isReady=false)
   {
     this.artist = raw.artist
     this.genre = raw.genre
     this.title = raw.title
     this.album = raw.album
     this.file = raw.file
-    this.isReady = false
+    this.isReady = isReady||this.hasData()
   }
 
-  storeData(data) {
+  hasData() {
+    if(this.isReady){
+      return true
+    }
+    switch(STORAGE_TOOL) {
+      case 'volatile': return !!this.data
+      case 'localStorage':
+      case 'sessionStorage': return storage.getItem(this.file)
+      default:
+        alert('STORAGE_TOOL has an invalid value: ' + STORAGE_TOOL)
+    }
+  }
+
+  storeData(data, done) {
+    switch(STORAGE_TOOL) {
+      case 'volatile': this.data = data
+        done()
+        break
+      case 'localStorage':
+      case 'sessionStorage': util.blobToBase64Strings(data, this.file).then((strings) => {
+        //alert(this.file + '\n' + data.size + '\n' + str.length)
+        strings.map((o, i)=>{
+          if(i===0){
+            storage.setItem(o.key, JSON.stringify({length:o.length, type:o.type}))
+          } else {
+            storage.setItem(o.key, o.base64String)
+          }
+        })
+        done()
+        //storage.setItem(this.file, str)
+      })
+        break
+      default:
+        alert('STORAGE_TOOL has an invalid value: ' + STORAGE_TOOL)
+        done()
+    }
     this.isReady = true
-    this.data = data
+  }
+
+  reset() {
+    if(this.URL) {
+      window.URL.revokeObjectURL(this.URL)
+      delete this.URL
+    }
+    if(this.tempData) {
+      delete this.tempData
+    }
+  }
+
+  prepare(done) {
+    switch(STORAGE_TOOL) {
+      case 'volatile': this.tempData = this.data
+        this.URL = window.URL.createObjectURL(this.tempData)
+        done(this.URL)
+        break
+      case 'localStorage':
+      case 'sessionStorage': {
+        const info = JSON.parse(storage.getItem(this.file))
+        let stringArray = []
+        for(let i = 1;i<=info.length;i++) {
+          stringArray.push(storage.getItem(this.file + '-' + i))
+        }
+        this.tempData = util.base64StringsToBlob(stringArray, info.type)
+        this.URL = window.URL.createObjectURL(this.tempData)
+        done(this.URL)
+      }
+          /*.then((blob) => {
+            this.tempData = blob
+            this.URL = window.URL.createObjectURL(this.tempData)
+            done(this.URL)
+          })*/
+        break
+      default:
+        alert('STORAGE_TOOL has an invalid value: ' + STORAGE_TOOL)
+    }
   }
 
   fetchData(cb) {
-    const FETCH_TOOL = 'XHR'  //the other two values don't work on all browsers
+    if(this.isReady) {
+      cb()
+      return
+    }
     switch(FETCH_TOOL) {
       case 'XHR': this.fetchWithXHR(cb)
         break
-      /*case 'jquery': this.fetchSongWithJQuery(song, cb)
-        break
-      */
       case 'fetch': this.fetchWithFetch(cb)
+        break
+      case 'none': this.isReady = true
         break
     }
   }
@@ -37,7 +121,6 @@ class Song {
       if(response.ok) {
         response.blob()
         .then((data)=>{
-          //song.data = data.slice(0, data.size, MP3Type)
           this.storeData(data)
           cb()
         }, (err) => {cb(err)})
@@ -47,6 +130,28 @@ class Song {
     }, (response) => {
       cb(response)
     })
+  }
+
+  /*this function seems to work on the iphone, while the other two don't.  It doesn't work with firefox 52
+  */
+  fetchWithXHR(cb) {
+    let xhr = new XMLHttpRequest()
+    xhr.open('GET', 'data/' + this.file)
+    xhr.responseType = 'blob'
+    //let self = this
+    xhr.onload = (e) => {
+      if(xhr.status == 200) {
+        if(xhr.responseType !== 'blob') {
+          alert('xhr.responseType: ' + xhr.responseType)
+        }
+        this.storeData(xhr.response)
+        cb()
+      }
+    }
+    xhr.onerror = function(e) {
+      alert('XHR failed: ' + e.target.status)
+    }
+    xhr.send()
   }
 
   /*There doesn't seem to be any way to make jquery give me access to get a blob.
@@ -70,39 +175,6 @@ class Song {
   }
 */
 
-/*this function seems to work on the iphone, while the other two don't
-*/
-  fetchWithXHR(cb) {
-    let xhr = new XMLHttpRequest()
-    xhr.open('GET', 'data/' + this.file)
-    xhr.responseType = 'blob'
-    //let self = this
-    xhr.onload = (e) => {
-      if(xhr.status == 200) {
-        if(xhr.responseType !== 'blob') {
-          alert('xhr.responseType: ' + xhr.responseType)
-        }
-        this.storeData(xhr.response)
-        cb()
-      }
-    }
-    xhr.onerror = function(e) {
-      alert('XHR failed: ' + e.target.status)
-    }
-    xhr.send()
-  }
-
-
-  reset() {
-    if(this.URL) {
-      window.URL.revokeObjectURL(this.URL)
-      delete this.URL
-    }
-  }
-
-  prepare() {
-    this.URL = window.URL.createObjectURL(this.data)
-  }
 
   matchesFilter (filter) {
     //always filter songs that don't have loaded data

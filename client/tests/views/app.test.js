@@ -3,6 +3,7 @@
 import App from '../../app/views/app.js'
 import {shallow} from 'enzyme'
 
+
 describe('App', () => {
   const songs = [
     {
