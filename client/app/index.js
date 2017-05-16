@@ -3,6 +3,7 @@
 import React from 'react'
 import {render} from 'react-dom'
 import storageStrategy from './utils/storageStrategy.js'
+import fetchStrategy from './utils/fetchStrategy.js'
 
 //import $ from 'jquery'
 import App from './views/app.js'
@@ -11,7 +12,7 @@ import functionalityTest from './functionalityTest.js'
 
 functionalityTest()
 
-let model = new Model(renderApp, storageStrategy.volatile)
+let model = new Model(renderApp, storageStrategy.volatile, fetchStrategy.XHR)
 window.React = React
 
 const getData = () => {

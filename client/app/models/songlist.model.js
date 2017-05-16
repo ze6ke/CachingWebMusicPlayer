@@ -1,7 +1,7 @@
 import Song from './song.model.js'
 
 class Songlist {
-  constructor(renderApp, storageStrategy, fake=false) {
+  constructor(renderApp, storageStrategy, fetchStrategy, fake=false) {
     this.songlist = null
     this.filter = ''
     this.current = null
@@ -10,6 +10,7 @@ class Songlist {
     }
     this.fake = fake
     this.storageStrategy = storageStrategy
+    this.fetchStrategy = fetchStrategy
   }
 
   clearCachedData() {
@@ -39,7 +40,7 @@ class Songlist {
   }
 
   setSonglist (songlist) {
-    this.songlist = songlist.map((raw) => new Song(raw, this.storageStrategy, this.fake))
+    this.songlist = songlist.map((raw) => new Song(raw, this.storageStrategy, this.fetchStrategy, this.fake))
     //this.changeCurrentSong(this.songlist[0])
     this.fetchAllSongs()
   }

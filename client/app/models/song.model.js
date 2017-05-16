@@ -3,7 +3,7 @@ import {isString} from '../utils/util.js'
 //import util from '../utils/util.js'
 import 'babel-polyfill'
 
-const FETCH_TOOL = 'XHR'  //'fetch' 'none'
+//const FETCH_TOOL = 'XHR'  //'fetch' 'none'
 //sessionStorage doesn't work in firefox or chrome on the desktop giving errors about quota exceeded
 //localStorage doesn't work in firefox or chrome on the desktop giving errors about quota exceeded
 //const STORAGE_TOOL = 'localStorage'//'sessionStorage', 'localStorage', 'volatile', 'indexedDB', 'fileSystem'
@@ -11,7 +11,7 @@ const FETCH_TOOL = 'XHR'  //'fetch' 'none'
 //const storage = STORAGE_TOOL === 'sessionStorage' ? sessionStorage : STORAGE_TOOL === 'localStorage' ? localStorage  : null
 
 class Song {
-  constructor(raw, storageStrategy, isReady=false)
+  constructor(raw, storageStrategy, fetchStrategy, isReady=false)
   {
     this.artist = raw.artist
     this.genre = raw.genre
@@ -19,6 +19,7 @@ class Song {
     this.album = raw.album
     this.file = raw.file
     this.storageStrategy = storageStrategy
+    this.fetchStrategy = fetchStrategy
     this.isReady = isReady||this.hasData()
   }
 
@@ -112,17 +113,23 @@ class Song {
     if(this.isReady) {
       return Promise.resolve(this)
     }
-    switch(FETCH_TOOL) {
+    return this.fetchStrategy.fetch('data/' + this.file)
+    .then((data) => {
+      return this.storeData(data)
+    })
+    .then(() => this)
+
+    /*switch(FETCH_TOOL) {
       case 'XHR': return this.fetchWithXHR()
       case 'fetch': return this.fetchWithFetch()
       case 'none': this.isReady = true
         return Promise.resolve(this)
-    }
+    }*/
   }
 
   /*this version works on the desktop, but not in safari or chrome on the iphone
   */
-  fetchWithFetch() {
+/*  fetchWithFetch() {
     return fetch('data/' + this.file)
     .then((response)=> {
       if(response.ok) {
@@ -135,10 +142,10 @@ class Song {
     })
     .then(()=>this)
   }
-
+*/
   /*this function seems to work on the iphone, while the other two don't.  It doesn't work with firefox 52
   */
-  fetchWithXHR() {
+  /*fetchWithXHR() {
     return new Promise((resolve, reject) => {
       let xhr = new XMLHttpRequest()
       xhr.open('GET', 'data/' + this.file)
@@ -159,7 +166,7 @@ class Song {
     })
     .then(()=>this)
   }
-
+*/
 
   matchesFilter (filter) {
     //always filter songs that don't have loaded data
