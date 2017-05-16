@@ -1,23 +1,24 @@
 import {isString} from '../utils/util.js'
 //import blobUtil from 'blob-util'
-import util from '../utils/util.js'
+//import util from '../utils/util.js'
 import 'babel-polyfill'
 
 const FETCH_TOOL = 'XHR'  //'fetch' 'none'
 //sessionStorage doesn't work in firefox or chrome on the desktop giving errors about quota exceeded
 //localStorage doesn't work in firefox or chrome on the desktop giving errors about quota exceeded
-const STORAGE_TOOL = 'localStorage'//'sessionStorage', 'localStorage', 'volatile', 'indexedDB', 'fileSystem'
+//const STORAGE_TOOL = 'localStorage'//'sessionStorage', 'localStorage', 'volatile', 'indexedDB', 'fileSystem'
 //const MP3Type = 'audio/mpeg'
-const storage = STORAGE_TOOL === 'sessionStorage' ? sessionStorage : STORAGE_TOOL === 'localStorage' ? localStorage  : null
+//const storage = STORAGE_TOOL === 'sessionStorage' ? sessionStorage : STORAGE_TOOL === 'localStorage' ? localStorage  : null
 
 class Song {
-  constructor(raw, isReady=false)
+  constructor(raw, storageStrategy, isReady=false)
   {
     this.artist = raw.artist
     this.genre = raw.genre
     this.title = raw.title
     this.album = raw.album
     this.file = raw.file
+    this.storageStrategy = storageStrategy
     this.isReady = isReady||this.hasData()
   }
 
@@ -25,16 +26,21 @@ class Song {
     if(this.isReady){
       return true
     }
+    return this.storageStrategy.hasData(this)
+/*
     switch(STORAGE_TOOL) {
       case 'volatile': return !!this.data
       case 'localStorage':
       case 'sessionStorage': return storage.getItem(this.file)
       default:
         alert('STORAGE_TOOL has an invalid value: ' + STORAGE_TOOL)
-    }
+    }*/
   }
 
   storeData(data) {
+    return this.storageStrategy.storeData(this, data)
+    .then(() => this.isReady = true)
+    /*
     return new Promise((resolve, reject) => {
       switch(STORAGE_TOOL) {
         case 'volatile': this.data = data
@@ -59,6 +65,7 @@ class Song {
     }).then(()=>{
       this.isReady = true
     })
+    */
   }
 
   reset() {
@@ -72,6 +79,11 @@ class Song {
   }
 
   prepare() {
+    return this.storageStrategy.prepare(this)
+    .then(null, (err)=> {
+      return null
+    })
+    /*
     return new Promise((resolve, reject) => {
       switch(STORAGE_TOOL) {
         case 'volatile': this.tempData = this.data
@@ -93,18 +105,18 @@ class Song {
         default:
           reject('STORAGE_TOOL has an invalid value: ' + STORAGE_TOOL)
       }
-    })
+    })*/
   }
 
   fetchData() {
     if(this.isReady) {
-      return Promise.resolve()
+      return Promise.resolve(this)
     }
     switch(FETCH_TOOL) {
       case 'XHR': return this.fetchWithXHR()
       case 'fetch': return this.fetchWithFetch()
       case 'none': this.isReady = true
-        return Promise.resolve()
+        return Promise.resolve(this)
     }
   }
 
@@ -121,6 +133,7 @@ class Song {
     .then((data)=>{
       return this.storeData(data)
     })
+    .then(()=>this)
   }
 
   /*this function seems to work on the iphone, while the other two don't.  It doesn't work with firefox 52
@@ -144,6 +157,7 @@ class Song {
       }
       xhr.send()
     })
+    .then(()=>this)
   }
 
 

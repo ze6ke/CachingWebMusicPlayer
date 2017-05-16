@@ -1,7 +1,7 @@
 import Song from './song.model.js'
 
 class Songlist {
-  constructor(renderApp, fake=false) {
+  constructor(renderApp, storageStrategy, fake=false) {
     this.songlist = null
     this.filter = ''
     this.current = null
@@ -9,6 +9,7 @@ class Songlist {
       renderApp(this)
     }
     this.fake = fake
+    this.storageStrategy = storageStrategy
   }
 
   clearCachedData() {
@@ -29,17 +30,25 @@ class Songlist {
 
   fetchAllSongs() {
     //this.songlist.forEach((song)=>song.fetchData(()=>{this.renderApp()}))
-    this.songlist.forEach((song)=>song.fetchData().then(this.renderApp))
+    this.songlist.forEach((song)=>song.fetchData().then((song) => {
+      if(!this.current && song) {
+        this.changeCurrentSong(song)
+      }
+      this.renderApp()
+    }))
   }
 
   setSonglist (songlist) {
-    this.songlist = songlist.map((raw) => new Song(raw, this.fake))
-    this.changeCurrentSong(this.songlist[0])
+    this.songlist = songlist.map((raw) => new Song(raw, this.storageStrategy, this.fake))
+    //this.changeCurrentSong(this.songlist[0])
     this.fetchAllSongs()
   }
 
 
   changeCurrentSong (song) {
+    if(!song || !(song.constructor) || song.constructor.name !== 'Song') {
+      throw {name: 'incorrect type', message: 'Songlist.changeCurrentSong can only accept a Song'}
+    }
     this.current && this.current.reset()
 
     this.current = song

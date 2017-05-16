@@ -3,6 +3,7 @@ import Model from '../../app/models/model.js'
 import {expect} from 'chai'
 import util from '../../app/utils/util.js'
 import Song from '../../app/models/song.model.js'
+import storageStrategy from '../../app/utils/storageStrategy.js'
 //import {isPhantom} from '../helper.js'
 
 
@@ -90,7 +91,7 @@ const songlistRaw = [
 describe('song', function() {
   let songlist
   before(function() {
-    songlist = songlistRaw.map((raw) => new Song(raw, true))
+    songlist = songlistRaw.map((raw) => new Song(raw, storageStrategy.volatile, true))
   })
 
   it('Filters correctly on 1x1', function() {
@@ -137,11 +138,8 @@ describe('song', function() {
   const mediumBlob = new Blob([sourceMediumArray], {type})
   const sourceBigArray = new Uint8Array([...Array(5000000)].map(()=>5))
   const bigBlob = new Blob([sourceBigArray], {type})
-  localStorage.clear()
-  sessionStorage.clear()
 
-  let testDataStorage = (blob) => {
-    let aSong = songlist[0]
+  let testDataStorage = (aSong, blob) => {
     return aSong.storeData(blob)
     .then(() => {aSong.prepare()})//passing aSong.prepare directly causes this to not be bound. :(
     .then(()=>{
@@ -149,21 +147,62 @@ describe('song', function() {
     })
   }
 
-  it('stores data 50 KB of data correctly', function(){return testDataStorage(mediumBlob)})
-  it.skip('stores data 5 MB of data correctly', function(){return testDataStorage(bigBlob)})
+  describe('volatile storage', function () {
+    const ss = storageStrategy.volatile
+    let aSong = new Song(songlistRaw[0], ss, true)
+    ss.clearData()
+    it('stores data 50 KB of data correctly', function(){return testDataStorage(aSong, mediumBlob)})
+    it.skip('stores data 5 MB of data correctly', function(){return testDataStorage(aSong, bigBlob)})
+    it.skip('tracks used space', function () {
+      expect(ss.getDataUsage()).to.be.above(0)
+    })
+    it('clears used space', function () {
+      ss.clearData()
+      expect(ss.getDataUsage()).to.be.equal(0)
+    })
+  })
+  describe('session storage', function () {
+    const ss = storageStrategy.sessionStorage
+    let aSong = new Song(songlistRaw[0], ss, true)
+    ss.clearData()
+    it('stores data 50 KB of data correctly', function(){return testDataStorage(aSong, mediumBlob)})
+    it.skip('stores data 5 MB of data correctly', function(){return testDataStorage(aSong, bigBlob)})
+    it('tracks used space', function () {
+      expect(ss.getDataUsage()).to.be.above(0)
+    })
+    it('clears used space', function () {
+      ss.clearData()
+      expect(ss.getDataUsage()).to.be.equal(0)
+    })
+  })
+  describe('local storage', function () {
+    const ss = storageStrategy.localStorage
+    let aSong = new Song(songlistRaw[0], ss, true)
+    ss.clearData()
+    it('stores data 50 KB of data correctly', function(){return testDataStorage(aSong, mediumBlob)})
+    it.skip('stores data 5 MB of data correctly', function(){return testDataStorage(aSong, bigBlob)})
+    it('tracks used space', function () {
+      expect(ss.getDataUsage()).to.be.above(0)
+    })
+    it('clears used space', function () {
+      ss.clearData()
+      expect(ss.getDataUsage()).to.be.equal(0)
+    })
+  })
+
 })
 
 describe('model', function() {
   const songlist = songlistRaw
 
   it('getFilteredSonglist works correctly with empty filter', function() {
-    var model = new Model((f)=>f, true)
+    var model = new Model((f)=>f, storageStrategy.volatile, true)
     model.setSonglist(songlist, true)
     expect(model.getFilteredSonglist()).to.have.lengthOf(3)
   })
 
   it('getFilteredSonglist works correctly with a filter', function() {
-    var model = new Model((f)=>f, true)
+    var model = new Model((f)=>f, storageStrategy.volatile, true)
     model.setSonglist(songlist, true)
     model.changeFilter('s')
     expect(model.getFilteredSonglist()).to.have.lengthOf(3)
@@ -174,8 +213,9 @@ describe('model', function() {
   })
 
   it('getNextSong works correctly with unfiltered list', function() {
-    var model = new Model((f)=>f, true)
+    var model = new Model((f)=>f, storageStrategy.volatile, true)
     model.setSonglist(songlist, true)
+    model.changeCurrentSong(model.songlist[0])
     model.changeCurrentSong(model.getNextSong())
     expect(model.getCurrentSong().file).to.deep.equal(songlist[1].file)
     model.changeCurrentSong(model.getNextSong())
@@ -185,8 +225,9 @@ describe('model', function() {
   })
 
   it('getNextSong works correctly with filtered list', function() {
-    var model = new Model((f)=>f, true)
+    var model = new Model((f)=>f, storageStrategy.volatile, true)
     model.setSonglist(songlist, true)
+    model.changeCurrentSong(model.songlist[0])
     model.changeFilter('song')
     model.changeCurrentSong(model.getNextSong())
     expect(model.getCurrentSong().file).to.deep.equal(songlist[2].file)
