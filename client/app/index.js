@@ -58,7 +58,7 @@ function renderApp (model) {
     document.getElementById('app-container'))
 }
 
-storageStrategy.getStrategy('indexedDB').then((ss) => {
+storageStrategy.getStrategy('sessionStorage').then((ss) => {
   model = new Model(renderApp, ss, fetchStrategy.XHR)
   getData()
 })

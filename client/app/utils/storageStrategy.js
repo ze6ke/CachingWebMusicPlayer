@@ -1,6 +1,18 @@
 import util from './util.js'
 
-
+function getItemSize(item, depth=1) {
+  if(item.size !== undefined) {
+    return item.size
+  } else if(item.length !== undefined) {
+    return item.length
+  } else if (depth >= 5) {
+    return 0
+  } else if (typeof(item) == 'object') {
+    return Object.keys(item).reduce((acc, v) => acc += getItemSize(v, depth+1))
+  } else {
+    return 0
+  }
+}
 
 const storageStrategy = {
   getStrategy: function(type) {
@@ -22,6 +34,7 @@ const storageStrategy = {
     }
   },
   volatile: {
+    name: 'volatile',
 
     storeData: function(theSong, data) {
       theSong.data = data
@@ -38,15 +51,15 @@ const storageStrategy = {
     },
 
     hasData: function(theSong) {
-      return !!theSong.data
+      return Promise.resolve(!!theSong.data)
     },
 
     clearData: function() {
-
+      return Promise.resolve()
     },
 
     getDataUsage: function() {
-      return 0
+      return Promise.resolve(0)
     }
   },
 
@@ -76,21 +89,22 @@ const storageStrategy = {
       })
     },
     hasData: function(storage, theSong) {
-      return storage.getItem(theSong.file)
+      return Promise.resolve(storage.getItem(theSong.file))
     },
 
     clearData: function(storage) {
-      storage.clear()
+      return Promise.resolve(storage.clear())
     },
 
     getDataUsage: function(storage) {
-      return Object.keys(storage).reduce((acc, val) => {
+      return Promise.resolve(Object.keys(storage).reduce((acc, val) => {
         return acc += storage.getItem(val).length * 2
-      }, 0)/1024/1024
+      }, 0)/1024/1024)
     }
   },
 
   localStorage: {
+    name: 'local storage',
     storeData: function(theSong, data) {
       return storageStrategy.sessionAndLocalStorage.storeData(localStorage, theSong, data)
     },
@@ -109,6 +123,8 @@ const storageStrategy = {
   },
 
   sessionStorage: {
+    name: 'session storage',
+
     storeData: function(theSong, data) {
       return storageStrategy.sessionAndLocalStorage.storeData(sessionStorage, theSong, data)
     },
@@ -127,6 +143,7 @@ const storageStrategy = {
   },
 
   indexedDB: {
+    name: 'indexed DB',
     indexedDB: window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.OIndexedDB || window.msIndexedDB,
     IDBTransaction: window.IDBTransaction || window.webkitIDBTransaction || window.OIDBTransaction || window.msIDBTransaction,
     dbVersion: 1,
@@ -180,7 +197,7 @@ const storageStrategy = {
     },
 
     hasData: function(theSong) {
-      return null
+      return this.prepare(theSong)
     },
 
     reset: function() {
@@ -200,12 +217,48 @@ const storageStrategy = {
     },
 
     getDataUsage: function() {
-      return null
+      return new Promise((resolve, reject) => {
+        let size = 0
+        let cursorRequest = this.db.transaction([this.objectStoreName], 'readonly')
+          .objectStore(this.objectStoreName)
+          .openCursor()
+        cursorRequest.onerror = (e) => reject(e)
+        cursorRequest.onsuccess = (e) => {
+          let cursor = e.target.result
+          if(cursor) {
+            size += getItemSize(cursor.value)
+            cursor.continue() //on success will be called again on the next item (or with a falsey e.target.result)
+          } else {
+            resolve(size)
+          }
+        }
+      })
     },
 
     clearData: function() {
       return new Promise((resolve, reject) => {
-        resolve()
+        let cursorRequest = this.db.transaction([this.objectStoreName], 'readwrite')
+          .objectStore(this.objectStoreName)
+          .openCursor()
+
+        let deletionPromiseArray = []
+        cursorRequest.onerror = (e) => reject(e)
+        cursorRequest.onsuccess = (e) => {
+          let cursor = e.target.result
+          if(cursor) {
+            let request = cursor.delete()
+
+            let newPromise = new Promise((resolve, reject) => {
+              request.onsuccess = () => resolve()
+            })
+            deletionPromiseArray.push(newPromise)
+
+            cursor.continue() //on success will be called again on the next item (or with a falsey e.target.result)
+          } else {
+            Promise.all(deletionPromiseArray)
+            .then(()=>resolve())
+          }
+        }
       })
     }
   }

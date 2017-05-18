@@ -14,18 +14,17 @@ class Songlist {
   }
 
   clearCachedData() {
-    localStorage.clear()
-    sessionStorage.clear()
-    alert('clearCachedData called')
+    this.storageStrategy.clearData()
+    .then(() => {
+      alert('Data Cleared')
+    })
   }
 
-  getLocalStorageUsage() {
-    return Object.keys(localStorage).reduce((acc, val) => {
-      return acc += localStorage.getItem(val).length * 2
-    }, 0)/1024/1024
-  }
   showDataUsage() {
-    alert('localStorage: ' + this.getLocalStorageUsage().toFixed(2) + 'MB')
+    this.storageStrategy.getDataUsage()
+    .then((usage) => {
+      alert(this.storageStrategy.name + ': ' + usage.toFixed(2) + 'MB')
+    })
   }
 
 
@@ -41,7 +40,10 @@ class Songlist {
 
   setSonglist (songlist) {
     this.songlist = songlist.map((raw) => new Song(raw, this.storageStrategy, this.fetchStrategy, this.fake))
-    //this.changeCurrentSong(this.songlist[0])
+    /*let filteredList = this.getFilteredSonglist()
+    if(filteredList.length) {
+      this.changeCurrentSong(filteredList[0])
+    }*/
     this.fetchAllSongs()
   }
 

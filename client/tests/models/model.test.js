@@ -165,68 +165,33 @@ describe('song', function() {
         })
       })
 
-      it.only('stores data 50 KB of data correctly', function(){return testDataStorage(aSong, mediumBlob)})
+      it('stores data 50 KB of data correctly', function(){return testDataStorage(aSong, mediumBlob)})
       it.skip('stores data 5 MB of data correctly', function(){return testDataStorage(aSong, bigBlob)})
 
       if(strategyName !== 'volatile') {
         it('tracks used space', function () {
-          expect(ss.getDataUsage()).to.be.above(0)
+          return ss.getDataUsage()
+          .then((spaceUsed) => {
+            expect(spaceUsed).to.be.above(0)
+          })
         })
         it('clears used space', function () {
-          ss.clearData()
-          expect(ss.getDataUsage()).to.be.equal(0)
+          return ss.clearData()
+          .then(() => {
+            return ss.getDataUsage()
+          })
+          .then((spaceUsed) => {
+            expect(spaceUsed).to.be.equal(0)
+          })
         })
       }
     })
   }
 
-  /*describe('volatile storage', function () {
-    const ss = storageStrategy.volatile
-    let aSong = new Song(songlistRaw[0], ss, fetchStrategy.none, true)
-    ss.clearData()
-    it('stores data 50 KB of data correctly', function(){return testDataStorage(aSong, mediumBlob)})
-    it.skip('stores data 5 MB of data correctly', function(){return testDataStorage(aSong, bigBlob)})
-    it.skip('tracks used space', function () {
-      expect(ss.getDataUsage()).to.be.above(0)
-    })
-    it('clears used space', function () {
-      ss.clearData()
-      expect(ss.getDataUsage()).to.be.equal(0)
-    })
-  })
-  describe('session storage', function () {
-    const ss = storageStrategy.sessionStorage
-    let aSong = new Song(songlistRaw[0], ss, fetchStrategy.none, true)
-    ss.clearData()
-    it('stores data 50 KB of data correctly', function(){return testDataStorage(aSong, mediumBlob)})
-    it.skip('stores data 5 MB of data correctly', function(){return testDataStorage(aSong, bigBlob)})
-    it('tracks used space', function () {
-      expect(ss.getDataUsage()).to.be.above(0)
-    })
-    it('clears used space', function () {
-      ss.clearData()
-      expect(ss.getDataUsage()).to.be.equal(0)
-    })
-  })
-  describe('local storage', function () {
-    const ss = storageStrategy.localStorage
-    let aSong = new Song(songlistRaw[0], ss, fetchStrategy.none, true)
-    ss.clearData()
-    it('stores data 50 KB of data correctly', function(){return testDataStorage(aSong, mediumBlob)})
-    it.skip('stores data 5 MB of data correctly', function(){return testDataStorage(aSong, bigBlob)})
-    it('tracks used space', function () {
-      expect(ss.getDataUsage()).to.be.above(0)
-    })
-    it('clears used space', function () {
-      ss.clearData()
-      expect(ss.getDataUsage()).to.be.equal(0)
-    })
-  })
-*/
   testStorageStrategy('indexedDB')
-  //testStorageStrategy('volatile')
-  //testStorageStrategy('sessionStorage')
-  //testStorageStrategy('localStorage')
+  testStorageStrategy('volatile')
+  testStorageStrategy('sessionStorage')
+  testStorageStrategy('localStorage')
 
 })
 

@@ -12,12 +12,17 @@ class Song {
     this.file = raw.file
     this.storageStrategy = storageStrategy
     this.fetchStrategy = fetchStrategy
-    this.isReady = isReady||this.hasData()
+    this.isReady = isReady
+    if(isReady) {
+      this.isReadyPromise = Promise.resolve()
+    } else {
+      this.isReadyPromise = this.hasData().then((hasData) => this.isReady = !!hasData)
+    }
   }
 
   hasData() {
     if(this.isReady){
-      return true
+      return Promise.resolve(true)
     }
     return this.storageStrategy.hasData(this)
   }
@@ -45,14 +50,16 @@ class Song {
   }
 
   fetchData() {
-    if(this.isReady) {
-      return Promise.resolve(this)
-    }
-    return this.fetchStrategy.fetch('data/' + this.file)
-    .then((data) => {
-      return this.storeData(data)
+    return this.isReadyPromise.then(() => {
+      if(this.isReady) {
+        return Promise.resolve(this)
+      }
+      return this.fetchStrategy.fetch('data/' + this.file)
+      .then((data) => {
+        return this.storeData(data)
+      })
+      .then(() => this)
     })
-    .then(() => this)
   }
 
 

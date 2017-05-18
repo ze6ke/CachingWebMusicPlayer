@@ -1,4 +1,4 @@
-let theCheckbox=undefined
+let theCheckbox=undefined //set by a ref
 const hideThen = (action) => () => {
   theCheckbox.checked=false
   return action()
