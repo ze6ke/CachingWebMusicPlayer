@@ -10,11 +10,11 @@ import App from './views/app.js'
 import Model from './models/model.js'
 import functionalityTest from './functionalityTest.js'
 
-functionalityTest()
-
-let model = new Model(renderApp, storageStrategy.volatile, fetchStrategy.XHR)
 window.React = React
 
+
+functionalityTest()
+let model
 const getData = () => {
   fetch('data/library.json')
   .then((response) => {
@@ -27,10 +27,7 @@ const getData = () => {
       alert(response.statusText)
     }
   }, (response) => {alert('fetch failed: ' + response)})
-
 }
-
-getData()
 
 const changeCurrentSong = (song) => {
   model.changeCurrentSong(song).then(()=>renderApp(model))
@@ -60,3 +57,8 @@ function renderApp (model) {
     clearCachedData={clearCachedData} showDataUsage={showDataUsage}/>,
     document.getElementById('app-container'))
 }
+
+storageStrategy.getStrategy('indexedDB').then((ss) => {
+  model = new Model(renderApp, ss, fetchStrategy.XHR)
+  getData()
+})

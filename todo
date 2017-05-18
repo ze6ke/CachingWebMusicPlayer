@@ -30,9 +30,10 @@
 //make watch and eslint work in text editor
 //remove blob-util
 //cache to localstorage (breakup files) (gives quota errors on all browsers that I tested, but stores the smallest song)
+//storage as strategy
 
+cache to indexedDB (get initialize called (create a strategy factory), use promise for all methods)
 cache to filesystemapi
-cache to indexedDB
 sorting
 shuffle
 https://www.npmjs.com/package/gulp-autoprefixer

@@ -142,13 +142,45 @@ describe('song', function() {
 
   let testDataStorage = (aSong, blob) => {
     return aSong.storeData(blob)
-    .then(() => {aSong.prepare()})//passing aSong.prepare directly causes this to not be bound. :(
+    .then(() => {return aSong.prepare()})//passing aSong.prepare directly causes this to not be bound. :(
     .then(()=>{
+      expect(aSong.tempData).to.not.be.undefined
       expect(aSong.tempData.size).to.equal(blob.size)
     })
   }
 
-  describe('volatile storage', function () {
+  let testStorageStrategy = (strategyName) => {
+    describe(strategyName, () => {
+      let ss
+      let aSong
+
+      before(() => {
+        return storageStrategy.resetStrategy(strategyName)
+        .then(() => {
+          return storageStrategy.getStrategy(strategyName)
+        })
+        .then((theStrategy) => {
+          ss = theStrategy
+          aSong = new Song(songlistRaw[0], ss, fetchStrategy.none, true)
+        })
+      })
+
+      it.only('stores data 50 KB of data correctly', function(){return testDataStorage(aSong, mediumBlob)})
+      it.skip('stores data 5 MB of data correctly', function(){return testDataStorage(aSong, bigBlob)})
+
+      if(strategyName !== 'volatile') {
+        it('tracks used space', function () {
+          expect(ss.getDataUsage()).to.be.above(0)
+        })
+        it('clears used space', function () {
+          ss.clearData()
+          expect(ss.getDataUsage()).to.be.equal(0)
+        })
+      }
+    })
+  }
+
+  /*describe('volatile storage', function () {
     const ss = storageStrategy.volatile
     let aSong = new Song(songlistRaw[0], ss, fetchStrategy.none, true)
     ss.clearData()
@@ -190,6 +222,11 @@ describe('song', function() {
       expect(ss.getDataUsage()).to.be.equal(0)
     })
   })
+*/
+  testStorageStrategy('indexedDB')
+  //testStorageStrategy('volatile')
+  //testStorageStrategy('sessionStorage')
+  //testStorageStrategy('localStorage')
 
 })
 
