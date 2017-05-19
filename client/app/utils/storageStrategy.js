@@ -180,7 +180,9 @@ const storageStrategy = {
     },
 
     prepare: function(theSong) {
+
       return new Promise((resolve, reject) => {
+
         let transaction = this.db.transaction([this.objectStoreName], 'readonly')
         let get = transaction.objectStore(this.objectStoreName).get(theSong.file)
 
@@ -188,7 +190,9 @@ const storageStrategy = {
           theSong.tempData = e.target.result
           resolve()
         }
-        get.onerror = (e) => reject(e)
+        get.onerror = (e) => {
+          reject(e)
+        }
       })
       .then(() => {
         theSong.URL = window.URL.createObjectURL(theSong.tempData)
@@ -197,7 +201,18 @@ const storageStrategy = {
     },
 
     hasData: function(theSong) {
-      return this.prepare(theSong)
+      return new Promise((resolve, reject) => {
+
+        let transaction = this.db.transaction([this.objectStoreName], 'readonly')
+        let get = transaction.objectStore(this.objectStoreName).get(theSong.file)
+
+        get.onsuccess = (e) => {
+          resolve(!!e.target.result)
+        }
+        get.onerror = (e) => {
+          reject(e)
+        }
+      })
     },
 
     reset: function() {
@@ -229,7 +244,7 @@ const storageStrategy = {
             size += getItemSize(cursor.value)
             cursor.continue() //on success will be called again on the next item (or with a falsey e.target.result)
           } else {
-            resolve(size)
+            resolve(size/1024/1024)
           }
         }
       })
@@ -262,6 +277,7 @@ const storageStrategy = {
       })
     }
   }
+
 }
 
 export default storageStrategy

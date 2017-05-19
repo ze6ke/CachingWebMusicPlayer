@@ -3,6 +3,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const common=require('./webpack.config.common.js')
 
 module.exports = Object.assign({}, common,{
+  devtool: '#source-map',
   entry: './client/app/index.js',
   output: {
     filename: 'bundle.js',

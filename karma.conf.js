@@ -3,7 +3,7 @@
 // Karma configuration
 // Generated on Sat May 13 2017 06:07:14 GMT+0000 (UTC)
 var webpackOptions = require('./webpack.config.common.js')
-webpackOptions.watch = true
+webpackOptions = Object.assign({}, webpackOptions, {devtool: 'inline-source-map',  watch: true})
 
 module.exports = function(config) {
   config.set({

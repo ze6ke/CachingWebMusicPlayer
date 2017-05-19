@@ -40,10 +40,6 @@ class Songlist {
 
   setSonglist (songlist) {
     this.songlist = songlist.map((raw) => new Song(raw, this.storageStrategy, this.fetchStrategy, this.fake))
-    /*let filteredList = this.getFilteredSonglist()
-    if(filteredList.length) {
-      this.changeCurrentSong(filteredList[0])
-    }*/
     this.fetchAllSongs()
   }
 
@@ -59,7 +55,7 @@ class Songlist {
     if(!this.fake) {
       return song.prepare()
     } else {
-      return undefined
+      return Promise.resolve()
     }
   }
 
@@ -73,11 +69,21 @@ class Songlist {
 
   getNextSong () {
     const sortedSongList = this.songlist
-    let seenCurrentSong = false
+    //let seenCurrentSong = false
     const current = this.current
-    const filter = this.filter
+    //const filter = this.filter
 
-    function takeAPass() {
+    return Promise.all(this.songlist.map((song) => song.matchesFilter(this.filter)))
+    .then((boolArray) => {
+      const currentPos = sortedSongList.indexOf(current)
+      let nextPos = currentPos === boolArray.length - 1 ? -1 : boolArray.indexOf(true, currentPos + 1)
+      if(nextPos==-1) {
+        nextPos = boolArray.indexOf(true)
+      }
+      return sortedSongList[nextPos]
+    })
+
+    /*function takeAPass() {
       return sortedSongList.findIndex((thisSong) => {
         if(seenCurrentSong) {
           return thisSong.matchesFilter(filter)
@@ -98,11 +104,15 @@ class Songlist {
       throw 'current song not found on song list'
     }
     return sortedSongList[indexOfNextSong]
-
+*/
   }
 
   getFilteredSonglist () {
-    return(this.songlist.filter((song) => song.matchesFilter(this.filter)))
+    return Promise.all(this.songlist.map((song) => song.matchesFilter(this.filter)))
+    .then((boolArray) => {
+      return this.songlist.filter((song, i) => boolArray[i])
+    })
+    //return Promise.resolve(this.songlist.filter((song) => song.matchesFilter(this.filter)))
   }
 
 }

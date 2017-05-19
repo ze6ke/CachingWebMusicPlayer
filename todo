@@ -31,9 +31,12 @@
 //remove blob-util
 //cache to localstorage (breakup files) (gives quota errors on all browsers that I tested, but stores the smallest song)
 //storage as strategy
+//cache to indexedDB
 
-cache to indexedDB (get initialize called (create a strategy factory), use promise for all methods)
+behavior when list is fully filtered (have a no current song option)
 cache to filesystemapi
+test with larger list of files
+make gulp go faster
 sorting
 shuffle
 https://www.npmjs.com/package/gulp-autoprefixer

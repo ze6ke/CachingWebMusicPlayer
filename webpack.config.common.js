@@ -1,6 +1,6 @@
 module.exports = {
   //devtool: '#source-map',
-  devtool: 'inline-source-map',
+  //devtool: 'inline-source-map',
   externals:{
     'react/addons': 'react/addons',
     'react/lib/ReactContext': 'react/lib/ReactContext',

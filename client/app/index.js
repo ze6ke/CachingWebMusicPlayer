@@ -52,13 +52,17 @@ const showDataUsage = () => {
 }
 
 function renderApp (model) {
-  render(<App songs={model.getFilteredSonglist()} current={model.getCurrentSong()}
-    changeCurrentSong={changeCurrentSong} songEnded={songEnded} changeFilter={changeFilter}
-    clearCachedData={clearCachedData} showDataUsage={showDataUsage}/>,
-    document.getElementById('app-container'))
+  return model.getFilteredSonglist()
+  .then((songs) => {
+    render(<App songs={songs} current={model.getCurrentSong()}
+      changeCurrentSong={changeCurrentSong} songEnded={songEnded} changeFilter={changeFilter}
+      clearCachedData={clearCachedData} showDataUsage={showDataUsage}/>,
+      document.getElementById('app-container'))
+  })
+
 }
 
-storageStrategy.getStrategy('sessionStorage').then((ss) => {
+storageStrategy.getStrategy('indexedDB').then((ss) => {
   model = new Model(renderApp, ss, fetchStrategy.XHR)
   getData()
 })

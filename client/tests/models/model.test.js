@@ -100,8 +100,14 @@ describe('song', function() {
     const validCriterion1 = 'name'
     const invalidCriterion1 = 'names'
 
-    expect(singleItemSong.matchesFilter(validCriterion1)).to.equal(true)
-    expect(singleItemSong.matchesFilter(invalidCriterion1)).to.equal(false)
+    return singleItemSong.matchesFilter(validCriterion1)
+    .then((result) => {
+      expect(result).to.equal(true)
+      return singleItemSong.matchesFilter(invalidCriterion1)
+    })
+    .then((result) => {
+      expect(result).to.equal(false)
+    })
   })
 
   it('Filters correctly on 2x1', function() {
@@ -111,11 +117,22 @@ describe('song', function() {
     const validCriterion2 = 'genre'
     const invalidCriterion1 = 'names'
 
-    expect(multiItemSong1.matchesFilter(criterion1)).to.equal(true)
-    expect(multiItemSong1.matchesFilter(validCriterion2)).to.equal(true)
-    expect(multiItemSong1.matchesFilter(invalidCriterion1)).to.equal(false)
-    expect(multiItemSong2.matchesFilter(criterion1)).to.equal(false)
-
+    return multiItemSong1.matchesFilter(criterion1)
+    .then((result) => {
+      expect(result).to.equal(true)
+      return multiItemSong1.matchesFilter(validCriterion2)
+    })
+    .then((result) => {
+      expect(result).to.equal(true)
+      return multiItemSong1.matchesFilter(invalidCriterion1)
+    })
+    .then((result) => {
+      expect(result).to.equal(false)
+      return multiItemSong2.matchesFilter(criterion1)
+    })
+    .then((result) => {
+      expect(result).to.equal(false)
+    })
   })
 
   it('Filters correctly on 2x2', function() {
@@ -123,15 +140,24 @@ describe('song', function() {
     const validCriterion1 = 'name genre'
     const invalidCriterion1 = 'names genre'
 
-    expect(multiItemSong.matchesFilter(validCriterion1)).to.equal(true)
-    expect(multiItemSong.matchesFilter(invalidCriterion1)).to.equal(false)
+    return multiItemSong.matchesFilter(validCriterion1)
+    .then((result) => {
+      expect(result).to.equal(true)
+      return multiItemSong.matchesFilter(invalidCriterion1)
+    })
+    .then((result) => {
+      expect(result).to.equal(false)
+    })
   })
 
   it('Filters correctly on empty filter', function() {
     const multiItemSong = songlist[1]
     const validCriterion1 = ''
 
-    expect(multiItemSong.matchesFilter(validCriterion1)).to.equal(true)
+    return multiItemSong.matchesFilter(validCriterion1)
+    .then((result) => {
+      expect(result).to.equal(true)
+    })
   })
 
   const type = 'audio/mpeg'
@@ -201,43 +227,87 @@ describe('model', function() {
   it('getFilteredSonglist works correctly with empty filter', function() {
     var model = new Model((f)=>f, storageStrategy.volatile, fetchStrategy.none, true)
     model.setSonglist(songlist, true)
-    expect(model.getFilteredSonglist()).to.have.lengthOf(3)
+    return model.getFilteredSonglist()
+    .then((filteredList) => {
+      expect(filteredList).to.have.lengthOf(3)
+    })
+
   })
 
   it('getFilteredSonglist works correctly with a filter', function() {
     var model = new Model((f)=>f, storageStrategy.volatile, fetchStrategy.none, true)
     model.setSonglist(songlist, true)
     model.changeFilter('s')
-    expect(model.getFilteredSonglist()).to.have.lengthOf(3)
-    model.changeFilter('genre')
-    expect(model.getFilteredSonglist()).to.have.lengthOf(2)
-    model.changeFilter('name genre')
-    expect(model.getFilteredSonglist()).to.have.lengthOf(1)
+    return model.getFilteredSonglist()
+    .then((filteredList) => {
+      expect(filteredList).to.have.lengthOf(3)
+      model.changeFilter('genre')
+    })
+    .then(()=>model.getFilteredSonglist())
+    .then((filteredList) => {
+      expect(filteredList).to.have.lengthOf(2)
+      model.changeFilter('name genre')
+    })
+    .then(()=>model.getFilteredSonglist())
+    .then((filteredList) => {
+      expect(filteredList).to.have.lengthOf(1)
+    })
   })
 
   it('getNextSong works correctly with unfiltered list', function() {
     var model = new Model((f)=>f, storageStrategy.volatile, fetchStrategy.none, true)
     model.setSonglist(songlist, true)
-    model.changeCurrentSong(model.songlist[0])
-    model.changeCurrentSong(model.getNextSong())
-    expect(model.getCurrentSong().file).to.deep.equal(songlist[1].file)
-    model.changeCurrentSong(model.getNextSong())
-    expect(model.getCurrentSong().file).to.deep.equal(songlist[2].file)
-    model.changeCurrentSong(model.getNextSong())
-    expect(model.getCurrentSong().file).to.deep.equal(songlist[0].file)
+    return model.changeCurrentSong(model.songlist[0])
+    .then(() => {
+      return model.getNextSong()
+    })
+    .then((aSong) => {
+      return model.changeCurrentSong(aSong)
+    }).then(() => {
+      expect(model.getCurrentSong().file).to.deep.equal(songlist[1].file)
+      return model.getNextSong()
+    })
+    .then((aSong) => {
+      return model.changeCurrentSong(aSong)
+    }).then(() => {
+      expect(model.getCurrentSong().file).to.deep.equal(songlist[2].file)
+      return model.getNextSong()
+    })
+    .then((aSong) => {
+      return model.changeCurrentSong(aSong)
+    }).then(() => {
+      expect(model.getCurrentSong().file).to.deep.equal(songlist[0].file)
+    })
   })
 
   it('getNextSong works correctly with filtered list', function() {
     var model = new Model((f)=>f, storageStrategy.volatile, fetchStrategy.none, true)
     model.setSonglist(songlist, true)
-    model.changeCurrentSong(model.songlist[0])
-    model.changeFilter('song')
-    model.changeCurrentSong(model.getNextSong())
-    expect(model.getCurrentSong().file).to.deep.equal(songlist[2].file)
-    model.changeCurrentSong(model.getNextSong())
-    expect(model.getCurrentSong().file).to.deep.equal(songlist[2].file)
-    model.changeFilter('genre')
-    model.changeCurrentSong(model.getNextSong())
-    expect(model.getCurrentSong().file).to.deep.equal(songlist[1].file)
+    return model.changeCurrentSong(model.songlist[0])
+    .then(() => {
+      model.changeFilter('song')
+      return model.getNextSong()
+    })
+    .then((aSong) => {
+      return model.changeCurrentSong(aSong)
+    })
+    .then(() => {
+      expect(model.getCurrentSong().file).to.deep.equal(songlist[2].file)
+      return model.getNextSong()
+    })
+    .then((aSong) => {
+      return model.changeCurrentSong(aSong)
+    })
+    .then(() => {
+      expect(model.getCurrentSong().file).to.deep.equal(songlist[2].file)
+      model.changeFilter('genre')
+      return model.getNextSong()
+    })
+    .then((aSong) => {
+      return model.changeCurrentSong(aSong)
+    })
+    .then(() => {
+      expect(model.getCurrentSong().file).to.deep.equal(songlist[1].file)
+    })
   })
 })
