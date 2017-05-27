@@ -33,14 +33,17 @@
 //storage as strategy
 //cache to indexedDB
 
-behavior when list is fully filtered (have a no current song option)
+create a trivial indexedDB example and confirm that it works on my phone
+read
 cache to filesystemapi
+behavior when list is fully filtered (have a no current song option)
 test with larger list of files
 make gulp go faster
 sorting
 shuffle
 https://www.npmjs.com/package/gulp-autoprefixer
 
+make ctags work with vim
 dynamically determine header.height and set headerplaceholder.height to match
 test on chrome
 test on firefox

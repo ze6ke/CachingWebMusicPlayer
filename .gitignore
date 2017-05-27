@@ -1,3 +1,4 @@
+*.swp
 node_modules
 dist/
 .gulp-cache
@@ -8,3 +9,4 @@ prep/*.json
 prep/music
 prep/manifest
 prep/shortManifest
+tags

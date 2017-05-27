@@ -1,4 +1,5 @@
 import Song from './song.model.js'
+import {displayError} from '../utils/util.js'
 
 class Songlist {
   constructor(renderApp, storageStrategy, fetchStrategy, fake=false) {
@@ -20,6 +21,13 @@ class Songlist {
     })
   }
 
+  resetCachedData() {
+    this.storageStrategy.reset()
+    .then(() => {
+      alert('Cache Reset')
+    })
+  }
+
   showDataUsage() {
     this.storageStrategy.getDataUsage()
     .then((usage) => {
@@ -30,12 +38,17 @@ class Songlist {
 
   fetchAllSongs() {
     //this.songlist.forEach((song)=>song.fetchData(()=>{this.renderApp()}))
-    this.songlist.forEach((song)=>song.fetchData().then((song) => {
+    this.songlist.forEach((song)=>song.fetchData()
+      .then((song) => {
       if(!this.current && song) {
         this.changeCurrentSong(song)
       }
       this.renderApp()
-    }))
+      })
+      .catch((e) => {
+        displayError(e, 'fetchAllSongs')
+      })
+    )
   }
 
   setSonglist (songlist) {

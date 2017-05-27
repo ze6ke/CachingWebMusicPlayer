@@ -6,6 +6,54 @@ let isString = function(v) {
   return typeof v === 'string' || v instanceof String
 }
 
+let getAllKeys = function (o) {
+  let a = []
+  for(let e in o) {
+    a.push(e)
+  }
+  return a
+}
+
+let formatError = function (e, source, lineFeed) {
+  let message = source?'source: ' + source : ''
+  
+  if(e.target){
+    if(e.target.error) {
+      message += lineFeed + 'target.error: ' + formatError(e.target.error, '', lineFeed)
+    } else {
+      message += 'target: ' + getAllKeys(e.target)
+    }
+  } else if(e.name) {
+    message += 'name: ' + e.name
+  }
+  else if(isString(e)){
+    message += e
+  }
+  else {
+    message += getAllKeys(e)//Object.keys(e)//JSON.stringify(e) 
+  }
+  if(e.message) {
+    message += lineFeed + 'message: ' + e.message
+  }
+  if(message.length === 0) {
+    message = 'no info could be determined'
+  }
+  return message
+}
+
+let displayError = function (e, source) {
+  let el = document.getElementById('errors')
+  const lineFeed = el?'<br>':lineFeed 
+  const message = formatError(e, source, lineFeed)
+
+  if(el) {
+    el.innerHTML += '<p>' + message
+  }
+  else {
+    alert (message)
+  }
+}
+
 let blobToArray = (blob) => {
   return new Promise((resolve, reject) => {
     let fr = new FileReader()
@@ -44,5 +92,5 @@ let base64StringsToBlob = (stringArray, type) => {
 
 //export default utils
 
-export {isString, blobToBase64Strings, base64StringsToBlob, blobToArray}
-export default {isString, blobToBase64Strings, base64StringsToBlob, blobToArray}
+export {formatError, displayError, isString, blobToBase64Strings, base64StringsToBlob, blobToArray}
+export default {formatError, displayError, isString, blobToBase64Strings, base64StringsToBlob, blobToArray}

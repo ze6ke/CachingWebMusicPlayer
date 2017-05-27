@@ -6,12 +6,13 @@ const hideThen = (action) => () => {
   //let the animation complete
 }
 
-const Hamburger = ({clearCachedData, showDataUsage}) => (
+const Hamburger = ({clearCachedData, showDataUsage, resetCachedData}) => (
   <nav><input type="checkbox" id="hamburger-check" ref={(el)=>theCheckbox=el} />
     <label htmlFor="hamburger-check" className="fa-bars hamburger-icon"></label>
     <ul className="menu">
       <li onClick={hideThen(clearCachedData)}>Clear Cached Data</li>
       <li onClick={hideThen(showDataUsage)}>Show Data Usage</li>
+      <li onClick={hideThen(resetCachedData)}>Reset Data Store</li>
     </ul>
   </nav>
 )

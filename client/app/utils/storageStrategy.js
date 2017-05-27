@@ -35,6 +35,9 @@ const storageStrategy = {
   },
   volatile: {
     name: 'volatile',
+    reset: function() {
+      return Promise.resolve()
+    },
 
     storeData: function(theSong, data) {
       theSong.data = data
@@ -105,6 +108,9 @@ const storageStrategy = {
 
   localStorage: {
     name: 'local storage',
+    reset: function() {
+      return Promise.resolve()
+    },
     storeData: function(theSong, data) {
       return storageStrategy.sessionAndLocalStorage.storeData(localStorage, theSong, data)
     },
@@ -125,6 +131,7 @@ const storageStrategy = {
   sessionStorage: {
     name: 'session storage',
 
+    reset: function() {return Promise.resolve()},
     storeData: function(theSong, data) {
       return storageStrategy.sessionAndLocalStorage.storeData(sessionStorage, theSong, data)
     },
@@ -143,10 +150,10 @@ const storageStrategy = {
   },
 
   indexedDB: {
-    name: 'indexed DB',
+    name: 'indexedDB',
     indexedDB: window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.OIndexedDB || window.msIndexedDB,
     IDBTransaction: window.IDBTransaction || window.webkitIDBTransaction || window.OIDBTransaction || window.msIDBTransaction,
-    dbVersion: 1,
+    dbVersion: 3,
     dbName: 'songs',
     objectStoreName: 'songs',
     initialize: function()  {
@@ -167,6 +174,9 @@ const storageStrategy = {
       })
     },
     createObjectStore: function(db) {
+      if(db.objectStoreNames.contains(this.objectStoreName)) {
+        db.deleteObjectStore(this.objectStoreName)
+      }
       db.createObjectStore(this.objectStoreName)
     },
     storeData: function(theSong, data) {
@@ -175,7 +185,10 @@ const storageStrategy = {
         let put = transaction.objectStore(this.objectStoreName).put(data, theSong.file)
 
         put.onsuccess = (e) => resolve(e)
-        put.onerror = (e) => reject(e)
+        put.onerror = (e) => {
+          //util.displayError(e, 'indexedDB.storeData onerror')
+          reject(e)
+        }
       })
     },
 
@@ -216,11 +229,13 @@ const storageStrategy = {
     },
 
     reset: function() {
+      this.db.close()
+
       let thePromise = new Promise((resolve, reject) => {
         let deleteRequest
         deleteRequest = this.indexedDB.deleteDatabase(this.dbName)
         deleteRequest.onsuccess = (e) => {
-          resolve()
+          resolve(this.initialize())
         }
         deleteRequest.onerror = (e) => {
           reject(e)
@@ -228,7 +243,6 @@ const storageStrategy = {
       })
 
       return thePromise
-
     },
 
     getDataUsage: function() {

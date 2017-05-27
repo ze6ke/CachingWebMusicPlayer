@@ -19,6 +19,21 @@ describe('util.isString', function() {
   })
 })
 
+describe('util.formatError', function() {
+  it('handles strings', function() {
+    expect(util.formatError('hi', undefined, '\n')).to.equal('hi')
+  })
+
+  it('handles name, message objects', function() {
+    expect(util.formatError({name:'name', message: 'message'}, undefined, '\n')).to.equal(
+      'name: name\nmessage: message')
+  })
+
+  it('handles weird objects', function() {
+    expect(util.formatError({f: 1, f1: 2}, null, '\n')).to.equal('f,f1')
+  })
+})
+
 describe('util.Base64Strings', function() {
   const type = 'audio/mpeg'
   //const smallBlob = new Blob(['this will be encoded'], {type})

@@ -30,15 +30,15 @@ nav input[type="checkbox"]
   font-family: FontAwesome
   font-size: 2em
 
-nav input[type="checkbox"]:not(:checked) ~ ul
+nav input[type="checkbox"]:not(:checked) ~ ul /* menu when hidden */
   height: 0
   width: 0
   transition: width .5s, height .5s
   border: 0
 
 
-nav input[type="checkbox"]:checked ~ ul
-  height: calc(2.1em + 6px)
+nav input[type="checkbox"]:checked ~ ul /* menu when displayed */
+  height: calc(3.1em + 6px)
   width: 150px
   transition: width .5s, height .5s
 

@@ -9,8 +9,14 @@ import fetchStrategy from './utils/fetchStrategy.js'
 import App from './views/app.js'
 import Model from './models/model.js'
 import functionalityTest from './functionalityTest.js'
+import {displayError} from './utils/util.js'
 
 window.React = React
+
+window.onerror = function (errorMsg, url, lineNumber) {
+  displayError(errorMsg, 'window.onerror')
+  return true //allow normal error handling to continue
+}
 
 
 functionalityTest()
@@ -40,11 +46,16 @@ const changeFilter = (e) => {
 }
 
 const songEnded = () => {
-  changeCurrentSong(model.getNextSong())
+  model.getNextSong()
+  .then((song) => changeCurrentSong(song))
 }
 
 const clearCachedData = () => {
   return model.clearCachedData()
+}
+
+const resetCachedData = () => {
+  return model.resetCachedData()
 }
 
 const showDataUsage = () => {
@@ -56,7 +67,7 @@ function renderApp (model) {
   .then((songs) => {
     render(<App songs={songs} current={model.getCurrentSong()}
       changeCurrentSong={changeCurrentSong} songEnded={songEnded} changeFilter={changeFilter}
-      clearCachedData={clearCachedData} showDataUsage={showDataUsage}/>,
+      clearCachedData={clearCachedData} showDataUsage={showDataUsage} resetCachedData={resetCachedData}/>,
       document.getElementById('app-container'))
   })
 

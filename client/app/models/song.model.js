@@ -1,4 +1,4 @@
-import {isString} from '../utils/util.js'
+import {displayError, isString} from '../utils/util.js'
 import 'babel-polyfill'
 
 
@@ -86,7 +86,7 @@ class Song {
       if(!hasData) {
         return false
       } else {
-        let ands = filter.toUpperCase().split(/\s/)
+        let ands = filter.toUpperCase().split(/\s+/)
         return ands.every((filter) => {
           return Object.keys(this).some((field) => {
             return field !== 'file' && isString(this[field]) && this[field].toUpperCase().includes(filter)
