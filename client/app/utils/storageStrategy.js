@@ -1,14 +1,16 @@
 import util from './util.js'
 
 function getItemSize(item, depth=1) {
-  if(item.size !== undefined) {
+  if(item.byteLength !== undefined) {
+    return item.byteLength
+  } else if(item.size !== undefined) {
     return item.size
   } else if(item.length !== undefined) {
     return item.length
   } else if (depth >= 5) {
     return 0
   } else if (typeof(item) == 'object') {
-    return Object.keys(item).reduce((acc, v) => acc += getItemSize(v, depth+1))
+    return Object.keys(item).reduce((acc, v) => acc += getItemSize(v, depth+1), 0)
   } else {
     return 0
   }
@@ -153,7 +155,7 @@ const storageStrategy = {
     name: 'indexedDB',
     indexedDB: window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.OIndexedDB || window.msIndexedDB,
     IDBTransaction: window.IDBTransaction || window.webkitIDBTransaction || window.OIDBTransaction || window.msIDBTransaction,
-    dbVersion: 3,
+    dbVersion: 5,
     dbName: 'songs',
     objectStoreName: 'songs',
     initialize: function()  {
@@ -161,7 +163,14 @@ const storageStrategy = {
         this.request = this.indexedDB.open(this.dbName, this.dbVersion)
 
         this.request.onupgradeneeded = (e) => {
-          this.createObjectStore(e.target.result)
+          let db = e.target.result
+	  let os = this.createObjectStore(db)
+    
+	os.transaction.oncomplete = () => {
+  	  let tran = db.transaction(['songs'], 'readwrite')
+	  let os = tran.objectStore('songs')
+	  let p = os.put(new Map(), 'config')
+      }
         }
         this.request.onerror = (e) => {
           reject(e)
@@ -177,19 +186,31 @@ const storageStrategy = {
       if(db.objectStoreNames.contains(this.objectStoreName)) {
         db.deleteObjectStore(this.objectStoreName)
       }
-      db.createObjectStore(this.objectStoreName)
+      return db.createObjectStore(this.objectStoreName)
     },
     storeData: function(theSong, data) {
+      return this.store(theSong.file, data)
+      .then((e) => {
+	this.config.set(theSong.file, true)
+	return this.storeConfig()
+      .then(() => e)
+      })
+    },
+    store: function(key, data) {
       return new Promise((resolve, reject) => {
         let transaction = this.db.transaction([this.objectStoreName], 'readwrite')
-        let put = transaction.objectStore(this.objectStoreName).put(data, theSong.file)
-
-        put.onsuccess = (e) => resolve(e)
+	let os = transaction.objectStore(this.objectStoreName)
+        let put = os.put(data, key)
+        
+	put.onsuccess = (e) => resolve(e)
         put.onerror = (e) => {
-          //util.displayError(e, 'indexedDB.storeData onerror')
           reject(e)
         }
       })
+    },
+
+    storeConfig: function() {
+      return this.store('config', this.config)
     },
 
     prepare: function(theSong) {
@@ -200,7 +221,7 @@ const storageStrategy = {
         let get = transaction.objectStore(this.objectStoreName).get(theSong.file)
 
         get.onsuccess = (e) => {
-          theSong.tempData = e.target.result
+          theSong.tempData = new Blob([e.target.result], {type: theSong.type})
           resolve()
         }
         get.onerror = (e) => {
@@ -214,18 +235,24 @@ const storageStrategy = {
     },
 
     hasData: function(theSong) {
-      return new Promise((resolve, reject) => {
+      return Promise.resolve(this.config.has(theSong.file))
+    },
+    getConfig() {
+     return new Promise((resolve, reject) => {
 
         let transaction = this.db.transaction([this.objectStoreName], 'readonly')
-        let get = transaction.objectStore(this.objectStoreName).get(theSong.file)
+        let get = transaction.objectStore(this.objectStoreName).get('config')
 
         get.onsuccess = (e) => {
-          resolve(!!e.target.result)
+	  this.config = e.target.result
+	  resolve()
         }
         get.onerror = (e) => {
           reject(e)
         }
       })
+ 
+      
     },
 
     reset: function() {

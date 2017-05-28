@@ -1,3 +1,4 @@
+const rt = 'arraybuffer'
 
 const fetchStrategy = {
   none: {
@@ -10,7 +11,11 @@ const fetchStrategy = {
       return fetch(url)
       .then((response)=> {
         if(response.ok) {
-          return response.blob()
+	  if(rt==='blob') {
+            return response.blob()
+	  } else {
+	    return response.arrayBuffer()
+	  }
         } else {
           throw response
         }
@@ -23,11 +28,11 @@ const fetchStrategy = {
       return new Promise((resolve, reject) => {
         let xhr = new XMLHttpRequest()
         xhr.open('GET', url)
-        xhr.responseType = 'blob'
+        xhr.responseType = rt
         xhr.onload = (e) => {
           if(xhr.status == 200) {
-            if(xhr.responseType !== 'blob') {
-              reject({name:'invalid reponseType', message: `expected "blob", received "${xhr.responseType}"`})
+            if(xhr.responseType !== rt ) {
+              reject({name:'invalid reponseType', message: `expected "${rt}", received "${xhr.responseType}"`})
             }
             resolve(xhr.response)
           }

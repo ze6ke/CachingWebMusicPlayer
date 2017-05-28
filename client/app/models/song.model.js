@@ -13,11 +13,7 @@ class Song {
     this.storageStrategy = storageStrategy
     this.fetchStrategy = fetchStrategy
     this.confirmedReady = confirmedReady
-    /*if(isReady) {
-      this.isReadyPromise = Promise.resolve()
-    } else {
-      this.isReadyPromise = this.hasData().then((hasData) => this.isReady = !!hasData)
-    }*/
+    this.type = 'audio/mpeg'
   }
 
   hasData() {
@@ -47,9 +43,6 @@ class Song {
 
   prepare() {
     return this.storageStrategy.prepare(this)
-    /*.then(null, (err)=> {
-      return null
-    })*/
   }
 
   fetchData() {
@@ -65,17 +58,6 @@ class Song {
         .then(() => this)
       }
     })
-
-    /*return this.isReadyPromise.then(() => {
-      if(this.isReady) {
-        return Promise.resolve(this)
-      }
-      return this.fetchStrategy.fetch('data/' + this.file)
-      .then((data) => {
-        return this.storeData(data)
-      })
-      .then(() => this)
-    })*/
   }
 
 
@@ -94,15 +76,6 @@ class Song {
         })
       }
     })
-    /*if(!this.isReady) {
-      return false
-    }
-    let ands = filter.toUpperCase().split(/\s/)
-    return ands.every((filter) => {
-      return Object.keys(this).some((field) => {
-        return field !== 'file' && isString(this[field]) && this[field].toUpperCase().includes(filter)
-      })
-    })*/
   }
 }
 

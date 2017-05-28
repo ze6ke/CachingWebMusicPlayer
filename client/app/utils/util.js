@@ -14,9 +14,10 @@ let getAllKeys = function (o) {
   return a
 }
 
-let formatError = function (e, source, lineFeed) {
+let formatError = function (e, source) {
   let message = source?'source: ' + source : ''
-  
+  let lineFeed = '\n'
+
   if(e.target){
     if(e.target.error) {
       message += lineFeed + 'target.error: ' + formatError(e.target.error, '', lineFeed)
@@ -44,7 +45,7 @@ let formatError = function (e, source, lineFeed) {
 let displayError = function (e, source) {
   let el = document.getElementById('errors')
   const lineFeed = el?'<br>':lineFeed 
-  const message = formatError(e, source, lineFeed)
+  const message = formatError(e, source, lineFeed).replace(/\n/g, lineFeed)
 
   if(el) {
     el.innerHTML += '<p>' + message
@@ -53,6 +54,7 @@ let displayError = function (e, source) {
     alert (message)
   }
 }
+
 
 let blobToArray = (blob) => {
   return new Promise((resolve, reject) => {

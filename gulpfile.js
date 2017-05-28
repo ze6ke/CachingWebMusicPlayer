@@ -189,7 +189,8 @@ gulp.task('launchbrowser', ['serve'], () => {
     reloadDebounce: 2000, //I don't think that these are both necessary
     reloadThrottle: 1000,
     proxy: 'http://localhost:8000',
-    port: 8888
+    port: 8888,
+    host: '192.168.1.11'
   })
 })
 

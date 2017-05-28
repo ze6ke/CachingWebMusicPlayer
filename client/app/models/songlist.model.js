@@ -37,7 +37,6 @@ class Songlist {
 
 
   fetchAllSongs() {
-    //this.songlist.forEach((song)=>song.fetchData(()=>{this.renderApp()}))
     this.songlist.forEach((song)=>song.fetchData()
       .then((song) => {
       if(!this.current && song) {
@@ -121,6 +120,7 @@ class Songlist {
   }
 
   getFilteredSonglist () {
+    //return Promise.resolve(this.songlist)
     return Promise.all(this.songlist.map((song) => song.matchesFilter(this.filter)))
     .then((boolArray) => {
       return this.songlist.filter((song, i) => boolArray[i])

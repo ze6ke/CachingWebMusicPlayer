@@ -22,17 +22,14 @@ window.onerror = function (errorMsg, url, lineNumber) {
 functionalityTest()
 let model
 const getData = () => {
-  fetch('data/library.json')
+  return fetch('data/library.json')
   .then((response) => {
     if(response.ok) {
-      response.json().then((data) => {
-        model.setSonglist(data)
-        renderApp(model)
-      })
+      return response.json()
     } else {
-      alert(response.statusText)
+      throw {name:response.statusText, message: 'none'}
     }
-  }, (response) => {alert('fetch failed: ' + response)})
+  })
 }
 
 const changeCurrentSong = (song) => {
@@ -75,5 +72,12 @@ function renderApp (model) {
 
 storageStrategy.getStrategy('indexedDB').then((ss) => {
   model = new Model(renderApp, ss, fetchStrategy.XHR)
-  getData()
+  Promise.all([
+    getData(),
+    ss.getConfig()])
+  .then((data) => {
+    model.setSonglist(data[0])
+    renderApp(model)
+  })
+  .catch(displayError)
 })
