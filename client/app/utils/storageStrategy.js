@@ -164,13 +164,13 @@ const storageStrategy = {
 
         this.request.onupgradeneeded = (e) => {
           let db = e.target.result
-	  let os = this.createObjectStore(db)
+          let os = this.createObjectStore(db)
     
-	os.transaction.oncomplete = () => {
-  	  let tran = db.transaction(['songs'], 'readwrite')
-	  let os = tran.objectStore('songs')
-	  let p = os.put(new Map(), 'config')
-      }
+          os.transaction.oncomplete = () => {
+            let tran = db.transaction(['songs'], 'readwrite')
+            let os = tran.objectStore('songs')
+            let p = os.put(new Map(), 'config')
+          }
         }
         this.request.onerror = (e) => {
           reject(e)
@@ -191,18 +191,18 @@ const storageStrategy = {
     storeData: function(theSong, data) {
       return this.store(theSong.file, data)
       .then((e) => {
-	this.config.set(theSong.file, true)
-	return this.storeConfig()
+        this.config.set(theSong.file, true)
+        return this.storeConfig()
       .then(() => e)
       })
     },
     store: function(key, data) {
       return new Promise((resolve, reject) => {
         let transaction = this.db.transaction([this.objectStoreName], 'readwrite')
-	let os = transaction.objectStore(this.objectStoreName)
+        let os = transaction.objectStore(this.objectStoreName)
         let put = os.put(data, key)
         
-	put.onsuccess = (e) => resolve(e)
+        put.onsuccess = (e) => resolve(e)
         put.onerror = (e) => {
           reject(e)
         }
@@ -244,8 +244,8 @@ const storageStrategy = {
         let get = transaction.objectStore(this.objectStoreName).get('config')
 
         get.onsuccess = (e) => {
-	  this.config = e.target.result
-	  resolve()
+          this.config = e.target.result
+          resolve()
         }
         get.onerror = (e) => {
           reject(e)

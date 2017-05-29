@@ -32,8 +32,9 @@
 //cache to localstorage (breakup files) (gives quota errors on all browsers that I tested, but stores the smallest song)
 //storage as strategy
 //cache to indexedDB
+//create a trivial indexedDB example and confirm that it works on my phone
 
-create a trivial indexedDB example and confirm that it works on my phone
+create cache manifest experiments
 read
 cache to filesystemapi
 behavior when list is fully filtered (have a no current song option)
@@ -43,7 +44,7 @@ sorting
 shuffle
 https://www.npmjs.com/package/gulp-autoprefixer
 
-make ctags work with vim
+make ctags work with vim https://github.com/andreypopp/ctags-webpack-plugin
 dynamically determine header.height and set headerplaceholder.height to match
 test on chrome
 test on firefox

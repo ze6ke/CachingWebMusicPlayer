@@ -2,19 +2,119 @@ CACHE MANIFEST
 #v1x
 
 index.html
+/
+playerStyle.css
 favicon.ico
 bundle.js
 data/library.json
 
-#data after here is auto-generated
 
-data/Amazon%20MP3/Tom%20Cochrane/Mad%20Mad%20World/01%20-%20Life%20Is%20A%20Highway.mp3
-data/Amazon%20MP3/The%20Proclaimers/Sunshine%20On%20Leith/01%20-%20I'm%20Gonna%20Be%20(500%20Miles).mp3
-data/Amazon%20MP3/Robert%20Parker/Barefootin'/01%20-%20Barefootin'%20-%20Original.mp3
-data/Amazon%20MP3/Rednex/Sex%20&%20Violins/01%20-%20Cotton%20Eye%20Joe%20(Original%20Version).mp3
-data/Amazon%20MP3/Ram%20Jam/The%20Very%20Best%20Of%20Ram%20Jam/01%20-%20Black%20Betty.mp3
-data/Amazon%20MP3/Orchestre%20des%20Chambre%20des%20Concerts%20Pasdeloup,%20Louis%20Martini/Charpentier_%20Te%20Deum%20pour%20solistes,%20choeurs,%20orgue%20et%20orchestre/02%20-%202-%20Te%20Deum.mp3
-data/Amazon%20MP3/Orchestre%20des%20Chambre%20des%20Concerts%20Pasdeloup,%20Louis%20Martini/Charpentier_%20Te%20Deum%20pour%20solistes,%20choeurs,%20orgue%20et%20orchestre/03%20-%203-%20Te%20aeternum%20Patrem.mp3
-data/Amazon%20MP3/Orchestre%20des%20Chambre%20des%20Concerts%20Pasdeloup,%20Louis%20Martini/Charpentier_%20Te%20Deum%20pour%20solistes,%20choeurs,%20orgue%20et%20orchestre/04%20-%204-%20Te%20per%20orbem.mp3
-data/Amazon%20MP3/Mazzy%20Star/So%20Tonight%20That%20I%20Might%20See/01%20-%20Fade%20Into%20You.mp3
-data/Amazon%20MP3/Manu%20Dibango/The%20Very%20Best%20Of%20Manu%20Dibango_%20Afro%20Soul%20Jazz%20From%20The%20Original%20Makossa%20Man/01%20-%20Soul%20Makossa.mp3
+font-awesome-4.7.0/css/font-awesome.css
+font-awesome-4.7.0/css/font-awesome.min.css
+font-awesome-4.7.0/fonts/fontawesome-webfont.woff
+font-awesome-4.7.0/fonts/fontawesome-webfont.woff2
+font-awesome-4.7.0/fonts/fontawesome-webfont.eot
+font-awesome-4.7.0/fonts/fontawesome-webfont.svg
+font-awesome-4.7.0/fonts/fontawesome-webfont.ttf
+font-awesome-4.7.0/fonts/FontAwesome.otf
+font-awesome-4.7.0/scss/_fixed-width.scss
+font-awesome-4.7.0/scss/_core.scss
+font-awesome-4.7.0/scss/_icons.scss
+font-awesome-4.7.0/scss/_bordered-pulled.scss
+font-awesome-4.7.0/scss/_stacked.scss
+font-awesome-4.7.0/scss/_screen-reader.scss
+font-awesome-4.7.0/scss/_path.scss
+font-awesome-4.7.0/scss/_variables.scss
+font-awesome-4.7.0/scss/_larger.scss
+font-awesome-4.7.0/scss/_animated.scss
+font-awesome-4.7.0/scss/font-awesome.scss
+font-awesome-4.7.0/scss/_list.scss
+font-awesome-4.7.0/scss/_rotated-flipped.scss
+font-awesome-4.7.0/scss/_mixins.scss
+font-awesome-4.7.0/less/rotated-flipped.less
+font-awesome-4.7.0/less/screen-reader.less
+font-awesome-4.7.0/less/font-awesome.less
+font-awesome-4.7.0/less/core.less
+font-awesome-4.7.0/less/list.less
+font-awesome-4.7.0/less/stacked.less
+font-awesome-4.7.0/less/fixed-width.less
+font-awesome-4.7.0/less/path.less
+font-awesome-4.7.0/less/mixins.less
+font-awesome-4.7.0/less/animated.less
+font-awesome-4.7.0/less/variables.less
+font-awesome-4.7.0/less/bordered-pulled.less
+font-awesome-4.7.0/less/icons.less
+font-awesome-4.7.0/less/larger.less
+font-awesome-4.7.0/HELP-US-OUT.txt
+
+NETWORK:
+
+
+data/01 Big 10-Inch Record.mp3
+data/01 Blues Medley.mp3
+data/01 Moanin'.mp3
+data/01 One Hour Mama.m4a
+data/01 St.James Infirmary.mp3
+data/01 This Bitter Earth.mp3
+data/01 Wade In The Water.mp3
+data/01 Where Blues Turn Black.mp3
+data/02 Good Morning Blues.mp3
+data/02 Lucky So and So.mp3
+data/02 Maybe Someday.mp3
+data/03 Back Water Blues.mp3
+data/03 How Long Blues.mp3
+data/03 Pony Blues.mp3
+data/04 Blues Ya 'fore I Lose Ya.mp3
+data/05 Back To The 'Hood.mp3
+data/05 I Lost My Mind in Wild Romance.mp3
+data/05 Let The Blues Move You.mp3
+data/05 Mo' Better Blues.mp3
+data/05 New York Blues Queen.mp3
+data/06 Hard Time Killing Floor Blues.mp3
+data/06 Hum Drum Blues.mp3
+data/06 If It Had Been A Dog.m4a
+data/06 Pour Some Sugar In My Bowl.mp3
+data/06 Sunhat Blues.mp3
+data/06 Suzie Blue.mp3
+data/07 Alright, Ok, You Win _ Everyday (.mp3
+data/07 Amazing Love.mp3
+data/07 Blues For Jezebel.mp3
+data/07 I Want You To Love Me.mp3
+data/07 Over And Over.mp3
+data/07 Screenwriter's Blues.mp3
+data/07 That's All Right _ Someone Else I.mp3
+data/08 I Want A Little Girl.mp3
+data/08 Let The Healing Begin.mp3
+data/08 Southern Comfort.mp3
+data/08 Suffering With The Blues.mp3
+data/08 Tango Blues.mp3
+data/08 Track 08.mp3
+data/09 Down Home Blues.mp3
+data/09 Grinder Man Blues.mp3
+data/09 Old Love.mp3
+data/1-01 Learned My Lesson.mp3
+data/1-02 Bigger And Better.mp3
+data/10 Chains Of Love.mp3
+data/10 Everyday I Have The Blues.mp3
+data/10 Humdrum Blues.mp3
+data/10 Maybelle's Blues.mp3
+data/10 Please Send Me Someone To Love.mp3
+data/10 Take The Wrinkle Out Your Birthda.mp3
+data/11 Baby Be Good To Me.mp3
+data/11 Beale St. Blues.mp3
+data/11 Careless Love.mp3
+data/11 Seven Long Days.mp3
+data/12 Dr. Blues.m4a
+data/12 Gin And Tonic Blues.mp3
+data/12 I've Got News For You.mp3
+data/12 Ruby Mae.mp3
+data/13 Blue Angel.mp3
+data/13 Track 13 14.mp3
+data/14 Basin Street Blues.mp3
+data/14 Don't Treat You Man Like A Dog.m4a
+data/16 Blues In The Night (Parts I & II).mp3
+data/17 A Good Man is Hard to Find.mp3
+data/17 Constipation Blues.mp3
+data/2-06 Down Home Blues.mp3
+data/2-10 Best Of Me.mp3
+data/21 Bottom Blues.mp3

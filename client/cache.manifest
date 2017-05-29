@@ -1,9 +1,0 @@
-CACHE MANIFEST
-#v1xx
-
-index.html
-favicon.ico
-bundle.js
-data/library.json
-
-#data after here is auto-generated
