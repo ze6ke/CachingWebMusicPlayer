@@ -33,9 +33,11 @@
 //storage as strategy
 //cache to indexedDB
 //create a trivial indexedDB example and confirm that it works on my phone
+//create cache manifest experiments
+//fix karma tests
 
-create cache manifest experiments
 read
+understand font awesome better and why it loads late/or not at all
 cache to filesystemapi
 behavior when list is fully filtered (have a no current song option)
 test with larger list of files

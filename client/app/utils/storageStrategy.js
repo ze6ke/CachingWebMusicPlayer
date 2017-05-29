@@ -20,8 +20,6 @@ const storageStrategy = {
   getStrategy: function(type) {
     switch (type) {
       case 'volatile': return Promise.resolve().then(() => storageStrategy.volatile)
-      case 'sessionStorage': return Promise.resolve().then(() => storageStrategy.sessionStorage)
-      case 'localStorage': return Promise.resolve().then(() => storageStrategy.localStorage)
       case 'indexedDB': return storageStrategy.indexedDB.initialize()
       default: throw {name: 'type undefined', message: 'The type passed in is not valid: ' + type}
     }
@@ -29,9 +27,7 @@ const storageStrategy = {
   resetStrategy: function(type) {
     switch (type) {
       case 'indexedDB': return storageStrategy.indexedDB.reset()
-      case 'volatile':
-      case 'sessionStorage':
-      case 'localStorage': return Promise.resolve()
+      case 'volatile':return Promise.resolve()
       default: throw {name: 'type undefined', message: 'The type passed in is not valid: ' + type}
     }
   },
@@ -49,10 +45,13 @@ const storageStrategy = {
     prepare: function(theSong) {
       return Promise.resolve()
       .then(() => {
-        theSong.tempData = theSong.data
+        theSong.tempData = new Blob([theSong.data],{type: theSong.type})
         theSong.URL = window.URL.createObjectURL(theSong.tempData)
         return theSong.URL
       })
+    },
+    getConfig: function() {
+      return Promise.resolve()
     },
 
     hasData: function(theSong) {
@@ -65,89 +64,6 @@ const storageStrategy = {
 
     getDataUsage: function() {
       return Promise.resolve(0)
-    }
-  },
-
-  sessionAndLocalStorage: {
-    storeData: function(storage, theSong, data) {
-      return util.blobToBase64Strings(data, theSong.file)
-      .then((strings) => {
-        strings.map((o, i)=>{
-          if(i===0){
-            storage.setItem(o.key, JSON.stringify({length:o.length, type:o.type}))
-          } else {
-            storage.setItem(o.key, o.base64String)
-          }
-        })
-      })
-    },
-    prepare: function(storage, theSong) {
-      return new Promise((resolve, reject) => {
-        const info = JSON.parse(storage.getItem(theSong.file))
-        let stringArray = []
-        for(let i = 1;i<=info.length;i++) {
-          stringArray.push(storage.getItem(theSong.file + '-' + i))
-        }
-        theSong.tempData = util.base64StringsToBlob(stringArray, info.type)
-        theSong.URL = window.URL.createObjectURL(theSong.tempData)
-        resolve(theSong.URL)
-      })
-    },
-    hasData: function(storage, theSong) {
-      return Promise.resolve(storage.getItem(theSong.file))
-    },
-
-    clearData: function(storage) {
-      return Promise.resolve(storage.clear())
-    },
-
-    getDataUsage: function(storage) {
-      return Promise.resolve(Object.keys(storage).reduce((acc, val) => {
-        return acc += storage.getItem(val).length * 2
-      }, 0)/1024/1024)
-    }
-  },
-
-  localStorage: {
-    name: 'local storage',
-    reset: function() {
-      return Promise.resolve()
-    },
-    storeData: function(theSong, data) {
-      return storageStrategy.sessionAndLocalStorage.storeData(localStorage, theSong, data)
-    },
-    prepare: function(theSong) {
-      return storageStrategy.sessionAndLocalStorage.prepare(localStorage, theSong)
-    },
-    hasData: function(theSong) {
-      return storageStrategy.sessionAndLocalStorage.hasData(localStorage, theSong)
-    },
-    clearData: function() {
-      return storageStrategy.sessionAndLocalStorage.clearData(localStorage)
-    },
-    getDataUsage: function() {
-      return storageStrategy.sessionAndLocalStorage.getDataUsage(localStorage)
-    }
-  },
-
-  sessionStorage: {
-    name: 'session storage',
-
-    reset: function() {return Promise.resolve()},
-    storeData: function(theSong, data) {
-      return storageStrategy.sessionAndLocalStorage.storeData(sessionStorage, theSong, data)
-    },
-    prepare: function(theSong) {
-      return storageStrategy.sessionAndLocalStorage.prepare(sessionStorage, theSong)
-    },
-    hasData: function(theSong) {
-      return storageStrategy.sessionAndLocalStorage.hasData(sessionStorage, theSong)
-    },
-    clearData: function() {
-      return storageStrategy.sessionAndLocalStorage.clearData(sessionStorage)
-    },
-    getDataUsage: function() {
-      return storageStrategy.sessionAndLocalStorage.getDataUsage(sessionStorage)
     }
   },
 
@@ -256,7 +172,7 @@ const storageStrategy = {
     },
 
     reset: function() {
-      this.db.close()
+      this.db && this.db.close()
 
       let thePromise = new Promise((resolve, reject) => {
         let deleteRequest

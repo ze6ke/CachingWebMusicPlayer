@@ -176,17 +176,15 @@ describe('song', function() {
   })
 
   const type = 'audio/mpeg'
-  const sourceMediumArray = new Uint8Array([...Array(50000)].map(()=>5))
-  const mediumBlob = new Blob([sourceMediumArray], {type})
-  const sourceBigArray = new Uint8Array([...Array(5000000)].map(()=>5))
-  const bigBlob = new Blob([sourceBigArray], {type})
+  const mediumArray = new ArrayBuffer(5000)
+  const bigArray = new ArrayBuffer(5000000)
 
-  let testDataStorage = (aSong, blob) => {
-    return aSong.storeData(blob)
+  let testDataStorage = (aSong, arr) => {
+    return aSong.storeData(arr)
     .then(() => {return aSong.prepare()})//passing aSong.prepare directly causes this to not be bound. :(
     .then(()=>{
       expect(aSong.tempData).to.not.be.undefined
-      expect(aSong.tempData.size).to.equal(blob.size)
+      expect(aSong.tempData.size).to.equal(arr.byteLength)
     })
   }
 
@@ -203,11 +201,12 @@ describe('song', function() {
         .then((theStrategy) => {
           ss = theStrategy
           aSong = new Song(songlistRaw[0], ss, fetchStrategy.none, true)
+          return ss.getConfig()
         })
       })
 
-      it('stores data 50 KB of data correctly', function(){return testDataStorage(aSong, mediumBlob)})
-      it.skip('stores data 5 MB of data correctly', function(){return testDataStorage(aSong, bigBlob)})
+      it('stores data 50 KB of data correctly', function(){return testDataStorage(aSong, mediumArray)})
+      it('stores data 5 MB of data correctly', function(){return testDataStorage(aSong, bigArray)})
 
       if(strategyName !== 'volatile') {
         it('tracks used space', function () {
@@ -231,8 +230,6 @@ describe('song', function() {
 
   testStorageStrategy('indexedDB')
   testStorageStrategy('volatile')
-  testStorageStrategy('sessionStorage')
-  testStorageStrategy('localStorage')
 
 })
 
