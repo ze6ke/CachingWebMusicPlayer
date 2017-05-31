@@ -7,7 +7,7 @@ import fetchStrategy from './utils/fetchStrategy.js'
 
 //import $ from 'jquery'
 import App from './views/app.js'
-import Model from './models/model.js'
+import Model from './models/songlist.model.js'
 import functionalityTest from './functionalityTest.js'
 import {displayError} from './utils/util.js'
 
@@ -34,7 +34,6 @@ const getData = () => {
 
 const changeCurrentSong = (song) => {
   model.changeCurrentSong(song).then(()=>renderApp(model))
-  //renderApp(model)
 }
 
 const changeFilter = (e) => {

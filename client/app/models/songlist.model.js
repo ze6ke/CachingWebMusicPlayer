@@ -57,14 +57,14 @@ class Songlist {
 
 
   changeCurrentSong (song) {
-    if(!song || !(song.constructor) || song.constructor.name !== 'Song') {
+    if(!!song && (!(song.constructor) || song.constructor.name !== 'Song')) {
       throw {name: 'incorrect type', message: 'Songlist.changeCurrentSong can only accept a Song'}
     }
     this.current && this.current.reset()
 
     this.current = song
 
-    if(!this.fake) {
+    if(this.current && !this.fake) {
       return song.prepare()
     } else {
       return Promise.resolve()
@@ -89,43 +89,18 @@ class Songlist {
     .then((boolArray) => {
       const currentPos = sortedSongList.indexOf(current)
       let nextPos = currentPos === boolArray.length - 1 ? -1 : boolArray.indexOf(true, currentPos + 1)
-      if(nextPos==-1) {
+      if(nextPos == -1) {
         nextPos = boolArray.indexOf(true)
       }
-      return sortedSongList[nextPos]
+      return nextPos === -1 ? undefined : sortedSongList[nextPos]
     })
-
-    /*function takeAPass() {
-      return sortedSongList.findIndex((thisSong) => {
-        if(seenCurrentSong) {
-          return thisSong.matchesFilter(filter)
-        }
-        else {
-          if(thisSong.file === current.file) {
-            seenCurrentSong = true
-          }
-          return false
-        }
-      })
-    }
-    let indexOfNextSong = takeAPass()
-    if(indexOfNextSong === -1) { //there was no song on the list after the current song
-      indexOfNextSong = takeAPass() //look from the beginning, but start with seenCurrentSong = true
-    }
-    if(indexOfNextSong === -1) { //there was no song on the list after the current song
-      throw 'current song not found on song list'
-    }
-    return sortedSongList[indexOfNextSong]
-*/
   }
 
   getFilteredSonglist () {
-    //return Promise.resolve(this.songlist)
     return Promise.all(this.songlist.map((song) => song.matchesFilter(this.filter)))
     .then((boolArray) => {
       return this.songlist.filter((song, i) => boolArray[i])
     })
-    //return Promise.resolve(this.songlist.filter((song) => song.matchesFilter(this.filter)))
   }
 
 }

@@ -35,12 +35,12 @@
 //create a trivial indexedDB example and confirm that it works on my phone
 //create cache manifest experiments
 //fix karma tests
+//read
+//understand font awesome better and why it loads late/or not at all
+//behavior when list is fully filtered (have a no current song option)
 
-read
-understand font awesome better and why it loads late/or not at all
-cache to filesystemapi
-behavior when list is fully filtered (have a no current song option)
 test with larger list of files
+if needed, try out persistent storage options
 make gulp go faster
 sorting
 shuffle
@@ -55,9 +55,12 @@ setup istanbul for code coverage
 create webpack bundle for libraries
 move to nginx
 make jumping ahead work on phone
+try out different css templates
+try out bootstrap
 really make it look good (colors and stuff)
 optimize how the long list is displayed (if necessary)
 handle ogg files better (metadata doesn't work)
 come up with good stylelint rules
 how to deploy node product
 setup integration test suite (nightshade or selenium directly)
+open source
