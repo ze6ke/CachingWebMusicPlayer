@@ -1,5 +1,5 @@
 import Song from './song.model.js'
-import {displayError} from '../utils/util.js'
+import {throttle, displayError} from '../utils/util.js'
 
 class Songlist {
   constructor(renderApp, storageStrategy, fetchStrategy, fake=false) {
@@ -37,17 +37,19 @@ class Songlist {
 
 
   fetchAllSongs() {
-    this.songlist.forEach((song)=>song.fetchData()
+    let generateTicket = throttle.promiseTicketGenerator(2)
+    this.songlist.forEach((song)=> {
+      let ticket = generateTicket()
+      ticket.resolve(song)
+      .then((song) => song.fetchData())
+      .then(ticket.returnOnSuccess, ticket.returnOnError)
       .then((song) => {
       if(!this.current && song) {
         this.changeCurrentSong(song)
       }
       this.renderApp()
       })
-      .catch((e) => {
-        displayError(e, 'fetchAllSongs')
-      })
-    )
+    })
   }
 
   setSonglist (songlist) {

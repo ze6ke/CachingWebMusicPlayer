@@ -20,7 +20,9 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
       'client/tests/models/model.test.js',
-      'client/tests/views/all.test.js'
+      'client/tests/views/all.test.js',
+      'client/tests/utils/utils.test.js'
+
     ],
 
 
@@ -33,6 +35,7 @@ module.exports = function(config) {
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
       'client/tests/models/model.test.js': ['webpack', 'sourcemap'],
+      'client/tests/utils/utils.test.js': ['webpack', 'sourcemap'],
       'client/tests/views/all.test.js': ['webpack', 'sourcemap']
     },
     webpack: webpackOptions,

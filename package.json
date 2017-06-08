@@ -64,6 +64,7 @@
     "morgan": "^1.8.1",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
+    "react-virtual-list": "^2.2.0",
     "walk": "^2.3.9"
   }
 }

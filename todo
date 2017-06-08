@@ -38,8 +38,12 @@
 //read
 //understand font awesome better and why it loads late/or not at all
 //behavior when list is fully filtered (have a no current song option)
+//test with larger list of files
+//optimize how the long list is displayed (if necessary)
+//fix fetchAll to only delay actions if a server call is required
 
-test with larger list of files
+make vi work with es6
+figure out why caching isn't working and also isn't giving errors
 if needed, try out persistent storage options
 make gulp go faster
 sorting
@@ -58,7 +62,6 @@ make jumping ahead work on phone
 try out different css templates
 try out bootstrap
 really make it look good (colors and stuff)
-optimize how the long list is displayed (if necessary)
 handle ogg files better (metadata doesn't work)
 come up with good stylelint rules
 how to deploy node product

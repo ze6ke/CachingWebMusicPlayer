@@ -9,15 +9,16 @@ import fetchStrategy from './utils/fetchStrategy.js'
 import App from './views/app.js'
 import Model from './models/songlist.model.js'
 import functionalityTest from './functionalityTest.js'
-import {displayError} from './utils/util.js'
+import {isMobile, throttle, displayError} from './utils/util.js'
 
 window.React = React
 
-window.onerror = function (errorMsg, url, lineNumber) {
-  displayError(errorMsg, 'window.onerror')
-  return true //allow normal error handling to continue
+if(navigator && isMobile(navigator.userAgent)) {
+  window.onerror = function (errorMsg, url, lineNumber) {
+    displayError(errorMsg, 'window.onerror')
+    return true //allow normal error handling to continue
+  }
 }
-
 
 functionalityTest()
 let model
@@ -69,8 +70,8 @@ function renderApp (model) {
 
 }
 
-storageStrategy.getStrategy('indexedDB').then((ss) => {
-  model = new Model(renderApp, ss, fetchStrategy.XHR)
+storageStrategy.getStrategy('stub').then((ss) => {
+  model = new Model(throttle.basic(renderApp, 1000), ss, fetchStrategy.stub)
   Promise.all([
     getData(),
     ss.getConfig()])
@@ -78,5 +79,4 @@ storageStrategy.getStrategy('indexedDB').then((ss) => {
     model.setSonglist(data[0])
     renderApp(model)
   })
-  .catch(displayError)
 })

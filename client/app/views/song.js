@@ -1,5 +1,5 @@
-const Song = ({song, changeCurrentSong}) =>
-  <li className="song" onClick={() => changeCurrentSong(song)}>
+const Song = ({style, song, changeCurrentSong}) =>
+  <li style={style} className="song" onClick={() => changeCurrentSong(song)}>
     <div className="song-row">
       <span className="song-title">{song.title}</span>
       <span className="song-artist">{song.artist}</span>

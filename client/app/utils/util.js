@@ -92,7 +92,138 @@ let base64StringsToBlob = (stringArray, type) => {
   return blob
 }
 
-//export default utils
+let promisify = (fn, args) => {
+  return new Promise((resolve, reject) => {
+    try {
+      resolve(fn(...args))
+    } catch (e) {
+      reject(e)
+    }
+  })
+}
 
-export {formatError, displayError, isString, blobToBase64Strings, base64StringsToBlob, blobToArray}
-export default {formatError, displayError, isString, blobToBase64Strings, base64StringsToBlob, blobToArray}
+let throttle = {
+  promisePerSecondGenerator: (promisesPerSecond) => {
+    let resolverArray = []
+    let resolverRunning = false
+
+    let releasePromise = () => {
+      let {resolve, val} = resolverArray.shift()
+      resolve(val)//call the first resolver put on the array
+      if(resolverArray.length) {
+        setTimeout(releasePromise, 1000/promisesPerSecond)
+      } else {
+        resolverRunning = false
+      }
+    }
+
+    return (val) => {
+      let thisPromise = new Promise((resolve) => {
+        resolverArray.push({resolve, val})
+      })
+
+      if(!resolverRunning) {
+        setTimeout(releasePromise, 1000/promisesPerSecond)
+        resolverRunning = true
+      }
+
+      return thisPromise
+    }
+  },
+  /*this function accepts a function and a minDelay value and returns a new function.  When the new function is called, it will call the underlying
+   * function if that function hasn't been called in minDelay ms.  Otherwise, it waits until minDelay ms have passed and calls the function with
+   * whatever arguments were last provided (the underlying function needs to be idempotent to get good results).
+   * In both cases, it returns a promise that will completed/reject based on the execution of the function
+   */
+  basic: (fn, minDelay = 0) => {
+    let lastCall = 0 //current time in ms since epoch
+    let currentArgs = null
+    let timerHandle = null
+    let currentPromise = null
+    return (...args) => {
+      const now = +new Date()
+      if(!timerHandle && now > lastCall + minDelay) { //we can run the function right now and have no commitments otherwise
+        lastCall = now
+        return promisify(fn, args)
+      } else { //we can't run immediately or we've handed out a promise someplace and somebody's (potentially) waiting on results
+        currentArgs = args
+        if(!timerHandle) {
+          currentPromise = new Promise((resolve, reject) => {
+            timerHandle = setTimeout(() => {
+              lastCall = now
+              try {
+                let retVal = fn(...currentArgs)
+                resolve(retVal)
+              } catch(e) {
+                reject(e)
+              } finally {
+                currentArgs = null
+                currentPromise = null
+                timerHandle = null
+              }
+            }, minDelay + lastCall - now)
+          })
+        }  //we have already set a timer and handed out a promise, just return the existing promise
+        return currentPromise
+      }
+    }
+  }
+  ,
+  promiseTicketGenerator: (numberOfTickets, timeoutPeriod=60000) => {
+    let resolverArray = []
+    let availableTickets = numberOfTickets
+    
+    let releaseTicket = () => {
+      if(availableTickets && resolverArray.length) {
+        availableTickets--
+        resolverArray.shift()()
+      }
+    }
+    let generateTicket = () => {
+      let timerHandle = null
+      let thePromise = null
+
+      let reclaimTicket = () => {
+        console.error('ticket expired, either the timeout value is too low, or you forgot to release it')
+        theTicket.returnTicket()
+      }
+
+      let theTicket = {
+        resolve: (arg) => {
+          if (!thePromise) {
+            thePromise = new Promise((resolve) => {
+              resolverArray.push(() => {
+                timerHandle = setTimeout(reclaimTicket, timeoutPeriod)
+                resolve(arg)
+              })
+            })
+            releaseTicket()
+          }
+          return thePromise
+        },
+        returnTicket: function() {
+          clearTimeout(timerHandle)
+          availableTickets++
+          releaseTicket()
+        },
+        returnOnSuccess: function(v) {
+          this.returnTicket()
+          return v
+        }, 
+        returnOnError: function(e) {
+          this.returnTicket()
+          throw e
+        }
+      }
+      theTicket.returnOnSuccess = theTicket.returnOnSuccess.bind(theTicket)
+      theTicket.returnOnError = theTicket.returnOnError.bind(theTicket)
+      return theTicket
+    }
+    return generateTicket
+  }
+}
+
+let isMobile = (userAgent) => /iphone|ipad|ipod|android/i.test(userAgent)
+//export default utils
+export {isMobile, throttle, formatError, displayError, isString, blobToBase64Strings, base64StringsToBlob, blobToArray}
+export default {isMobile, throttle, formatError, displayError, isString, blobToBase64Strings, base64StringsToBlob, blobToArray}

@@ -22,6 +22,11 @@ const fetchStrategy = {
       })
     }
   },
+  stub: {
+    fetch: (url) => {
+      return Promise.resolve(new ArrayBuffer(0))
+    }
+  },
   XHR: {
     //this function seems to work on the iphone, while the other two don't.  It doesn't work with firefox 52
     fetch: (url) => {
