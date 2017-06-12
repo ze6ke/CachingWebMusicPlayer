@@ -70,8 +70,8 @@ function renderApp (model) {
 
 }
 
-storageStrategy.getStrategy('stub').then((ss) => {
-  model = new Model(throttle.basic(renderApp, 1000), ss, fetchStrategy.stub)
+storageStrategy.getStrategy('indexedDB').then((ss) => {
+  model = new Model(throttle.basic(renderApp, 1000), ss, fetchStrategy.XHR)
   Promise.all([
     getData(),
     ss.getConfig()])
