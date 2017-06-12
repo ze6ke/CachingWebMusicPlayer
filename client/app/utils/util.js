@@ -103,6 +103,10 @@ let promisify = (fn, args) => {
 }
 
 let throttle = {
+  /*This function returns a function that generates promises.  You can generate any number of those promises, but be assured
+   * that at most promisesPerSecond promises will be fulfilled per second.  Useful if you want to kick off lots of requests, but
+   * not have them all fulfill at the same time
+   */
   promisePerSecondGenerator: (promisesPerSecond) => {
     let resolverArray = []
     let resolverRunning = false
@@ -169,6 +173,12 @@ let throttle = {
     }
   }
   ,
+  /*This function returns a function that generates tickets.  The calling code can the request that a ticket be resolved (which returns a promise)
+   * if an argument is passed to resolve, it is passed on through the returned promise.  One numberOfTickets tickets can be resolved and active at
+   * any given moment.  If all of that number of active tickets is exceeded, subsequent tickets will need to wait until one of the active tickets
+   * calls returnTicket.  Because this model can have ticket leaks (i.e., returnTicket never gets called) a timer is set and the ticket is 
+   * automatically reclaimed after a certain time.
+   */
   promiseTicketGenerator: (numberOfTickets, timeoutPeriod=60000) => {
     let resolverArray = []
     let availableTickets = numberOfTickets

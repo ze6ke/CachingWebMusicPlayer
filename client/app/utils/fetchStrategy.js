@@ -1,5 +1,7 @@
 const rt = 'arraybuffer'
 
+//this allows me to extrapolate out the AJAX request.  JQuery showed up in an earlier version, but didn't work, so got removed.
+
 const fetchStrategy = {
   none: {
     fetch: (url) => Promise.resolve()

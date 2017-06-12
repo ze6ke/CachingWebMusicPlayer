@@ -5,7 +5,6 @@ import {render} from 'react-dom'
 import storageStrategy from './utils/storageStrategy.js'
 import fetchStrategy from './utils/fetchStrategy.js'
 
-//import $ from 'jquery'
 import App from './views/app.js'
 import Model from './models/songlist.model.js'
 import functionalityTest from './functionalityTest.js'
@@ -21,6 +20,7 @@ if(navigator && isMobile(navigator.userAgent)) {
 }
 
 functionalityTest()
+
 let model
 const getData = () => {
   return fetch('data/library.json')

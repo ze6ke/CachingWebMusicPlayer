@@ -1,5 +1,0 @@
-{
-    "commands": [
-        "**/* : bash touch {absPath}{filename}"
-    ]
-}

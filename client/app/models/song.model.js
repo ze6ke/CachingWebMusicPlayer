@@ -33,7 +33,7 @@ class Song {
 
   reset() {
     if(this.URL) {
-      window.URL.revokeObjectURL(this.URL)
+      window.URL.revokeObjectURL(this.URL) //Object URLs need to be reclaimed.  To avoid loading the entire library into volatile memory, I reset songs after finishing with them.
       delete this.URL
     }
     if(this.tempData) {
@@ -68,6 +68,9 @@ class Song {
       if(!hasData) {
         return false
       } else {
+        //break the filter into tokens on whitespace (e.g., 'one two' becomes two tokens, 'one' and 'two')
+        //Afterwards confirm that each token matches to at least one field on this song (e.g., token one could match to title and token two 
+        //match to album).  If any token can't be matched to a field, the song is filtered, otherwise the song is displayed.
         let ands = filter.toUpperCase().split(/\s+/)
         return ands.every((filter) => {
           return Object.keys(this).some((field) => {

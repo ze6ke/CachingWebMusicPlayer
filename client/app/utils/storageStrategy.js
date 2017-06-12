@@ -1,5 +1,12 @@
 import util from './util.js'
 
+//this allows me to extract out the storage method (and change it with a simple modification to index.js).
+//volatile stores everything in memory, stub throws everything away (for testing purposes) and indexedDB stores everything in indexedDB.
+//local and session storage were implemented in earlier versions, but were removed because I couldn't imagine a situation when they would seem useful.
+
+/*
+ * estimate item size.  Won't handle recursive items well but won't crash (it stops after 5 levels of nesting)
+ */
 function getItemSize(item, depth=1) {
   if(item.byteLength !== undefined) {
     return item.byteLength
@@ -145,7 +152,9 @@ let indexedDB = {
   hasData: function(theSong) {
     return Promise.resolve(this.config.has(theSong.file))
   },
-  getConfig() {
+  getConfig() {//there's no function to list keys without retrieving data, and the system crashes if you make thousands of asynch requests
+    //to pull back keys, so I started tracking what files have been loaded on my own.  This will
+    //certainly be a source of bugs, but it still seems like the best way to deal with that problem.
     return new Promise((resolve, reject) => {
 
       let transaction = this.db.transaction([this.objectStoreName], 'readonly')

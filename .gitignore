@@ -11,3 +11,4 @@ prep/manifest
 prep/shortManifest
 tags
 bmusic/
+*[lL]ibrary*.json

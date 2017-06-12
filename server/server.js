@@ -13,9 +13,6 @@ const morgan = require('morgan')
 if(process.env.NODE_ENV !== 'unittest') {
   app.use(morgan(':date :method :status :response-time[1]ms\t:url\t\tsize-:res[content-length]\ttype-:res[content-type]'))
 }
-/*app.get('/cache.manifest', function (req, res) {
-  res.type('text/cache-manifest').sendFile(path.join(__dirname + '/cache.appcache'))
-})*/
 
 app.use(express.static('dist/public'))//host application files
 app.use('/data', express.static('music')) //host the music files (this is my full music library)
