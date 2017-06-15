@@ -1,19 +1,16 @@
-const gulp = require('gulp')
-const eslint = require('gulp-eslint')
-const browsersynch = require('browser-sync')
-const nodemon = require('gulp-nodemon')
-const gutil = require('gulp-util')
-const watch = require('gulp-watch')
+const requiret = require('./requireTimer.js')
+/* when possible, push the require statements into the actual task blocks, otherwise you incur the (potentially expensive) cost of loading
+ * the files on every execution and invisibly
+ */
+const gulp = requiret.require('gulp')
+const FileCache = requiret.require('gulp-file-cache')
+
+requiret.notifications = false //the delay for the requires inside of tasks are displayed in the task execution time.  The ones above this line
+                              //do not happen inside of a task so need to be displayed seperately.
 const browserRefreshDelay = 2000//on this box 1 second doesn't always work
-const webpack = require('webpack')
-const FileCache = require('gulp-file-cache')
-const del = require('del')
-const mocha = require('gulp-mocha')
-const stylus = require('gulp-stylus')
-const styleLint = require('gulp-stylelint')
-const karma = require('karma')
 
 gulp.task('stylus', () => {
+  const stylus = requiret.require('gulp-stylus')
   gulp.src('client/styles/playerStyle.styl')
   .pipe(stylus())
   .pipe(gulp.dest('dist/public'))
@@ -21,6 +18,7 @@ gulp.task('stylus', () => {
 })
 
 gulp.task('lintcss', ['stylus'], () => {
+  const styleLint = requiret.require('gulp-stylelint')
   gulp.src('dist/public/playerStyle.css')
   .pipe(styleLint({
     reporters: [
@@ -38,6 +36,7 @@ function handleError(err) {
 }
 
 const runKarma = (done, singleRun=true) => {
+  const karma = requiret.require('karma')
   new karma.Server({
     configFile: __dirname + '/karma.conf.js',
     singleRun: singleRun
@@ -55,6 +54,7 @@ gulp.task('testclient', ['lintclient'], runKarma)
 
 
 gulp.task('testserver', ['lintserver'], () => {
+  const mocha = requiret.require('gulp-mocha')
   gulp.src('server/tests/**/*test.js').
   pipe(mocha({require: ['babel-core/register', 'server/tests/setup.js']}))
   .on('error', handleError)
@@ -64,6 +64,7 @@ gulp.task('testserver', ['lintserver'], () => {
 })
 
 gulp.task('testprep', ['lintprep'], () => {
+  const mocha = requiret.require('gulp-mocha')
   gulp.src('prep/tests/**/*test.js').
   pipe(mocha({require: ['babel-core/register']}))
   .on('error', handleError)
@@ -80,12 +81,15 @@ gulp.task('copydataandfiles', ['cleandata'], () => {
 
 
 gulp.task('cleandata', () => {
+  const del = requiret.require('del')
   //let paths =
   del.sync(['dist/public/data/**', 'dist/public/data'])
   //console.log('deleted: \n' + paths.join('\n'))
 })
 
 function runwebpack(configFile, desc, cb) {
+  const webpack = requiret.require('webpack')
+  const gutil = requiret.require('gulp-util')
   webpack(require(configFile), (err, status) => {
     if(err) throw new gutil.PluginError(desc, err)
     gutil.log(`[${desc}]`, status.toString({
@@ -107,6 +111,7 @@ gulp.task('webpack', ['webpackclient', 'webpackserver', 'stylus'])
 
 let clientFileCache = new FileCache //used to limit linting to files that have changed
 gulp.task('lintclient', () => {
+  const eslint = requiret.require('gulp-eslint')
     // ESLint ignores files with "node_modules" paths.
     // So, it's best to have gulp ignore the directory as well.
     // Also, Be sure to return the stream from the task;
@@ -127,6 +132,7 @@ gulp.task('lintclient', () => {
 
 let serverFileCache = new FileCache
 gulp.task('lintserver', () => {
+  const eslint = requiret.require('gulp-eslint')
   return gulp.src(['server/**/*.js','!**/node_modules/**'])
       .pipe(serverFileCache.filter())
       .pipe(eslint())
@@ -137,6 +143,7 @@ gulp.task('lintserver', () => {
 
 let prepFileCache = new FileCache
 gulp.task('lintprep', () => {
+  const eslint = requiret.require('gulp-eslint')
   return gulp.src(['prep/**/*.js','!**/node_modules/**'])
       .pipe(prepFileCache.filter())
       .pipe(eslint())
@@ -152,6 +159,8 @@ gulp.task('watchkarma', () => {
 })
 
 gulp.task('watch', () => {
+  const browsersynch = requiret.require('browser-sync')
+  const watch = requiret.require('gulp-watch')
   watch(['client/styles/**/*'], () => gulp.start(['stylus']))
   watch(['client/app/**/*','client/index.html','!node_modules/**'], () => {
     gulp.start(['clearscreen', 'lintclient', 'webpackclient'])
@@ -169,6 +178,8 @@ gulp.task('clearscreen', () => {
 })
 
 gulp.task('serve', ['webpack','lint','watch', 'copydataandfiles'], (cb) => {
+  const browsersynch = requiret.require('browser-sync')
+  const nodemon = requiret.require('gulp-nodemon')
   var called = false
   return nodemon({
     script: 'dist/server/server.js',
@@ -185,6 +196,7 @@ gulp.task('serve', ['webpack','lint','watch', 'copydataandfiles'], (cb) => {
 })
 
 gulp.task('launchbrowser', ['serve'], () => {
+  const browsersynch = requiret.require('browser-sync')
   browsersynch.init({
     reloadDebounce: 2000, //I don't think that these are both necessary
     reloadThrottle: 1000,

@@ -12,3 +12,4 @@ prep/shortManifest
 tags
 bmusic/
 *[lL]ibrary*.json
+npm-debug.log

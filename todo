@@ -41,29 +41,33 @@
 //test with larger list of files
 //optimize how the long list is displayed (if necessary)
 //fix fetchAll to only delay actions if a server call is required
+//test on chrome
+//test on firefox
+//test on other browsers
+//make vi work with es6
+//make gulp go faster
 
-make vi work with es6
-figure out why caching isn't working and also isn't giving errors
-if needed, try out persistent storage options
-make gulp go faster
+Make app behave better when caching fails (test for it and pair back the library)
 sorting
 shuffle
 https://www.npmjs.com/package/gulp-autoprefixer
-
+support playlists
 make ctags work with vim https://github.com/andreypopp/ctags-webpack-plugin
 dynamically determine header.height and set headerplaceholder.height to match
-test on chrome
-test on firefox
-test on other browsers
 setup istanbul for code coverage
 create webpack bundle for libraries
 move to nginx
 make jumping ahead work on phone
 try out different css templates
 try out bootstrap
+make the system clear out data in indexedDB that isn't in the data file
+setup the system to be easier to load with playlists
 really make it look good (colors and stuff)
 handle ogg files better (metadata doesn't work)
 come up with good stylelint rules
 how to deploy node product
 setup integration test suite (nightshade or selenium directly)
-open source
+open source player
+open source throttle library
+look for other things to open source
+
