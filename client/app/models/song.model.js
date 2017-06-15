@@ -10,6 +10,7 @@ class Song {
     this.title = raw.title
     this.album = raw.album
     this.file = raw.file
+    this.size = raw.size
     this.storageStrategy = storageStrategy
     this.fetchStrategy = fetchStrategy
     this.confirmedReady = confirmedReady

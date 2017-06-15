@@ -6,39 +6,20 @@ const walk = require('walk')
 const startingPath = process.argv[2] ? process.argv[2] : 'music' //music should be maintained as a soft link in this
 //folder and point to the correct target
 
-let walker = walk.walk(startingPath, {followLinks: false})
 let fileList = []
-walker.on('file', (root, filestats, next) => {
+
+let walker = walk.walk(startingPath, {followLinks: false})
+
+walker.on('file', (root, filestats, next) => {//visit each file and add all of its data to fileList
   const fullPath = path.join(root, filestats.name)
   readMetaData(fullPath).then((metadata)=>{
     fileList.push({filestats, metadata, fullPath})
     next()
   })
 })
-function keepGoodFiles (fileList) {
-  return fileList.filter((file) =>
-    file.metadata && Object.keys(file.metadata).length>=2)
-}
-function keepGoodFields (fileList) {
-  return fileList.map((file) => {
-    let retval = ['artist', 'genre', 'title', 'album'].filter((field) => file.metadata[field])
-    .reduce((obj, field) => Object.assign(obj, {[field]: file.metadata[field]}), {})
-    retval.file = fixFilePath(file.fullPath)
-    return retval
-  })
-}
 
-function writeFiles(library) {
-  fs.writeFile('shortLibrary.json', prettify(library.slice(0, 10)))
-  fs.writeFile('library.json', prettify(library))
-  fs.writeFile('shortManifest', prepFileListForManifest(library.slice(0,10)))
-  fs.writeFile('manifest', prepFileListForManifest(library))
-}
-
-
-walker.on('end', () => {
+walker.on('end', () => {//after all of the files have been visited, generate the results
   let library = keepGoodFields(keepGoodFiles(fileList))
-  //console.log(prettify(library))
   writeFiles(library)
 })
 
@@ -46,17 +27,45 @@ walker.on('error', console.log)
 function fixFilePath(path) {
   return path.substring(6)
 }
-function prettify(arr) {
+
+function keepGoodFiles (fileList) {
+  return fileList.filter((file) =>
+    file.metadata && Object.keys(file.metadata).length>=2)
+}
+
+function keepGoodFields (fileList) { //convert a full file object into a simpler form that can be consumed by the player
+  return fileList.map((file) => {
+    let retval = ['artist', 'genre', 'title', 'album'].filter((field) => file.metadata[field])
+    .reduce((obj, field) => Object.assign(obj, {[field]: file.metadata[field]}), {})
+
+    retval.file = fixFilePath(file.fullPath)
+    retval.size = file.filestats.size
+
+    return retval
+  })
+}
+
+function writeFiles(library) {
+  fs.writeFile('shortLibrary.json', prettify(library.slice(0, 10)))
+  fs.writeFile('midLibrary.json', prettify(library.slice(0, 500)))
+  fs.writeFile('library.json', prettify(library))
+  //fs.writeFile('shortManifest', prepFileListForManifest(library.slice(0,10)))
+  //fs.writeFile('manifest', prepFileListForManifest(library))
+}
+
+function prettify(arr) {//make a JSON file with line feeds, so it's easier to manually work with
   return '[\n' + arr.map((el) => JSON.stringify(el)).join(',\n') + '\n]'
 }
-function prepFileListForManifest(fileList) {
-  return fileList.reduce((retval, file) => {
-    return retval + '\n' + prepFileForManifest(file)
-  }, '')
-}
-function prepFileForManifest(file) {
-  return encodeURI('data/' + file.file)
-}
+
+//function prepFileListForManifest(fileList) {
+//  return fileList.reduce((retval, file) => {
+//    return retval + '\n' + prepFileForManifest(file)
+//  }, '')
+//}
+//
+//function prepFileForManifest(file) {
+//  return encodeURI('data/' + file.file)
+//}
 
 function readMetaData(filepath) {
   return new Promise((resolve) => {

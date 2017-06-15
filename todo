@@ -46,18 +46,15 @@
 //test on other browsers
 //make vi work with es6
 //make gulp go faster
+//Make app behave better when caching fails (will try to download each time it opens, but will never try to download a file larger than one that failed.  Chrome doesn't give QuotaExceededError (it reports success), so this doesn't work there).
 
-Make app behave better when caching fails (test for it and pair back the library)
-sorting
-shuffle
 https://www.npmjs.com/package/gulp-autoprefixer
-support playlists
 make ctags work with vim https://github.com/andreypopp/ctags-webpack-plugin
 dynamically determine header.height and set headerplaceholder.height to match
 setup istanbul for code coverage
 create webpack bundle for libraries
 move to nginx
-make jumping ahead work on phone
+make jumping in a song ahead work on phone
 try out different css templates
 try out bootstrap
 make the system clear out data in indexedDB that isn't in the data file
@@ -71,3 +68,6 @@ open source player
 open source throttle library
 look for other things to open source
 
+sorting
+shuffle
+support playlists

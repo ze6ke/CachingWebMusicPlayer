@@ -1,5 +1,5 @@
 import Song from './song.model.js'
-import {throttle, displayError} from '../utils/util.js'
+import {throttle} from '../utils/util.js'
 
 class Songlist {
   constructor(renderApp, storageStrategy, fetchStrategy, fake=false) {
@@ -37,18 +37,33 @@ class Songlist {
 
 
   fetchAllSongs() {
+    let maxSize = Infinity
     let generateTicket = throttle.promiseTicketGenerator(2)
     this.songlist.forEach((song)=> {
       let ticket = generateTicket()
+      let theSong = null
       ticket.resolve(song)
-      .then((song) => song.fetchData())
-      .then(ticket.returnOnSuccess, ticket.returnOnError)
-      .then((song) => {
-      if(!this.current && song) {
-        this.changeCurrentSong(song)
-      }
-      this.renderApp()
-      })
+        .then((song) => {
+          theSong = song
+          if(song.size < maxSize) { //don't bother fetching the song if it can't be stored
+            return song.fetchData()
+          } else {
+            return null
+          }
+        })
+        .catch((e) => {
+          if(e.message.indexOf('too large') || e.name == 'QuotaExceededError') {
+            maxSize = theSong.size
+          }
+          return null
+        })
+        .then(ticket.returnOnSuccess, ticket.returnOnError)
+        .then((song) => {
+          if(!this.current && song) {
+            this.changeCurrentSong(song)
+          }
+          this.renderApp()
+        })
     })
   }
 

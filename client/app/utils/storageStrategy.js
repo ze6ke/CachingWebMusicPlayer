@@ -122,7 +122,8 @@ let indexedDB = {
         resolve(e)
       }
       put.onerror = (e) => {
-        reject(e)
+        let retval = e.error?e.error:put.error?put.error:transaction.error //no guaranty about where the error info will actually show up
+        reject(retval)
       }
     })
   },
