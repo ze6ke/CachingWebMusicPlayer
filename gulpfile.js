@@ -11,8 +11,13 @@ const browserRefreshDelay = 2000//on this box 1 second doesn't always work
 
 gulp.task('stylus', () => {
   const stylus = requiret.require('gulp-stylus')
+  const autoprefixer = requiret.require('gulp-autoprefixer')
   gulp.src('client/styles/playerStyle.styl')
   .pipe(stylus())
+  .pipe(autoprefixer({
+    browsers: ['last 2 version'],
+    cascade: false
+  }))
   .pipe(gulp.dest('dist/public'))
   .on('error', handleError)
 })

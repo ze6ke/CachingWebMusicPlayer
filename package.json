@@ -29,6 +29,7 @@
     "eslint-plugin-inferno": "^6.10.4",
     "eslint-plugin-react": "^6.10.3",
     "gulp": "^3.9.1",
+    "gulp-autoprefixer": "^4.0.0",
     "gulp-eslint": "^3.0.1",
     "gulp-file-cache": "^0.0.1",
     "gulp-mocha": "^4.3.1",

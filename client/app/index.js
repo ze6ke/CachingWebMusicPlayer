@@ -22,7 +22,7 @@ if(navigator && isMobile(navigator.userAgent)) {
 functionalityTest()
 
 let model
-const getData = () => {
+const getLibrary = () => {
   return fetch('data/library.json')
   .then((response) => {
     if(response.ok) {
@@ -73,7 +73,7 @@ function renderApp (model) {
 storageStrategy.getStrategy('indexedDB').then((ss) => {
   model = new Model(throttle.basic(renderApp, 1000), ss, fetchStrategy.XHR)
   Promise.all([
-    getData(),
+    getLibrary(),
     ss.getConfig()])
   .then((data) => {
     model.setSonglist(data[0])
