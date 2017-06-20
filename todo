@@ -49,19 +49,21 @@
 //Make app behave better when caching fails (will try to download each time it opens, but will never try to download a file larger than one that failed.  Chrome doesn't give QuotaExceededError (it reports success), so this doesn't work there).
 //https://www.npmjs.com/package/gulp-autoprefixer
 //make ctags work with vim https://github.com/andreypopp/ctags-webpack-plugin
+//dynamically determine header.height and set headerplaceholder.height to match
 
-dynamically determine header.height and set headerplaceholder.height to match
+try out bootstrap
+have enough style rules that the flyout is always the same size (or find another way of ensuring that)
+really make it look good (colors and stuff)
+come up with good stylelint rules
+try out different css templates
+make jumping in a song ahead work on phone
+are 404s causing me to leak a promise ticket?
 setup istanbul for code coverage
 create webpack bundle for libraries
 move to nginx
-make jumping in a song ahead work on phone
-try out different css templates
-try out bootstrap
 make the system clear out data in indexedDB that isn't in the data file
 setup the system to be easier to load with playlists
-really make it look good (colors and stuff)
 handle ogg files better (metadata doesn't work)
-come up with good stylelint rules
 how to deploy node product
 setup integration test suite (nightshade or selenium directly)
 open source player

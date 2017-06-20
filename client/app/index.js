@@ -11,6 +11,8 @@ import functionalityTest from './functionalityTest.js'
 import {isMobile, throttle, displayError} from './utils/util.js'
 
 window.React = React
+let header = null
+let headerPlaceholder = null
 
 if(navigator && isMobile(navigator.userAgent)) {
   window.onerror = function (errorMsg, url, lineNumber) {
@@ -18,6 +20,11 @@ if(navigator && isMobile(navigator.userAgent)) {
     return true //allow normal error handling to continue
   }
 }
+
+const setHeaderPlaceholderHeight = throttle.basic(() => {
+  headerPlaceholder.style.height = header.getBoundingClientRect().height + 'px'
+}, 80)
+
 
 functionalityTest()
 
@@ -59,11 +66,20 @@ const showDataUsage = () => {
   return model.showDataUsage()
 }
 
+const grabHeader = (e) => {
+  header = e
+}
+  
+const grabHeaderPlaceholder = (e) => {
+  headerPlaceholder = e
+}
+
 function renderApp (model) {
   return model.getFilteredSonglist()
   .then((songs) => {
     render(<App songs={songs} current={model.getCurrentSong()}
       changeCurrentSong={changeCurrentSong} songEnded={songEnded} changeFilter={changeFilter}
+      grabHeaderPlaceholder={grabHeaderPlaceholder} grabHeader={grabHeader}
       clearCachedData={clearCachedData} showDataUsage={showDataUsage} resetCachedData={resetCachedData}/>,
       document.getElementById('app-container'))
   })
@@ -78,5 +94,9 @@ storageStrategy.getStrategy('indexedDB').then((ss) => {
   .then((data) => {
     model.setSonglist(data[0])
     renderApp(model)
+    .then(() => {
+      setHeaderPlaceholderHeight()
+    })
+    window.onresize = setHeaderPlaceholderHeight
   })
 })

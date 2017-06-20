@@ -1,9 +1,9 @@
 
 
 function requiret(library) {
-  const startTime = +new Date()
+  const startTime = Date.now()
   const retval = require(library)
-  const totalTime = +new Date() - startTime
+  const totalTime = Date.now() - startTime
   this.times[library]=totalTime
   this.notifications && totalTime && console.log(`Loading ${library}: ${totalTime}ms`)
   return retval

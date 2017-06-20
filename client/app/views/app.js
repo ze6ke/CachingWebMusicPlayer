@@ -3,11 +3,11 @@ import Player from './player.js'
 import Filter from './filter.js'
 import Hamburger from './hamburger.js'
 
-const App = ({songs, current, changeCurrentSong, songEnded, changeFilter, clearCachedData, showDataUsage, resetCachedData}) => (
+const App = ({songs, current, changeCurrentSong, songEnded, changeFilter, clearCachedData, showDataUsage, resetCachedData, grabHeader, grabHeaderPlaceholder}) => (
   <section id="appsection">
-    <div className="header-placeholder">
+    <div className="header-placeholder" ref={grabHeaderPlaceholder}>
     </div>
-    <div className="header">
+    <div className="header" ref={grabHeader}>
       <span className="title-bar">
         <h1>Music Player</h1><Hamburger
         clearCachedData={clearCachedData} showDataUsage={showDataUsage} resetCachedData={resetCachedData}/>
