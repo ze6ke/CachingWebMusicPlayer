@@ -58,6 +58,7 @@ come up with good stylelint rules
 try out different css templates
 make jumping in a song ahead work on phone
 are 404s causing me to leak a promise ticket?
+would views/app.js read better if fewer things were passed in?
 setup istanbul for code coverage
 create webpack bundle for libraries
 move to nginx
