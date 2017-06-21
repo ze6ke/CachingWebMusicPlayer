@@ -1,0 +1,13 @@
+{
+  "libs": [
+  ],
+  "loadEagerly": [
+    "util.js"
+  ],
+  "plugins": {
+    "requirejs": {
+      "baseURL": "./",
+      "paths": {}
+    }
+  }
+}

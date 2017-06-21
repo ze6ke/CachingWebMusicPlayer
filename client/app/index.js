@@ -81,7 +81,7 @@ function renderApp (model) {
       changeCurrentSong={changeCurrentSong} songEnded={songEnded} changeFilter={changeFilter}
       grabHeaderPlaceholder={grabHeaderPlaceholder} grabHeader={grabHeader}
       clearCachedData={clearCachedData} showDataUsage={showDataUsage} resetCachedData={resetCachedData}/>,
-      document.getElementById('app-container'))
+    document.getElementById('app-container'))
   })
 
 }
