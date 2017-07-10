@@ -50,12 +50,14 @@
 //https://www.npmjs.com/package/gulp-autoprefixer
 //make ctags work with vim https://github.com/andreypopp/ctags-webpack-plugin
 //dynamically determine header.height and set headerplaceholder.height to match
+//try out bootstrap
+//have enough style rules that the flyout is always the same size (or find another way of ensuring that)
+//really make it look good (colors and stuff)
+//try out different css templates
+//have gulp give errors when no input found
 
-try out bootstrap
-have enough style rules that the flyout is always the same size (or find another way of ensuring that)
-really make it look good (colors and stuff)
+decide on css strategy
 come up with good stylelint rules
-try out different css templates
 make jumping in a song ahead work on phone
 are 404s causing me to leak a promise ticket?
 would views/app.js read better if fewer things were passed in?

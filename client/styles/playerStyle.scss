@@ -1,0 +1,224 @@
+@import 'universal-reset';
+
+h1 {
+  margin: .25em 0;
+}
+
+input {
+  margin: 2px;
+  color: inherit;
+}
+
+li {
+  border: 1px solid;
+}
+
+li:not(:last-child) {
+  margin-bottom: -1px;
+}
+
+li:last-child {
+  margin-bottom: 0px;
+}
+
+/*
+ * style title bar
+ */
+
+#title-bar h1 {
+  display: inline;
+  flex-shrink: 1;
+  white-space: nowrap;
+}
+#title-bar nav {
+  flex-shrink: 0;
+  position: relative;
+}
+#title-bar {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 12px;
+}
+/*
+ * end title bar
+ */
+
+/*
+ * style hamburger menu
+ */
+
+.arrow_box {
+	border: 0px solid;
+}
+.arrow_box:after, .arrow_box:before {
+	bottom: 100%;
+	right: 0%;
+	border: solid transparent;
+	content: " ";
+	height: 0;
+	width: 0;
+	position: absolute;
+	pointer-events: none;
+}
+
+.arrow_box:before {
+	border-color: rgba(194, 225, 245, 0);/*transparent*/
+	border-bottom-color: inherit;
+	border-width: 10px;
+}
+
+nav ul {
+  position: absolute;
+  top: 3em;
+  right: -2em;
+  display: inline-block;
+  z-index: 10;
+  margin-right: 2em;
+  white-space: nowrap;
+}
+
+nav li {
+  padding: 2px;
+  font-size: 1.5em;
+}
+
+/*
+ * end hamburger menu
+ */
+
+
+/*
+ * hide hamburger menu
+ */
+
+nav input[type="checkbox"] {
+  height: 0;
+  width: 0;
+  display: none;
+  border: 0;
+}
+
+nav input[type="checkbox"]:not(:checked) ~ ul {
+  transform: scale(0);
+  transition: transform 0.5s;
+  transform-origin: top right;
+}
+
+nav input[type="checkbox"]:checked ~ ul {
+  transform: scale(1);
+  transition: transform 0.5s;
+  transform-origin: top right;
+}
+/*
+ * end hiding hamburger menu
+ */
+
+
+
+
+
+/*
+ * style filter section
+ */
+.filter-span {
+  white-space: nowrap;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  position:relative;
+  padding: 3px 12px;
+}
+.song-count {
+  margin: 2px;
+}
+.filter-box {
+  border: 1px solid;
+  padding-left: 18px;
+  background-color: inherit;
+}
+.filter-icon-span {
+  border: none;
+  position: absolute;
+  top: 4px;
+  left: 16px;
+  font-size: 1.2em;
+  z-index: 1;
+  background-color: transparent;
+}
+/*
+ * end filter section
+ */
+
+/*
+ * icon rendering
+ */
+
+.filter-icon {
+  transform: rotate(45deg);
+  display: inline-block;
+}
+
+.hamburger {
+  font-size: 2em;
+}
+/*
+ * end icon rendering
+ */
+
+.player {
+  display: none;/*inline-block;*/
+  /*transform: scale(1.2);*/
+  margin-left: 22px;
+  z-index: 0;
+}
+
+
+
+  
+/*
+ * style songlist
+ */
+#songlist {
+  list-style-type: none;
+  padding: 0;
+  margin: 0 12px;
+}
+#songlist li {
+  white-space: nowrap;
+  height: 38px;
+}
+/*
+ * end songlist
+ */
+  
+/*
+ * song format
+ */
+.song-row {
+  white-space: nowrap;
+  overflow: hidden;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+}
+.song-title,
+.song-genre {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 0;
+  margin-right: 1em;
+  padding-left: 2px;
+}
+.song-artist,
+.song-album {
+  float: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 10;
+  padding-right: 2px;
+}
+/*
+ * end song format
+ */

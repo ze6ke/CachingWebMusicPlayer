@@ -1,5 +1,5 @@
 /*global describe, it*/
-import {expect} from 'chai'
+let {expect} = require('chai')
 import util from '../../app/utils/util.js'
 
 describe('util', function() {
@@ -50,7 +50,7 @@ describe('util', function() {
       })
       it('releases promises at the right speed', function() {
         let resolve = util.throttle.promisePerSecondGenerator(5)
-        let startTime = null
+        let startTime  
         return Promise.all([
           resolve().then(() => {
             startTime = +new Date()
@@ -83,10 +83,10 @@ describe('util', function() {
         let theTicket = ticketGenerator()
         let theSecondTicket = ticketGenerator()
         let aggregator = ''
-        let theFirstPromise = null
+        //let theFirstPromise = null
         let theSecondPromise = null
 
-        theFirstPromise = theTicket.resolve()
+        /*theFirstPromise = */theTicket.resolve()
         .then(() => {
           theSecondPromise = theSecondTicket.resolve() //if everything is working correctly, this won't resolve until the first ticket has returned
           .then(() => {

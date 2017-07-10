@@ -3,16 +3,17 @@ const requiret = require('./requireTimer.js')
  * the files on every execution and invisibly
  */
 const gulp = requiret.require('gulp')
+requiret.require('gulp-validated-src')(gulp)
 const FileCache = requiret.require('gulp-file-cache')
 
 requiret.notifications = false //the delay for the requires inside of tasks are displayed in the task execution time.  The ones above this line
-                              //do not happen inside of a task so need to be displayed seperately.
+//do not happen inside of a task so need to be displayed seperately.
 const browserRefreshDelay = 2000//on this box 1 second doesn't always work
 
-gulp.task('stylus', () => {
+/*gulp.task('stylus', () => {
   const stylus = requiret.require('gulp-stylus')
   const autoprefixer = requiret.require('gulp-autoprefixer')
-  gulp.src('client/styles/playerStyle.styl')
+  gulp.srcN('client/styles/playerStyle.styl')
   .pipe(stylus())
   .pipe(autoprefixer({
     browsers: ['last 2 version'],
@@ -20,11 +21,18 @@ gulp.task('stylus', () => {
   }))
   .pipe(gulp.dest('dist/public'))
   .on('error', handleError)
+})*/
+
+gulp.task('sass', () => {
+  const sass = requiret.require('gulp-sass')
+  return gulp.srcN('client/styles/playerStyle.scss', 1)
+  .pipe(sass().on('error', sass.logError))
+  .pipe(gulp.dest('dist/public/playerStyle.css'))
 })
 
-gulp.task('lintcss', ['stylus'], () => {
+gulp.task('lintcss', ['sass'], () => {
   const styleLint = requiret.require('gulp-stylelint')
-  gulp.src('dist/public/playerStyle.css')
+  gulp.srcN('dist/public/playerStyle.css', 1)
   .pipe(styleLint({
     reporters: [
       {formatter: 'string', console: true}
@@ -50,17 +58,17 @@ const runKarma = (done, singleRun=true) => {
 
 
 gulp.task('testclient', ['lintclient'], runKarma)
-  //gulp.src('client/tests/**/*test.js').
-  //pipe(mocha({require: ['babel-core/register', 'client/tests/setup.js']}))
-  //.on('error', handleError)
-  /*.once('end', cb)
+//gulp.srcN('client/tests/**/*test.js').
+//pipe(mocha({require: ['babel-core/register', 'client/tests/setup.js']}))
+//.on('error', handleError)
+/*.once('end', cb)
   .once('error', cb)*/ //for whatever reason, the pipe never seems to finish, so it's hard to identify when
-  //the tests have fully run
+//the tests have fully run
 
 
 gulp.task('testserver', ['lintserver'], () => {
   const mocha = requiret.require('gulp-mocha')
-  gulp.src('server/tests/**/*test.js').
+  gulp.srcN('server/tests/**/*test.js').
   pipe(mocha({require: ['babel-core/register', 'server/tests/setup.js']}))
   .on('error', handleError)
   /*.once('end', cb)
@@ -70,7 +78,7 @@ gulp.task('testserver', ['lintserver'], () => {
 
 gulp.task('testprep', ['lintprep'], () => {
   const mocha = requiret.require('gulp-mocha')
-  gulp.src('prep/tests/**/*test.js').
+  gulp.srcN('prep/tests/**/*test.js').
   pipe(mocha({require: ['babel-core/register']}))
   .on('error', handleError)
 })
@@ -78,9 +86,9 @@ gulp.task('testprep', ['lintprep'], () => {
 gulp.task('test', ['testclient', 'testserver', 'testprep'])
 
 gulp.task('copydataandfiles', ['cleandata'], () => {
-  gulp.src('client/data/**')
+  gulp.srcN('client/data/**')
   .pipe(gulp.dest('dist/public/data'))
-  gulp.src('client/resources/**')
+  gulp.srcN('client/resources/**')
   .pipe(gulp.dest('dist/public/'))
 })
 
@@ -112,49 +120,49 @@ gulp.task('webpackserver', (cb) => {
   runwebpack('./webpack.config.server.js', 'webpackserver', cb)
 })
 
-gulp.task('webpack', ['webpackclient', 'webpackserver', 'stylus'])
+gulp.task('webpack', ['webpackclient', 'webpackserver', 'sass'])
 
 let clientFileCache = new FileCache //used to limit linting to files that have changed
 gulp.task('lintclient', () => {
   const eslint = requiret.require('gulp-eslint')
-    // ESLint ignores files with "node_modules" paths.
-    // So, it's best to have gulp ignore the directory as well.
-    // Also, Be sure to return the stream from the task;
-    // Otherwise, the task may end before the stream has finished.
-  return gulp.src(['client/**/*.js','!node_modules/**'])
-      .pipe(clientFileCache.filter())
-      // eslint() attaches the lint output to the "eslint" property
-      // of the file object so it can be used by other modules.
-      .pipe(eslint())
-      // eslint.format() outputs the lint results to the console.
-      // Alternatively use eslint.formatEach() (see Docs).
-      .pipe(eslint.format())
-      // To have the process exit with an error code (1) on
-      // lint error, return the stream and pipe to failAfterError last.
-//      .pipe(eslint.failAfterError())
-      .pipe(clientFileCache.cache())
+  // ESLint ignores files with "node_modules" paths.
+  // So, it's best to have gulp ignore the directory as well.
+  // Also, Be sure to return the stream from the task;
+  // Otherwise, the task may end before the stream has finished.
+  return gulp.srcN(['client/**/*.js','!node_modules/**'])
+  .pipe(clientFileCache.filter())
+  // eslint() attaches the lint output to the "eslint" property
+  // of the file object so it can be used by other modules.
+  .pipe(eslint())
+  // eslint.format() outputs the lint results to the console.
+  // Alternatively use eslint.formatEach() (see Docs).
+  .pipe(eslint.format())
+  // To have the process exit with an error code (1) on
+  // lint error, return the stream and pipe to failAfterError last.
+  //      .pipe(eslint.failAfterError())
+  .pipe(clientFileCache.cache())
 })
 
 let serverFileCache = new FileCache
 gulp.task('lintserver', () => {
   const eslint = requiret.require('gulp-eslint')
-  return gulp.src(['server/**/*.js','!**/node_modules/**'])
-      .pipe(serverFileCache.filter())
-      .pipe(eslint())
-      .pipe(eslint.format())
-      //.pipe(eslint.failAfterError())
-      .pipe(serverFileCache.cache())
+  return gulp.srcN(['server/**/*.js','!**/node_modules/**'])
+  .pipe(serverFileCache.filter())
+  .pipe(eslint())
+  .pipe(eslint.format())
+  //.pipe(eslint.failAfterError())
+  .pipe(serverFileCache.cache())
 })
 
 let prepFileCache = new FileCache
 gulp.task('lintprep', () => {
   const eslint = requiret.require('gulp-eslint')
-  return gulp.src(['prep/**/*.js','!**/node_modules/**'])
-      .pipe(prepFileCache.filter())
-      .pipe(eslint())
-      .pipe(eslint.format())
-      //.pipe(eslint.failAfterError())
-      .pipe(prepFileCache.cache())
+  return gulp.srcN(['prep/**/*.js','!**/node_modules/**'])
+  .pipe(prepFileCache.filter())
+  .pipe(eslint())
+  .pipe(eslint.format())
+  //.pipe(eslint.failAfterError())
+  .pipe(prepFileCache.cache())
 })
 
 gulp.task('lint', ['lintclient', 'lintserver', 'lintprep', 'lintcss'])
@@ -166,7 +174,7 @@ gulp.task('watchkarma', () => {
 gulp.task('watch', () => {
   const browsersynch = requiret.require('browser-sync')
   const watch = requiret.require('gulp-watch')
-  watch(['client/styles/**/*'], () => gulp.start(['stylus']))
+  watch(['client/styles/**/*'], () => gulp.start(['sass']))
   watch(['client/app/**/*','client/index.html','!node_modules/**'], () => {
     gulp.start(['clearscreen', 'lintclient', 'webpackclient'])
   })
@@ -220,7 +228,7 @@ gulp.task('default', ['launchbrowser'])
 var gulp = require('gulp');
 var webpack = require('webpack-stream');
 gulp.task('default', function() {
-  return gulp.src('src/entry.js')
+  return gulp.srcN('src/entry.js')
     .pipe(webpack())
     .pipe(gulp.dest('dist/'));
 });*/
