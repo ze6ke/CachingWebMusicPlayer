@@ -57,6 +57,7 @@
 //have gulp give errors when no input found
 
 decide on css strategy
+get better vim formatting for scss
 come up with good stylelint rules
 make jumping in a song ahead work on phone
 are 404s causing me to leak a promise ticket?
@@ -71,6 +72,7 @@ how to deploy node product
 setup integration test suite (nightshade or selenium directly)
 open source player
 open source throttle library
+setup wraith
 look for other things to open source
 
 sorting

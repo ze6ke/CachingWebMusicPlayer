@@ -1,0 +1,185 @@
+
+
+.header {
+  color: $header-foreground-color;
+  background-color: $body-background-color;
+  background-image: linear-gradient(20deg, transparentize($header-background-color, .5), $header-background-color);
+  position: fixed;
+  top: 0;
+  width: 100%;
+  box-shadow: 2px 3px 3px 0px $header-foreground-color;
+
+  /* * style title bar */
+
+  .title-bar {
+    @extend %left-right-align;
+    padding: 0 12px;
+
+    h1 {
+      display: inline;
+      flex-shrink: 1;
+      white-space: nowrap;
+    }
+
+    nav {
+      flex-shrink: 0;
+      position: relative;
+    }
+  }
+  /* * end title bar */
+
+
+  /* * style hamburger menu */
+
+  .menu {
+    @include arrow_box ($header-foreground-color)
+  }
+  
+
+  /* * end hamburger menu */
+
+
+  /* * hide hamburger menu */
+
+  nav {
+    input[type="checkbox"] {
+      height: 0;
+      width: 0;
+      display: none;
+      border: 0;
+    }
+    input[type="checkbox"]:not(:checked) ~ ul {
+      transform: scale(0);
+      transition: transform 0.5s;
+      transform-origin: top right;
+    }
+
+    input[type="checkbox"]:checked ~ ul {
+      transform: scale(1);
+      transition: transform 0.5s;
+      transform-origin: top right;
+    }
+
+    ul {
+      position: absolute;
+      top: 3em;
+      right: -2em;
+      display: inline-block;
+      z-index: 10;
+      margin-right: 2em;
+      white-space: nowrap;
+    }
+
+    li {
+      padding: 2px;
+      font-size: 1.5em;
+    }
+
+  }
+  /* * end hiding hamburger menu */
+
+  /* * style filter section */
+  .filter-span {
+    white-space: nowrap;
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    position:relative;
+    padding: 3px 12px;
+  }
+  .song-count {
+    margin: 2px;
+  }
+  .filter-box {
+    border: 1px solid;
+    padding-left: 18px;
+    background-color: inherit;
+  }
+  .filter-icon-span {
+    border: none;
+    position: absolute;
+    top: 4px;
+    left: 16px;
+    font-size: 1.2em;
+    z-index: 1;
+    background-color: transparent;
+  }
+  /* * end filter section */
+
+  /* * icon rendering */
+
+  .filter-icon {
+    transform: rotate(45deg);
+    display: inline-block;
+  }
+
+  .hamburger {
+    font-size: 2em;
+  }
+  /* * end icon rendering */
+
+  .player {
+    display: none;/*inline-block;*/
+    /*transform: scale(1.2);*/
+    margin-left: 22px;
+    z-index: 0;
+  }
+
+}
+
+  
+.song-title {
+  font-weight: $heavy_font_weight;
+}
+
+nav ul {
+  background-color: $body-background-color;
+  color: $foreground-color;
+}
+
+/*
+ * style songlist
+ */
+.songlist {
+  list-style-type: none;
+  padding: 0;
+  margin: 0 12px;
+}
+.songlist li {
+  white-space: nowrap;
+  height: 38px;
+}
+/*
+ * end songlist
+ */
+
+/*
+ * song format
+ */
+.song-row {
+  white-space: nowrap;
+  overflow: hidden;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+}
+.song-title,
+.song-genre {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 0;
+  margin-right: 1em;
+  padding-left: 2px;
+}
+.song-artist,
+.song-album {
+  float: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 10;
+  padding-right: 2px;
+}
+/*
+ * end song format
+ */
+

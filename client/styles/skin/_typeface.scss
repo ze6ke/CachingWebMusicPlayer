@@ -1,0 +1,11 @@
+@import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro&subset=latin-ext');
+
+$normal_font_weight: 400;
+$heavy_font_weight: 600;
+
+%standard_font {
+  font-family: 'Source Sans Pro', san-serif;
+  font-weight: $normal_font_weight;
+}
+
+

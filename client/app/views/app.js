@@ -10,7 +10,7 @@ const App = ({songs, current, changeCurrentSong, songEnded, changeFilter, clearC
     <div className="header" ref={grabHeader}>
       <span className="title-bar">
         <h1>Music Player</h1><Hamburger
-        clearCachedData={clearCachedData} showDataUsage={showDataUsage} resetCachedData={resetCachedData}/>
+          clearCachedData={clearCachedData} showDataUsage={showDataUsage} resetCachedData={resetCachedData}/>
       </span>
       <Player current={current} songEnded={songEnded}/>
       <Filter changeFilter={changeFilter} songs={songs}/>

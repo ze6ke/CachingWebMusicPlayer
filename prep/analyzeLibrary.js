@@ -46,7 +46,7 @@ function keepGoodFields (fileList) { //convert a full file object into a simpler
 }
 
 function writeFiles(library) {
-  fs.writeFile('shortLibrary.json', prettify(library.slice(0, 10)))
+  fs.writeFile('shortLibrary.json', prettify(library.slice(0, 20)))
   fs.writeFile('midLibrary.json', prettify(library.slice(0, 500)))
   fs.writeFile('library.json', prettify(library))
   //fs.writeFile('shortManifest', prepFileListForManifest(library.slice(0,10)))
@@ -71,7 +71,7 @@ function readMetaData(filepath) {
   return new Promise((resolve) => {
     ffmetadata.read(filepath, (err, data) => {
       if (err) {
-/*        console.error('Error reading metadata, possibly sudo apt-get install ffmetadata will fix it')
+        /*console.error('Error reading metadata, possibly sudo apt-get install ffmetadata will fix it')
         console.error(err)
         reject(err)*/
         resolve({error:'metadata could not be retrieved'})

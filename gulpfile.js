@@ -23,16 +23,22 @@ const browserRefreshDelay = 2000//on this box 1 second doesn't always work
   .on('error', handleError)
 })*/
 
+const stylesheetBase = 'client/styles/style.scss'
+
 gulp.task('sass', () => {
   const sass = requiret.require('gulp-sass')
-  return gulp.srcN('client/styles/playerStyle.scss', 1)
-  .pipe(sass().on('error', sass.logError))
-  .pipe(gulp.dest('dist/public/playerStyle.css'))
+  const sourcemaps = requiret.require('gulp-sourcemaps')
+  
+  return gulp.srcN(stylesheetBase, 1)
+  .pipe(sourcemaps.init())
+  .pipe(sass({sourceComments: 'map'}).on('error', sass.logError))
+  .pipe(sourcemaps.write())
+  .pipe(gulp.dest('dist/public/'))
 })
 
 gulp.task('lintcss', ['sass'], () => {
   const styleLint = requiret.require('gulp-stylelint')
-  gulp.srcN('dist/public/playerStyle.css', 1)
+  gulp.srcN(stylesheetBase, 1)
   .pipe(styleLint({
     reporters: [
       {formatter: 'string', console: true}
