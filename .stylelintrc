@@ -1,9 +1,12 @@
 {
+  'extends': 'stylelint-config-standard',
   'rules': {
     'block-no-empty': null,
     'color-no-invalid-hex': true,
     'declaration-colon-space-after': 'always',
     'max-empty-lines': 2,
+    'at-rule-no-unknown': [true, {ignoreAtRules: ['extend']}],
+    'number-leading-zero': 'never',
     'unit-whitelist': ['em', 'rem', '%', 's', 'px', 'deg']
   }
 }

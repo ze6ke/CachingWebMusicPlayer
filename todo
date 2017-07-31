@@ -1,3 +1,30 @@
+change to more semantic elements (header at least)
+make jumping in a song ahead work on phone
+are 404s causing me to leak a promise ticket?
+would views/app.js read better if fewer things were passed in?
+setup istanbul for code coverage
+create webpack bundle for libraries
+move to nginx
+make the system clear out data in indexedDB that isn't in the data file
+setup the system to be easier to load with playlists
+handle ogg files better (metadata doesn't work)
+how to deploy node product
+setup integration test suite (nightshade or selenium directly)
+open source player
+open source throttle library
+setup wraith
+look for other things to open source
+
+sorting
+shuffle
+support playlists
+
+
+//get better vim formatting for scss
+//come up with good stylelint rules
+//ensure linter catches missing semicolon in scss
+//fix indent issue between js linter and vim for .then wanting an extra indent
+//decide on scut
 //add everything to git
 //setup lint
 //setup watcher (do I need gulp)
@@ -55,26 +82,4 @@
 //really make it look good (colors and stuff)
 //try out different css templates
 //have gulp give errors when no input found
-
-decide on css strategy
-get better vim formatting for scss
-come up with good stylelint rules
-make jumping in a song ahead work on phone
-are 404s causing me to leak a promise ticket?
-would views/app.js read better if fewer things were passed in?
-setup istanbul for code coverage
-create webpack bundle for libraries
-move to nginx
-make the system clear out data in indexedDB that isn't in the data file
-setup the system to be easier to load with playlists
-handle ogg files better (metadata doesn't work)
-how to deploy node product
-setup integration test suite (nightshade or selenium directly)
-open source player
-open source throttle library
-setup wraith
-look for other things to open source
-
-sorting
-shuffle
-support playlists
+//decide on css strategy

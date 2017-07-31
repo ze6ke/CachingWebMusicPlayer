@@ -9,7 +9,7 @@ const MyList = ({
 }) => (
   <ul>
     {items.map((song, id) => (
-       <Song key={id} style={{height: itemHeight - 2}} song={song} changeCurrentSong={changeCurrentSong} />
+      <Song key={id} /*style={{height: itemHeight}}*/ song={song} changeCurrentSong={changeCurrentSong} />
     ))}
   </ul>
 )
@@ -17,7 +17,9 @@ const MyList = ({
 const SonglistRaw = MyVirtualList()(MyList)
 
 const Songlist = ({songs, changeCurrentSong}) => {
-  return <SonglistRaw items={songs} changeCurrentSong={changeCurrentSong} itemHeight={38} />
+  return <section className="songlist" >
+    <SonglistRaw items={songs} changeCurrentSong={changeCurrentSong} itemHeight={40} />
+  </section>
 }
 
 /*const SonglistOld = ({songs, changeCurrentSong}) => (

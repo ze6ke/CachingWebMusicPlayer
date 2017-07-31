@@ -1,0 +1,37 @@
+body {
+  @extend %standard_font;
+
+  background-color: $body-background-color;
+}
+
+
+header {
+  color: $header-foreground-color;
+  background-color: $body-background-color;
+  position: fixed;
+  top: 0;
+  width: 100%;
+}
+
+h1 {
+  font-weight: $heavy_font_weight;
+  font-size: 2.5em;
+  margin: .25em 0;
+  color: $title-color;
+}
+
+nav {
+  position: relative;
+}
+
+li {
+  border: 1px solid;
+
+  :not(:last-child) {
+    margin-bottom: -1px;
+  }
+
+  :last-child {
+    margin-bottom: 0;
+  }
+}

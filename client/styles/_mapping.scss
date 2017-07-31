@@ -1,19 +1,14 @@
 
 
-.header {
-  color: $header-foreground-color;
-  background-color: $body-background-color;
+header {
+  box-shadow: .125em .1875em .1875em 0 $header-foreground-color;
   background-image: linear-gradient(20deg, transparentize($header-background-color, .5), $header-background-color);
-  position: fixed;
-  top: 0;
-  width: 100%;
-  box-shadow: 2px 3px 3px 0px $header-foreground-color;
 
   /* * style title bar */
 
   .title-bar {
     @extend %left-right-align;
-    padding: 0 12px;
+    padding: 0 .75em;
 
     h1 {
       display: inline;
@@ -23,94 +18,56 @@
 
     nav {
       flex-shrink: 0;
-      position: relative;
     }
   }
   /* * end title bar */
 
 
-  /* * style hamburger menu */
-
-  .menu {
-    @include arrow_box ($header-foreground-color)
-  }
-  
-
-  /* * end hamburger menu */
-
-
-  /* * hide hamburger menu */
+  /* * hamburger menu */
 
   nav {
     input[type="checkbox"] {
-      height: 0;
-      width: 0;
       display: none;
-      border: 0;
     }
+
+    .hamburger-icon {
+      font-size: 2em; /* this overrides the font-size specified by font awesome. */
+    }
+
     input[type="checkbox"]:not(:checked) ~ ul {
-      transform: scale(0);
-      transition: transform 0.5s;
-      transform-origin: top right;
+      @include animated-scale(0);
     }
 
     input[type="checkbox"]:checked ~ ul {
-      transform: scale(1);
-      transition: transform 0.5s;
-      transform-origin: top right;
+      @include animated-scale(1);
     }
 
     ul {
-      position: absolute;
-      top: 3em;
-      right: -2em;
-      display: inline-block;
-      z-index: 10;
-      margin-right: 2em;
+      @include float-under;
       white-space: nowrap;
     }
 
     li {
-      padding: 2px;
+      padding: .1875em;
       font-size: 1.5em;
     }
-
   }
-  /* * end hiding hamburger menu */
+
+  /* * end hamburger menu */
 
   /* * style filter section */
   .filter-span {
-    white-space: nowrap;
-    display: flex;
-    flex-wrap: nowrap;
-    justify-content: space-between;
+    @extend %left-right-align;
     position:relative;
-    padding: 3px 12px;
-  }
-  .song-count {
-    margin: 2px;
-  }
-  .filter-box {
-    border: 1px solid;
-    padding-left: 18px;
-    background-color: inherit;
-  }
-  .filter-icon-span {
-    border: none;
-    position: absolute;
-    top: 4px;
-    left: 16px;
-    font-size: 1.2em;
-    z-index: 1;
-    background-color: transparent;
-  }
-  /* * end filter section */
-
-  /* * icon rendering */
-
-  .filter-icon {
-    transform: rotate(45deg);
-    display: inline-block;
+    padding: .1875em .75em;
+  
+    .song-count {
+      margin: .125em;
+    }
+    input[type="text"] {
+      padding-left: 1.125em;
+      width: 50%;
+    }
   }
 
   .hamburger {
@@ -119,9 +76,9 @@
   /* * end icon rendering */
 
   .player {
-    display: none;/*inline-block;*/
+    display: inline-block;
     /*transform: scale(1.2);*/
-    margin-left: 22px;
+    margin-left: 1.375em;
     z-index: 0;
   }
 
@@ -140,14 +97,8 @@ nav ul {
 /*
  * style songlist
  */
-.songlist {
-  list-style-type: none;
-  padding: 0;
-  margin: 0 12px;
-}
 .songlist li {
-  white-space: nowrap;
-  height: 38px;
+  height: 2.375em; /* this value is hard coded in the javascript code in pixels. */
 }
 /*
  * end songlist
@@ -157,27 +108,30 @@ nav ul {
  * song format
  */
 .song-row {
-  white-space: nowrap;
-  overflow: hidden;
-  display: flex;
-  flex-wrap: nowrap;
-  justify-content: space-between;
+  @extend %left-right-align;
 }
+
 .song-title,
-.song-genre {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  flex-shrink: 0;
-  margin-right: 1em;
-  padding-left: 2px;
-}
+.song-genre, 
 .song-artist,
 .song-album {
-  float: right;
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.song-title,
+.song-genre {
+  flex-shrink: 0;
+  padding-left: .125em;
+  margin-right: 1em;
+}
+
+.song-artist,
+.song-album {
   flex-shrink: 10;
-  padding-right: 2px;
+  padding-right: .125em;
+  float: right;
 }
 /*
  * end song format

@@ -3,7 +3,7 @@ const Filter = ({changeFilter, songs}) => (
     <form onSubmit={(e)=>{e.preventDefault()}}>
       <span className="filter">
         <input type="text" className="filter-box" onChange={changeFilter} placeholder="filter"/>
-        <span className="filter-icon fa fa-search" aria-hidden="true"></span>
+        <span className="filter-icon" aria-hidden="true"></span>
       </span>Songs: {songs.length}
     </form>
   </span>

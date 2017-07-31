@@ -23,27 +23,27 @@ const browserRefreshDelay = 2000//on this box 1 second doesn't always work
   .on('error', handleError)
 })*/
 
-const stylesheetBase = 'client/styles/style.scss'
+const stylesheets = 'client/styles/**/*.scss'
 
 gulp.task('sass', () => {
   const sass = requiret.require('gulp-sass')
   const sourcemaps = requiret.require('gulp-sourcemaps')
-  
-  return gulp.srcN(stylesheetBase, 1)
-  .pipe(sourcemaps.init())
-  .pipe(sass({sourceComments: 'map'}).on('error', sass.logError))
-  .pipe(sourcemaps.write())
-  .pipe(gulp.dest('dist/public/'))
+
+  return gulp.srcN(stylesheets, 1)
+    .pipe(sourcemaps.init())
+    .pipe(sass({sourceComments: 'map'}).on('error', sass.logError))
+    .pipe(sourcemaps.write())
+    .pipe(gulp.dest('dist/public/'))
 })
 
-gulp.task('lintcss', ['sass'], () => {
+gulp.task('lintcss', () => {
   const styleLint = requiret.require('gulp-stylelint')
-  gulp.srcN(stylesheetBase, 1)
-  .pipe(styleLint({
-    reporters: [
-      {formatter: 'string', console: true}
-    ]
-  }))
+  gulp.srcN(stylesheets, 1)
+    .pipe(styleLint({
+      reporters: [
+        {formatter: 'string', console: true}
+      ]
+    }))
 })
 
 
@@ -75,8 +75,8 @@ gulp.task('testclient', ['lintclient'], runKarma)
 gulp.task('testserver', ['lintserver'], () => {
   const mocha = requiret.require('gulp-mocha')
   gulp.srcN('server/tests/**/*test.js').
-  pipe(mocha({require: ['babel-core/register', 'server/tests/setup.js']}))
-  .on('error', handleError)
+    pipe(mocha({require: ['babel-core/register', 'server/tests/setup.js']}))
+    .on('error', handleError)
   /*.once('end', cb)
   .once('error', cb)*/ //for whatever reason, the pipe never seems to finish, so it's hard to identify when
   //the tests have fully run
@@ -85,17 +85,17 @@ gulp.task('testserver', ['lintserver'], () => {
 gulp.task('testprep', ['lintprep'], () => {
   const mocha = requiret.require('gulp-mocha')
   gulp.srcN('prep/tests/**/*test.js').
-  pipe(mocha({require: ['babel-core/register']}))
-  .on('error', handleError)
+    pipe(mocha({require: ['babel-core/register']}))
+    .on('error', handleError)
 })
 
 gulp.task('test', ['testclient', 'testserver', 'testprep'])
 
 gulp.task('copydataandfiles', ['cleandata'], () => {
   gulp.srcN('client/data/**')
-  .pipe(gulp.dest('dist/public/data'))
+    .pipe(gulp.dest('dist/public/data'))
   gulp.srcN('client/resources/**')
-  .pipe(gulp.dest('dist/public/'))
+    .pipe(gulp.dest('dist/public/'))
 })
 
 
@@ -136,39 +136,39 @@ gulp.task('lintclient', () => {
   // Also, Be sure to return the stream from the task;
   // Otherwise, the task may end before the stream has finished.
   return gulp.srcN(['client/**/*.js','!node_modules/**'])
-  .pipe(clientFileCache.filter())
+    .pipe(clientFileCache.filter())
   // eslint() attaches the lint output to the "eslint" property
   // of the file object so it can be used by other modules.
-  .pipe(eslint())
+    .pipe(eslint())
   // eslint.format() outputs the lint results to the console.
   // Alternatively use eslint.formatEach() (see Docs).
-  .pipe(eslint.format())
+    .pipe(eslint.format())
   // To have the process exit with an error code (1) on
   // lint error, return the stream and pipe to failAfterError last.
   //      .pipe(eslint.failAfterError())
-  .pipe(clientFileCache.cache())
+    .pipe(clientFileCache.cache())
 })
 
 let serverFileCache = new FileCache
 gulp.task('lintserver', () => {
   const eslint = requiret.require('gulp-eslint')
   return gulp.srcN(['server/**/*.js','!**/node_modules/**'])
-  .pipe(serverFileCache.filter())
-  .pipe(eslint())
-  .pipe(eslint.format())
+    .pipe(serverFileCache.filter())
+    .pipe(eslint())
+    .pipe(eslint.format())
   //.pipe(eslint.failAfterError())
-  .pipe(serverFileCache.cache())
+    .pipe(serverFileCache.cache())
 })
 
 let prepFileCache = new FileCache
 gulp.task('lintprep', () => {
   const eslint = requiret.require('gulp-eslint')
   return gulp.srcN(['prep/**/*.js','!**/node_modules/**'])
-  .pipe(prepFileCache.filter())
-  .pipe(eslint())
-  .pipe(eslint.format())
+    .pipe(prepFileCache.filter())
+    .pipe(eslint())
+    .pipe(eslint.format())
   //.pipe(eslint.failAfterError())
-  .pipe(prepFileCache.cache())
+    .pipe(prepFileCache.cache())
 })
 
 gulp.task('lint', ['lintclient', 'lintserver', 'lintprep', 'lintcss'])

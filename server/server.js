@@ -15,7 +15,7 @@ if(process.env.NODE_ENV !== 'unittest') {
 }
 
 app.use(express.static('dist/public'))//host application files
-app.use('/data', express.static('music')) //host the music files (this is my full music library)
+app.use('/data', express.static('prep/music')) //host the music files (this is my full music library)
 app.use((req, res) => {
   res.status(404).send('something didn\'t work right')
 })

@@ -26,10 +26,10 @@ module.exports = {
       2,
       {
         'SwitchCase': 1,
-        'MemberExpression': 0 //this determines what indent level should happen chained function calls 
+        'MemberExpression': 1 //this determines what indent level should happen chained function calls 
         //promise
-        //.then
-        //.then
+        //  .then
+        //  .then
       }
     ],
     'linebreak-style': [

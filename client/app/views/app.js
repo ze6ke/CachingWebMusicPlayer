@@ -7,7 +7,7 @@ const App = ({songs, current, changeCurrentSong, songEnded, changeFilter, clearC
   <section id="appsection">
     <div className="header-placeholder" ref={grabHeaderPlaceholder}>
     </div>
-    <div className="header" ref={grabHeader}>
+    <header ref={grabHeader}>
       <span className="title-bar">
         <h1>Music Player</h1><Hamburger
           clearCachedData={clearCachedData} showDataUsage={showDataUsage} resetCachedData={resetCachedData}/>
@@ -15,7 +15,7 @@ const App = ({songs, current, changeCurrentSong, songEnded, changeFilter, clearC
       <Player current={current} songEnded={songEnded}/>
       <Filter changeFilter={changeFilter} songs={songs}/>
       <hr />
-    </div>
+    </header>
     <Songlist songs={songs} changeCurrentSong={changeCurrentSong}/>
   </section>
 )

@@ -1,0 +1,40 @@
+@mixin animated-scale($scale) {
+  transform: scale($scale);
+  transition: transform 0.5s;
+  transform-origin: top right;
+}
+
+@mixin arrow-up($color: $foreground-color) {
+  border: solid transparent;
+  border-width: 10px;
+  border-bottom-color: $color;
+  content: " ";
+  height: 0;
+  width: 0;
+  position: absolute;
+  pointer-events: none;
+}
+
+@mixin float-under() {
+  position: absolute;
+  top: 3em;
+  right: -2em;
+  display: inline-block;
+  z-index: 10;
+  margin-right: 2em;
+
+  &:before {
+    @include arrow-up($header-foreground-color);
+    bottom: 100%;
+    right: 0%;
+  }
+}
+
+
+%left-right-align {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
+  white-space: nowrap;
+}

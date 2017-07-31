@@ -163,6 +163,9 @@ let indexedDB = {
 
       get.onsuccess = (e) => {
         this.config = e.target.result
+        if(!this.config) {
+          this.config = new Map()
+        }
         resolve()
       }
       get.onerror = (e) => {
