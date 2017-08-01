@@ -4,7 +4,7 @@ import Filter from './filter.js'
 import Hamburger from './hamburger.js'
 
 const App = ({songs, current, changeCurrentSong, songEnded, changeFilter, clearCachedData, showDataUsage, resetCachedData, grabHeader, grabHeaderPlaceholder}) => (
-  <section id="appsection">
+  <main id="appsection">
     <div className="header-placeholder" ref={grabHeaderPlaceholder}>
     </div>
     <header ref={grabHeader}>
@@ -17,7 +17,7 @@ const App = ({songs, current, changeCurrentSong, songEnded, changeFilter, clearC
       <hr />
     </header>
     <Songlist songs={songs} changeCurrentSong={changeCurrentSong}/>
-  </section>
+  </main>
 )
 
 export default App

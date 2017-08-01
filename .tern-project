@@ -1,0 +1,19 @@
+{
+  "libs": [
+  ],
+  "loadEagerly": [
+    "util.js"
+  ],
+  "plugins": {
+    "modules": {
+    },
+    "node_resolve": {
+    },
+    "es_modules": {
+    },
+    "requirejs": {
+      "baseURL": "./",
+      "paths": {}
+    }
+  }
+}
