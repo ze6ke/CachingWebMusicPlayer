@@ -5,8 +5,9 @@
     'color-no-invalid-hex': true,
     'declaration-colon-space-after': 'always',
     'max-empty-lines': 2,
-    'at-rule-no-unknown': [true, {ignoreAtRules: ['extend']}],
+    'at-rule-no-unknown': [true, {ignoreAtRules: ['extend', 'include', 'mixin']}],
     'number-leading-zero': 'never',
-    'unit-whitelist': ['em', 'rem', '%', 's', 'px', 'deg']
+    'unit-whitelist': ['em', 'rem', '%', 's', 'px', 'deg'],
+    'comment-empty-line-before': null
   }
 }

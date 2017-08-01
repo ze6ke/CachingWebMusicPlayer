@@ -8,6 +8,7 @@ header {
 
   .title-bar {
     @extend %left-right-align;
+
     padding: 0 .75em;
 
     h1 {
@@ -44,6 +45,7 @@ header {
 
     ul {
       @include float-under;
+
       white-space: nowrap;
     }
 
@@ -58,12 +60,14 @@ header {
   /* * style filter section */
   .filter-span {
     @extend %left-right-align;
-    position:relative;
+
+    position: relative;
     padding: .1875em .75em;
-  
+
     .song-count {
       margin: .125em;
     }
+
     input[type="text"] {
       padding-left: 1.125em;
       width: 50%;
@@ -77,14 +81,13 @@ header {
 
   .player {
     display: inline-block;
-    /*transform: scale(1.2);*/
+    /* transform: scale(1.2); */
     margin-left: 1.375em;
     z-index: 0;
   }
-
 }
 
-  
+
 .song-title {
   font-weight: $heavy_font_weight;
 }
@@ -112,7 +115,7 @@ nav ul {
 }
 
 .song-title,
-.song-genre, 
+.song-genre,
 .song-artist,
 .song-album {
   white-space: nowrap;

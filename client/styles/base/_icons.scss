@@ -1,20 +1,20 @@
 
-  .filter-icon {
-    border: none;
-    position: absolute;
-    top: .2em;
-    left: .9em;
-    font-size: 1.2em;
-    z-index: 1;
-    background-color: transparent;
-  }
-  /* * end filter section */
+.filter-icon {
+  border: none;
+  position: absolute;
+  top: .2em;
+  left: .9em;
+  font-size: 1.2em;
+  z-index: 1;
+  background-color: transparent;
+}
+/* * end filter section */
 
-  /* * icon rendering */
+/* * icon rendering */
 
-  .filter-icon:after {
-    content: '\26b2'; /*&#9906;*/
-    transform: rotate(45deg);
-    display: inline-block;
-  }
+.filter-icon::after {
+  content: '\26b2'; /* &#9906; */
+  transform: rotate(45deg);
+  display: inline-block;
+}
 
