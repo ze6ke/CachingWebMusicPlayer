@@ -1,5 +1,3 @@
-change to more semantic elements (header at least)
-make jumping in a song ahead work on phone (progress bar visible)
 are 404s causing me to leak a promise ticket?
 would views/app.js read better if fewer things were passed in?
 setup istanbul for code coverage
@@ -20,6 +18,8 @@ shuffle
 support playlists
 
 
+//make jumping in a song ahead work on phone (progress bar visible)
+//change to more semantic elements (header at least)
 //fix scss linting errors
 //get better vim formatting for scss
 //come up with good stylelint rules

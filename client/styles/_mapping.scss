@@ -82,8 +82,12 @@ header {
   .player {
     display: inline-block;
     /* transform: scale(1.2); */
-    margin-left: 1.375em;
+    margin-left: 2em;
     z-index: 0;
+  }
+
+  audio {
+    transform: scale(1.33); /* this is a hack and it would be better to replace the controls */
   }
 }
 
