@@ -177,7 +177,8 @@ let throttle = {
    * if an argument is passed to resolve, it is passed on through the returned promise.  One numberOfTickets tickets can be resolved and active at
    * any given moment.  If all of that number of active tickets is exceeded, subsequent tickets will need to wait until one of the active tickets
    * calls returnTicket.  Because this model can have ticket leaks (i.e., returnTicket never gets called) a timer is set and the ticket is 
-   * automatically reclaimed after a certain time.
+   * automatically reclaimed after a certain time.  The timeout period expiring will (should) only happen
+   * because of a bug in the calling code.
    */
   promiseTicketGenerator: (numberOfTickets, timeoutPeriod=60000) => {
     let resolverArray = []
@@ -186,7 +187,8 @@ let throttle = {
     let releaseTicket = () => {
       if(availableTickets && resolverArray.length) {
         availableTickets--
-        resolverArray.shift()()
+        let nextResolver = resolverArray.shift()
+        nextResolver() 
       }
     }
     let generateTicket = () => {

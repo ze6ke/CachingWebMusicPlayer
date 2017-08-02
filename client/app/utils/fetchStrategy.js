@@ -6,22 +6,22 @@ const fetchStrategy = {
   none: {
     fetch: (url) => Promise.resolve()
   },
-  
+
   fetch: {
     //this version works on the desktop, but not in safari or chrome on the iphone
     fetch: (url) => {
       return fetch(url)
-      .then((response)=> {
-        if(response.ok) {
-	  if(rt==='blob') {
-            return response.blob()
-	  } else {
-	    return response.arrayBuffer()
-	  }
-        } else {
-          throw response
-        }
-      })
+        .then((response)=> {
+          if(response.ok) {
+            if(rt==='blob') {
+              return response.blob()
+            } else {
+              return response.arrayBuffer()
+            }
+          } else {
+            throw response
+          }
+        })
     }
   },
   stub: {
@@ -37,13 +37,17 @@ const fetchStrategy = {
         xhr.open('GET', url)
         xhr.responseType = rt
         xhr.onload = (e) => {
-          if(xhr.status == 200) {
-            if(xhr.responseType !== rt ) {
-              reject({name:'invalid reponseType', message: `expected "${rt}", received "${xhr.responseType}"`})
-            }
-            resolve(xhr.response)
+          if(xhr.status != 200) {
+            reject({name: 'invalid status', message: `expect "200", received "${xhr.status}"`})
+            return
           }
+          if(xhr.responseType !== rt ) {
+            reject({name:'invalid reponseType', message: `expected "${rt}", received "${xhr.responseType}"`})
+            return
+          }
+          resolve(xhr.response)
         }
+
         xhr.onerror = function(e) {
           reject('XHR failed: ' + e.target.status)
         }

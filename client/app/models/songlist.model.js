@@ -16,23 +16,23 @@ class Songlist {
 
   clearCachedData() {
     this.storageStrategy.clearData()
-    .then(() => {
-      alert('Data Cleared')
-    })
+      .then(() => {
+        alert('Data Cleared')
+      })
   }
 
   resetCachedData() {
     this.storageStrategy.reset()
-    .then(() => {
-      alert('Cache Reset')
-    })
+      .then(() => {
+        alert('Cache Reset')
+      })
   }
 
   showDataUsage() {
     this.storageStrategy.getDataUsage()
-    .then((usage) => {
-      alert(this.storageStrategy.name + ': ' + usage.toFixed(2) + 'MB')
-    })
+      .then((usage) => {
+        alert(this.storageStrategy.name + ': ' + usage.toFixed(2) + 'MB')
+      })
   }
 
 
@@ -52,7 +52,7 @@ class Songlist {
           }
         })
         .catch((e) => {
-          if(e.message.indexOf('too large') || e.name == 'QuotaExceededError') {
+          if(e.message.indexOf('too large') !== -1 || e.name == 'QuotaExceededError') {
             maxSize = theSong.size
           }
           return null
@@ -103,21 +103,21 @@ class Songlist {
     //const filter = this.filter
 
     return Promise.all(this.songlist.map((song) => song.matchesFilter(this.filter)))
-    .then((boolArray) => {
-      const currentPos = sortedSongList.indexOf(current)
-      let nextPos = currentPos === boolArray.length - 1 ? -1 : boolArray.indexOf(true, currentPos + 1)
-      if(nextPos == -1) {
-        nextPos = boolArray.indexOf(true)
-      }
-      return nextPos === -1 ? undefined : sortedSongList[nextPos]
-    })
+      .then((boolArray) => {
+        const currentPos = sortedSongList.indexOf(current)
+        let nextPos = currentPos === boolArray.length - 1 ? -1 : boolArray.indexOf(true, currentPos + 1)
+        if(nextPos == -1) {
+          nextPos = boolArray.indexOf(true)
+        }
+        return nextPos === -1 ? undefined : sortedSongList[nextPos]
+      })
   }
 
   getFilteredSonglist () {
     return Promise.all(this.songlist.map((song) => song.matchesFilter(this.filter)))
-    .then((boolArray) => {
-      return this.songlist.filter((song, i) => boolArray[i])
-    })
+      .then((boolArray) => {
+        return this.songlist.filter((song, i) => boolArray[i])
+      })
   }
 
 }
