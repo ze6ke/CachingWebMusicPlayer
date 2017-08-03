@@ -36,10 +36,12 @@ function keepGoodFiles (fileList) {
 function keepGoodFields (fileList) { //convert a full file object into a simpler form that can be consumed by the player
   return fileList.map((file) => {
     let retval = ['artist', 'genre', 'title', 'album'].filter((field) => file.metadata[field])
-    .reduce((obj, field) => Object.assign(obj, {[field]: file.metadata[field]}), {})
+      .reduce((obj, field) => Object.assign(obj, {[field]: file.metadata[field]}), {})
 
     retval.file = fixFilePath(file.fullPath)
-    retval.size = file.filestats.size
+    if(file.filestats) {
+      retval.size = file.filestats.size
+    }
 
     return retval
   })

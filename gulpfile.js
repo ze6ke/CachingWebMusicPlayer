@@ -5,6 +5,7 @@ const requiret = require('./requireTimer.js')
 const gulp = requiret.require('gulp')
 requiret.require('gulp-validated-src')(gulp)
 const FileCache = requiret.require('gulp-file-cache')
+const listTasks = requiret.require('gulp-task-listing')
 
 requiret.notifications = false //the delay for the requires inside of tasks are displayed in the task execution time.  The ones above this line
 //do not happen inside of a task so need to be displayed seperately.
@@ -22,6 +23,9 @@ const browserRefreshDelay = 2000//on this box 1 second doesn't always work
   .pipe(gulp.dest('dist/public'))
   .on('error', handleError)
 })*/
+
+
+gulp.task('help', listTasks)
 
 const stylesheets = 'client/styles/**/*.scss'
 

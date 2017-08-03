@@ -31,13 +31,13 @@ functionalityTest()
 let model
 const getLibrary = () => {
   return fetch('data/library.json')
-  .then((response) => {
-    if(response.ok) {
-      return response.json()
-    } else {
-      throw {name:response.statusText, message: 'none'}
-    }
-  })
+    .then((response) => {
+      if(response.ok) {
+        return response.json()
+      } else {
+        throw {name:response.statusText, message: 'none'}
+      }
+    })
 }
 
 const changeCurrentSong = (song) => {
@@ -51,7 +51,7 @@ const changeFilter = (e) => {
 
 const songEnded = () => {
   model.getNextSong()
-  .then((song) => changeCurrentSong(song))
+    .then((song) => changeCurrentSong(song))
 }
 
 const clearCachedData = () => {
@@ -69,20 +69,21 @@ const showDataUsage = () => {
 const grabHeader = (e) => {
   header = e
 }
-  
+
 const grabHeaderPlaceholder = (e) => {
   headerPlaceholder = e
 }
 
+const callbacks = {changeCurrentSong, songEnded, changeFilter, grabHeaderPlaceholder,
+  grabHeader, clearCachedData, showDataUsage, resetCachedData}
+
 function renderApp (model) {
   return model.getFilteredSonglist()
-  .then((songs) => {
-    render(<App songs={songs} current={model.getCurrentSong()}
-      changeCurrentSong={changeCurrentSong} songEnded={songEnded} changeFilter={changeFilter}
-      grabHeaderPlaceholder={grabHeaderPlaceholder} grabHeader={grabHeader}
-      clearCachedData={clearCachedData} showDataUsage={showDataUsage} resetCachedData={resetCachedData}/>,
-    document.getElementById('app-container'))
-  })
+    .then((songs) => {
+      
+      render(<App songs={songs} current={model.getCurrentSong()} callbacks={callbacks}/>,
+        document.getElementById('app-container'))
+    })
 
 }
 
@@ -91,12 +92,12 @@ storageStrategy.getStrategy('indexedDB').then((ss) => {
   Promise.all([
     getLibrary(),
     ss.getConfig()])
-  .then((data) => {
-    model.setSonglist(data[0])
-    renderApp(model)
-    .then(() => {
-      setHeaderPlaceholderHeight()
+    .then((data) => {
+      model.setSonglist(data[0])
+      renderApp(model)
+        .then(() => {
+          setHeaderPlaceholderHeight()
+        })
+      window.onresize = setHeaderPlaceholderHeight
     })
-    window.onresize = setHeaderPlaceholderHeight
-  })
 })

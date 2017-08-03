@@ -4,8 +4,10 @@ const analyzeLibrary = require('../analyzeLibrary.js')
 
 describe('analyzeLibrary', function() {
   const fileList = [
-    {removeMe: 'value', Me2: 'value', metadata: {genre:'Electronica/Dance',title:'In the Club vs Closer'},fullPath:'music/closer'},
-    {metadata: {artist:'Alain Souchon',genre:'Pop',title:'Sous Les Jupes Des Filles',album:'Collection'},fullPath:'music/jupes'},
+    {removeMe: 'value', Me2: 'value', metadata: 
+      {genre:'Electronica/Dance',title:'In the Club vs Closer'},fullPath:'music/closer'},
+    {metadata: {artist:'Alain Souchon',genre:'Pop',title:'Sous Les Jupes Des Filles',
+      album:'Collection'},fullPath:'music/jupes'},
     {metadata: {error:'coulnt find metadata'},fullPath:'music/badfile'}
   ]
 
@@ -24,6 +26,7 @@ describe('analyzeLibrary', function() {
   })
 
   it('keepsGoodFields', function() {
-    expect(analyzeLibrary.keepGoodFields(goodFileList)).to.deep.equal(goodFieldsOnGoodFiles)
+    const generatedList = analyzeLibrary.keepGoodFields(goodFileList)
+    expect(generatedList).to.deep.equal(goodFieldsOnGoodFiles)
   })
 })

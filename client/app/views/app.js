@@ -3,20 +3,20 @@ import Player from './player.js'
 import Filter from './filter.js'
 import Hamburger from './hamburger.js'
 
-const App = ({songs, current, changeCurrentSong, songEnded, changeFilter, clearCachedData, showDataUsage, resetCachedData, grabHeader, grabHeaderPlaceholder}) => (
+const App = ({songs, current, callbacks /* changeCurrentSong, songEnded, changeFilter, clearCachedData, showDataUsage, resetCachedData, grabHeader, grabHeaderPlaceholder */}) => (
   <main id="appsection">
-    <div className="header-placeholder" ref={grabHeaderPlaceholder}>
+    <div className="header-placeholder" ref={callbacks.grabHeaderPlaceholder}>
     </div>
-    <header ref={grabHeader}>
+    <header ref={callbacks.grabHeader}>
       <span className="title-bar">
         <h1>Music Player</h1><Hamburger
-          clearCachedData={clearCachedData} showDataUsage={showDataUsage} resetCachedData={resetCachedData}/>
+          clearCachedData={callbacks.clearCachedData} showDataUsage={callbacks.showDataUsage} resetCachedData={callbacks.resetCachedData}/>
       </span>
-      <Player current={current} songEnded={songEnded}/>
-      <Filter changeFilter={changeFilter} songs={songs}/>
+      <Player current={current} songEnded={callbacks.songEnded}/>
+      <Filter changeFilter={callbacks.changeFilter} songs={songs}/>
       <hr />
     </header>
-    <Songlist songs={songs} changeCurrentSong={changeCurrentSong}/>
+    <Songlist songs={songs} changeCurrentSong={callbacks.changeCurrentSong}/>
   </main>
 )
 

@@ -16,13 +16,13 @@ describe('App', () => {
     }
   ]
 
-  const changeCurrentSong = (x)=>x
+  //const changeCurrentSong = (x)=>x
 
   it('renders', () => {
-    shallow(<App  songs={songs} current='' changeCurrentSong={changeCurrentSong} />)
+    shallow(<App  songs={songs} current='' callbacks={{}} />)
   })
 
   it('renders with an active song', () => {
-    shallow(<App  songs={songs} current={songs[0]} changeCurrentSong={changeCurrentSong} />)
+    shallow(<App  songs={songs} current={songs[0]} callbacks={{}} />)
   })
 })

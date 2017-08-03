@@ -21,6 +21,7 @@ describe('Songlist', () => {
     shallow(<Songlist songs={songs} changeCurrentSong={changeCurrentSong} />)
   })
 
+  //This test no longer works now that songlist is virtualized.
   it.skip('renders each song', () => {
     const rendered = shallow(<Songlist songs={songs} changeCurrentSong={changeCurrentSong} />)
     expect(rendered.find('Song').length).to.equal(songs.length)
