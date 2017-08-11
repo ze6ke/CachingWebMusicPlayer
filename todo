@@ -1,13 +1,13 @@
+create production webpack config
 setup istanbul for code coverage
-create webpack bundle for libraries
+setup integration test suite (nightshade or selenium directly)
+open source throttle library
+Add github link to gulp.srcN
 move to nginx
 make the system clear out data in indexedDB that isn't in the data file
 setup the system to be easier to load with playlists
 handle ogg files better (metadata doesn't work)
-how to deploy node product
-setup integration test suite (nightshade or selenium directly)
 open source player
-open source throttle library
 setup wraith
 look for other things to open source
 
@@ -16,6 +16,8 @@ shuffle
 support playlists
 
 
+//create webpack bundle for libraries
+//how to deploy node product (set NODE_ENV=production and then do npm/yarn install)
 //would views/app.js read better if fewer things were passed in?
 //are 404s causing me to leak a promise ticket?
 //make jumping in a song ahead work on phone (progress bar visible)

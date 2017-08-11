@@ -1,16 +1,17 @@
 const path=require('path')
 const common=require('./webpack.config.common.js')
 const fs=require('fs')
-//const webpack=require('webpack')
 
-var nodeModules = {}
-fs.readdirSync('node_modules')
+const nodeModuleList = fs.readdirSync('node_modules')
   .filter(function(x) {
-    return ['.bin'].indexOf(x) === -1
+    return '.bin'!== x
   })
-  .forEach(function(mod) {
-    nodeModules[mod] = 'commonjs ' + mod
-  })
+
+const externals = nodeModuleList.reduce((acc, el)=> {
+  acc[el] = 'commonjs ' + el
+  return acc
+}, {})
+
 
 module.exports = Object.assign({}, common, {
   entry: './server/server.js',
@@ -22,10 +23,7 @@ module.exports = Object.assign({}, common, {
   node: {
     __dirname: false
   },
-  externals: nodeModules,
+  externals: externals,
   plugins: [
-    //new webpack.IgnorePlugin(/\.(css|less)$/),
-    //new webpack.BannerPlugin('require("source-map-support").install();',
-    //                         { raw: true, entryOnly: false })
   ]
 })
