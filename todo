@@ -1,9 +1,8 @@
-create production webpack config
-setup istanbul for code coverage
+clean up karma config
 setup integration test suite (nightshade or selenium directly)
 open source throttle library
-Add github link to gulp.srcN
 move to nginx
+create production webpack config
 make the system clear out data in indexedDB that isn't in the data file
 setup the system to be easier to load with playlists
 handle ogg files better (metadata doesn't work)
@@ -16,6 +15,8 @@ shuffle
 support playlists
 
 
+//setup istanbul for code coverage
+//Add github link to gulp.srcN
 //create webpack bundle for libraries
 //how to deploy node product (set NODE_ENV=production and then do npm/yarn install)
 //would views/app.js read better if fewer things were passed in?

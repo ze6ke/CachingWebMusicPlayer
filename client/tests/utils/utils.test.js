@@ -42,7 +42,7 @@ describe('util', function() {
           resolve().then(()=>{aggregator += '1'}),
           resolve().then(()=>{aggregator += '2'}),
           resolve().then(()=>{aggregator += '3'})])
-        .then(()=>{expect(aggregator).to.equal('123')})
+          .then(()=>{expect(aggregator).to.equal('123')})
       })
       it('passes values correctly', function() {
         let resolve = util.throttle.promisePerSecondGenerator(100)
@@ -67,16 +67,16 @@ describe('util', function() {
         let ticketGenerator = util.throttle.promiseTicketGenerator(1)
         let theTicket = ticketGenerator()
         return theTicket.resolve()
-        .then(theTicket.returnOnSuccess, theTicket.returnOnError)
+          .then(theTicket.returnOnSuccess, theTicket.returnOnError)
       })
       it('passes arguments', function() {
         let ticketGenerator = util.throttle.promiseTicketGenerator(1)
         let theTicket = ticketGenerator()
         return theTicket.resolve(5)
-        .then((val) => {
-          expect(val).to.equal(5)
-        })
-        .then(theTicket.returnOnSuccess, theTicket.returnOnError)
+          .then((val) => {
+            expect(val).to.equal(5)
+          })
+          .then(theTicket.returnOnSuccess, theTicket.returnOnError)
       })
       it('does not release all the promises at once', function(cb) {
         let ticketGenerator = util.throttle.promiseTicketGenerator(1)
@@ -87,15 +87,15 @@ describe('util', function() {
         let theSecondPromise = null
 
         /*theFirstPromise = */theTicket.resolve()
-        .then(() => {
-          theSecondPromise = theSecondTicket.resolve() //if everything is working correctly, this won't resolve until the first ticket has returned
           .then(() => {
-            aggregator += '2'
-          })
-          .then(theSecondTicket.returnOnSuccess, theSecondTicket.returnOnError)
+            theSecondPromise = theSecondTicket.resolve() //if everything is working correctly, this won't resolve until the first ticket has returned
+              .then(() => {
+                aggregator += '2'
+              })
+              .then(theSecondTicket.returnOnSuccess, theSecondTicket.returnOnError)
 
-          expect(aggregator).to.equal('')
-        })
+            expect(aggregator).to.equal('')
+          })
 
         setTimeout(() => { //wait for a while before releasing the first ticket.  If the second promise was gonna do it's thing, it would
           expect(aggregator).to.equal('')

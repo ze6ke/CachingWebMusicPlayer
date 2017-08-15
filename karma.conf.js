@@ -2,8 +2,45 @@
 
 // Karma configuration
 // Generated on Sat May 13 2017 06:07:14 GMT+0000 (UTC)
-var webpackOptions = require('./webpack.config.common.js')
-webpackOptions = Object.assign({}, webpackOptions, {devtool: 'inline-source-map',  watch: true})
+const merge = require('webpack-merge')
+
+const webpackOptions = merge({
+  devtool: 'inline-source-map',  
+  //devtool: 'inline-source-map',  
+  watch: true,
+  externals: [//I don't understand why, but enzyme requires it
+    'react/addons',
+    'react/lib/ReactContext',
+    'react/lib/ExecutionEnvironment',
+    'react-addons-test-utils'
+  ],
+  module: {
+    rules: [
+      { 
+        test: /\.js$/,
+        exclude: /(node_modules)|(test)/,
+        use: [
+          {
+            loader: 'istanbul-instrumenter-loader',
+            query: {
+              esModules: true
+            }
+          }]
+      },
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: 
+        {
+          loader: 'babel-loader',
+          options: {
+            presets: ['es2015', 'react', 'stage-3']
+          }
+        } 
+      }]
+  }
+})
+
 
 module.exports = function(config) {
   config.set({
@@ -49,12 +86,24 @@ module.exports = function(config) {
     phantomjsLauncher: {
       exitOnResourceError: true,
       debug: false
-    },
+    }/*,
+    plugins: [
+      'karma-coverage-istanbul-reporter'
+    ]*/,
 
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['mocha'/*'html''dots'*/],
+    reporters: ['mocha', 'coverage-istanbul'/*, 'coverage''html''dots'*/],
+    coverageIstanbulReporter: {
+      reports: ['html', 'text'],
+      dir: 'coverage/'
+    },
+    coverageReporter: {//this reporter doesn't work for html
+      //so I replaced it with coverage-istanbul, which seems to work
+      type: 'lcov',
+      dir: 'coveragen/'
+    },
     mochaReporter: {
       output: 'full'//autowatch, minimal, noFailures
     },

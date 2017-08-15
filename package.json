@@ -40,11 +40,13 @@
     "gulp-watch": "^4.3.11",
     "html-webpack-plugin": "^2.28.0",
     "inferno-test-utils": "^3.0.6",
+    "istanbul-instrumenter-loader": "^3.0.0",
     "jsdom": "^10.0.0",
     "karma": "^1.7.0",
     "karma-chai-plugins": "^0.9.0",
     "karma-chrome-launcher": "^2.1.1",
     "karma-coverage": "^1.1.1",
+    "karma-coverage-istanbul-reporter": "^1.3.0",
     "karma-html-reporter": "^0.2.7",
     "karma-mocha": "^1.3.0",
     "karma-mocha-reporter": "^2.2.3",
@@ -62,6 +64,7 @@
     "base64-js": "^1.2.0",
     "express": "^4.15.2",
     "ffmetadata": "^1.4.0",
+    "gulp-require-timer": "^1.0.0",
     "gulp-sass": "^3.1.0",
     "gulp-sourcemaps": "^2.6.0",
     "inferno": "^3.0.5",
@@ -70,6 +73,7 @@
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
     "react-virtual-list": "^2.2.0",
-    "walk": "^2.3.9"
+    "walk": "^2.3.9",
+    "webpack-merge": "^4.1.0"
   }
 }

@@ -1,6 +1,6 @@
-const requiret = require('./requireTimer.js')
+const requiret = require('gulp-require-timer')
 /* when possible, push the require statements into the actual task blocks, otherwise you incur the (potentially expensive) cost of loading
- * the files on every execution and invisibly
+ * the files on every execution invisibly
  */
 const gulp = requiret.require('gulp')
 requiret.require('gulp-validated-src')(gulp)
@@ -10,20 +10,6 @@ const listTasks = requiret.require('gulp-task-listing')
 requiret.notifications = false //the delay for the requires inside of tasks are displayed in the task execution time.  The ones above this line
 //do not happen inside of a task so need to be displayed seperately.
 const browserRefreshDelay = 2000//on this box 1 second doesn't always work
-
-/*gulp.task('stylus', () => {
-  const stylus = requiret.require('gulp-stylus')
-  const autoprefixer = requiret.require('gulp-autoprefixer')
-  gulp.srcN('client/styles/playerStyle.styl')
-  .pipe(stylus())
-  .pipe(autoprefixer({
-    browsers: ['last 2 version'],
-    cascade: false
-  }))
-  .pipe(gulp.dest('dist/public'))
-  .on('error', handleError)
-})*/
-
 
 gulp.task('help', listTasks)
 
