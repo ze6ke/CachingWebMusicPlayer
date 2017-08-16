@@ -2,9 +2,9 @@
 
 // Karma configuration
 // Generated on Sat May 13 2017 06:07:14 GMT+0000 (UTC)
-const merge = require('webpack-merge')
+//const merge = require('webpack-merge')
 
-const webpackOptions = merge({
+const webpackOptions = {
   devtool: 'inline-source-map',  
   //devtool: 'inline-source-map',  
   watch: true,
@@ -39,7 +39,7 @@ const webpackOptions = merge({
         } 
       }]
   }
-})
+}
 
 
 module.exports = function(config) {
@@ -56,9 +56,7 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'client/tests/models/model.test.js',
-      'client/tests/views/all.test.js',
-      'client/tests/utils/utils.test.js'
+      'client/tests/all.test.js'
 
     ],
 
@@ -71,9 +69,7 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      'client/tests/models/model.test.js': ['webpack', 'sourcemap'],
-      'client/tests/utils/utils.test.js': ['webpack', 'sourcemap'],
-      'client/tests/views/all.test.js': ['webpack', 'sourcemap']
+      'client/tests/all.test.js': ['webpack', 'sourcemap'],
     },
     webpack: webpackOptions,
 

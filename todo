@@ -1,4 +1,3 @@
-clean up karma config
 setup integration test suite (nightshade or selenium directly)
 open source throttle library
 move to nginx
@@ -15,6 +14,7 @@ shuffle
 support playlists
 
 
+//clean up karma config
 //setup istanbul for code coverage
 //Add github link to gulp.srcN
 //create webpack bundle for libraries
