@@ -1,42 +1,47 @@
 /*
-lint once--nothing else
-run unit tests once--
+x-lint once--nothing else
+x-run unit tests once
 run integration tests once--sass, webpack, start server, run webdriver, stop server
-lint and run unit tests
-run all tests once
+x-lint and run unit tests
+x-run all tests once
 
 serve for testing watching for changes
-run unit tests and watch for changes
+server with browsersync watching for changes
+run unit tests and watch for changes--independent
+lint and watch for changes--independent
 lint, unit test and watch for changes
-run integration tests and watch for changes
+run integration tests and watch for changes--integration test should watch /dist/** + /*
 run all tests and watch for changes
 serve and run all tests and watch for changes
 
-What about difference between client, server, and prep module?
-
-
-subtasks:
-sass
-webpack
-move files around 
 */
 
-const config={
+const requiret=require('gulp-require-timer')
+
+const gulp = requiret.require('gulp')
+const FileCache = requiret.require('gulp-file-cache')
+
+requiret.require('gulp-validated-src')(gulp)
+
+const listTasks = requiret.require('gulp-task-listing')
+gulp.task('help', listTasks)
+
+const config = {
   client: {
     name: 'client',
     stagingPath: 'staging/client',
     finalPath: 'dist/public',
     karma: {
-      glob:'',
-      options: {
-        configFile: __dirname + '/karma.conf.js'
-      }
+      configFile: __dirname + '/karma.conf.js'
     },
     sass: {
       source: 'client/styles/**/*.scss',
       target: 'dist/public/'
     },
-    lintjs: '',
+    lintjs: {
+      source: 'client/**/*.js',
+      filecache: new FileCache
+    },
     lintcss: '',
     webpack: './webpack.config.js'
   }, 
@@ -46,10 +51,26 @@ const config={
     finalPath: 'dist/server',
     webpack: './webpack.config.server.js',
     script: 'dist/server/server.js',
+    mocha: {
+      source: 'server/tests/**/*test.js',
+      requires: ['babel-core/register', 'server/tests/setup.js']
+    },
+    lintjs: {
+      source: 'server/**/*.js',
+      filecache: new FileCache
+    },
     watch: 'dist/server/server.js'
   },
   prep: {
     stagingPath: 'client/data',
+    lintjs: {
+      source: 'prep/**/*.js',
+      filecache: new FileCache
+    },
+    mocha: {
+      source: 'prep/tests/**/*test.js',
+      requires: ['babel-core/register', 'server/tests/setup.js']
+    },
     finalPath: 'dist/public/data'
   },
   resources: {
@@ -59,41 +80,123 @@ const config={
   }
 }
 
-const requiret=require('gulp-require-timer')
-const gulp = requiret.require('gulp')
-requiret.require('gulp-validated-src')(gulp)
-
-
-const listTasks = requiret.require('gulp-task-listing')
-gulp.task('help', listTasks)
-
 
 requiret.notifications = false 
+let nodemonHandle = null
 
-gulp.task('unittest-client', runKarma(config.client))
+gulp.task('unittest-client', runKarma(config.client, true))
 gulp.task('unittest-server', runMocha(config.server))
 gulp.task('unittest-prep', runMocha(config.prep))
 gulp.task('unittest', ['unittest-client', 'unittest-server', 'unittest-prep'])
 
+gulp.task('watchunittest-client', runKarma(config.client, false))
 
-gulp.task('sass-client', runSass(config.client))
-gulp.task('stagefiles-client', ['clearfiles-client', 'webpack-client', 'sass-client'], stageFiles(config.client))
-gulp.task('stagefiles-server', ['clearfiles-server', 'webpack-server'], stageFiles(config.server))
-gulp.task('stagefiles-data', ['clearfiles-client'], stageFiles(config.prep))
-gulp.task('stagefiles-resource', ['clearfiles-client'], stageFiles(config.resources))
-gulp.task('stagefiles', ['stagefiles-resource', 'stagefiles-data', 'stagefiles-server', 'stagefiles-client'])
+gulp.task('lint-css', lintCss(config.client))
+gulp.task('lint-client', lintJs(config.client))
+gulp.task('lint-server', lintJs(config.server))
+gulp.task('lint-prep', lintJs(config.prep))
+gulp.task('lint', ['lint-css', 'lint-client', 'lint-server', 'lint-prep'])
 
 gulp.task('clearfiles-client', clearFiles(config.client))
 gulp.task('clearfiles-server', clearFiles(config.server))
 
 gulp.task('webpack-client', runWebpack(config.client))
 gulp.task('webpack-server', runWebpack(config.server))
+gulp.task('sass-client', runSass(config.client))
 
-let nodemonHandle = null
+gulp.task('stagefiles-client', ['clearfiles-client', 'webpack-client', 'sass-client'], stageFiles(config.client))
+gulp.task('stagefiles-server', ['clearfiles-server', 'webpack-server'], stageFiles(config.server))
+gulp.task('stagefiles-data', ['clearfiles-client'], stageFiles(config.prep))
+gulp.task('stagefiles-resource', ['clearfiles-client'], stageFiles(config.resources))
+gulp.task('stagefiles', ['stagefiles-resource', 'stagefiles-data', 'stagefiles-server', 'stagefiles-client'])
 
 gulp.task('launchserver', ['stagefiles'], runNodemon(config.server))
+
 gulp.task('integrationtest-subtask', ['launchserver'], notImplemented('integrationtest-subtask'))
-gulp.task('integrationtest', ['webdrivertest'], stopServer())
+gulp.task('integrationtest', ['integrationtest-subtask'], stopServer())
+
+gulp.task('test', runAllTests)
+
+
+function runAllTests()
+{
+  const runSequence = requiret.require('run-sequence')
+
+  runSequence('unittest', 'integrationtest')
+}
+
+function runMocha(settings) {
+  const source = settings.mocha.source
+  const requires = settings.mocha.requires
+  
+  function handleError(err) {
+    //console.log(err)
+    this.emit('end')
+  }
+
+  return () => {
+    const mocha = requiret.require('gulp-mocha')
+
+    return gulp.srcN(source).
+      pipe(mocha({require: requires}))
+      .on('error', handleError)
+  }
+}
+
+function runKarma(settings, singleRun = true) {
+  const configFile = settings.karma.configFile
+
+  return (cb) => {
+    const karma = requiret.require('karma')
+    new karma.Server({
+      configFile,
+      singleRun: singleRun
+    }, cb).start()
+  }
+}
+
+
+function lintJs(settings) {
+  const source = settings.lintjs.source
+  const filecache = settings.lintjs.filecache
+
+  return () => {
+
+    const eslint = requiret.require('gulp-eslint')
+    // ESLint ignores files with "node_modules" paths.
+    // So, it's best to have gulp ignore the directory as well.
+    // Also, Be sure to return the stream from the task;
+    // Otherwise, the task may end before the stream has finished.
+    return gulp.srcN([source,'!node_modules/**'], 1)
+      .pipe(filecache.filter())
+    // eslint() attaches the lint output to the "eslint" property
+    // of the file object so it can be used by other modules.
+      .pipe(eslint())
+    // eslint.format() outputs the lint results to the console.
+    // Alternatively use eslint.formatEach() (see Docs).
+      .pipe(eslint.format())
+    // To have the process exit with an error code (1) on
+    // lint error, return the stream and pipe to failAfterError last.
+    //      .pipe(eslint.failAfterError())
+      .pipe(filecache.cache())
+  }
+}
+
+function lintCss(settings) {
+  const source = settings.sass.source
+
+  return () => {
+    const styleLint = requiret.require('gulp-stylelint')
+
+    gulp.srcN(source, 1)
+      .pipe(styleLint({
+        reporters: [
+          {formatter: 'string', console: true}
+        ]
+      }))
+  }
+}
+
 
 function notImplemented(name) {
   const thisName = name
@@ -186,16 +289,6 @@ function runSass (settings) {
       .pipe(sass({sourceComments: 'map'}).on('error', sass.logError))
       .pipe(sourcemaps.write())
       .pipe(gulp.dest(target))
-  }
-}
-
-function runMocha(settings) {
-  return () => {
-  }
-}
-
-function runKarma(settings) {
-  return () => {
   }
 }
 
