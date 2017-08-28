@@ -17,7 +17,7 @@ module.exports = Object.assign({}, common, {
   entry: './server/server.js',
   output: {
     filename: 'server.js',
-    path: path.resolve(__dirname, 'dist/server'),
+    path: path.resolve(__dirname, 'staging/server'),
     sourceMapFilename: 'server.map'
   },
   node: {

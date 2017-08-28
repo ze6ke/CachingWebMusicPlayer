@@ -1,4 +1,4 @@
-setup integration test suite (nightshade or selenium directly)
+setup integration test suite (nightwatch or selenium directly)
 open source throttle library
 move to nginx
 create production webpack config

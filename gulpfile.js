@@ -1,230 +1,201 @@
-const requiret = require('gulp-require-timer')
-/* when possible, push the require statements into the actual task blocks, otherwise you incur the (potentially expensive) cost of loading
- * the files on every execution invisibly
- */
+/*
+lint once--nothing else
+run unit tests once--
+run integration tests once--sass, webpack, start server, run webdriver, stop server
+lint and run unit tests
+run all tests once
+
+serve for testing watching for changes
+run unit tests and watch for changes
+lint, unit test and watch for changes
+run integration tests and watch for changes
+run all tests and watch for changes
+serve and run all tests and watch for changes
+
+What about difference between client, server, and prep module?
+
+
+subtasks:
+sass
+webpack
+move files around 
+*/
+
+const config={
+  client: {
+    name: 'client',
+    stagingPath: 'staging/client',
+    finalPath: 'dist/public',
+    karma: {
+      glob:'',
+      options: {
+        configFile: __dirname + '/karma.conf.js'
+      }
+    },
+    sass: {
+      source: 'client/styles/**/*.scss',
+      target: 'dist/public/'
+    },
+    lintjs: '',
+    lintcss: '',
+    webpack: './webpack.config.js'
+  }, 
+  server: {
+    name: 'server',
+    stagingPath: 'staging/server',
+    finalPath: 'dist/server',
+    webpack: './webpack.config.server.js',
+    script: 'dist/server/server.js',
+    watch: 'dist/server/server.js'
+  },
+  prep: {
+    stagingPath: 'client/data',
+    finalPath: 'dist/public/data'
+  },
+  resources: {
+    stagingPath: 'client/resources',
+    finalPath: 'dist/public'
+    
+  }
+}
+
+const requiret=require('gulp-require-timer')
 const gulp = requiret.require('gulp')
 requiret.require('gulp-validated-src')(gulp)
-const FileCache = requiret.require('gulp-file-cache')
+
+
 const listTasks = requiret.require('gulp-task-listing')
-
-requiret.notifications = false //the delay for the requires inside of tasks are displayed in the task execution time.  The ones above this line
-//do not happen inside of a task so need to be displayed seperately.
-const browserRefreshDelay = 2000//on this box 1 second doesn't always work
-
 gulp.task('help', listTasks)
 
-const stylesheets = 'client/styles/**/*.scss'
 
-gulp.task('sass', () => {
-  const sass = requiret.require('gulp-sass')
-  const sourcemaps = requiret.require('gulp-sourcemaps')
+requiret.notifications = false 
 
-  return gulp.srcN(stylesheets, 1)
-    .pipe(sourcemaps.init())
-    .pipe(sass({sourceComments: 'map'}).on('error', sass.logError))
-    .pipe(sourcemaps.write())
-    .pipe(gulp.dest('dist/public/'))
-})
-
-gulp.task('lintcss', () => {
-  const styleLint = requiret.require('gulp-stylelint')
-  gulp.srcN(stylesheets, 1)
-    .pipe(styleLint({
-      reporters: [
-        {formatter: 'string', console: true}
-      ]
-    }))
-})
+gulp.task('unittest-client', runKarma(config.client))
+gulp.task('unittest-server', runMocha(config.server))
+gulp.task('unittest-prep', runMocha(config.prep))
+gulp.task('unittest', ['unittest-client', 'unittest-server', 'unittest-prep'])
 
 
+gulp.task('sass-client', runSass(config.client))
+gulp.task('stagefiles-client', ['clearfiles-client', 'webpack-client', 'sass-client'], stageFiles(config.client))
+gulp.task('stagefiles-server', ['clearfiles-server', 'webpack-server'], stageFiles(config.server))
+gulp.task('stagefiles-data', ['clearfiles-client'], stageFiles(config.prep))
+gulp.task('stagefiles-resource', ['clearfiles-client'], stageFiles(config.resources))
+gulp.task('stagefiles', ['stagefiles-resource', 'stagefiles-data', 'stagefiles-server', 'stagefiles-client'])
 
+gulp.task('clearfiles-client', clearFiles(config.client))
+gulp.task('clearfiles-server', clearFiles(config.server))
 
-function handleError(err) {
-  //console.log(err)
-  this.emit('end')
+gulp.task('webpack-client', runWebpack(config.client))
+gulp.task('webpack-server', runWebpack(config.server))
+
+let nodemonHandle = null
+
+gulp.task('launchserver', ['stagefiles'], runNodemon(config.server))
+gulp.task('integrationtest-subtask', ['launchserver'], notImplemented('integrationtest-subtask'))
+gulp.task('integrationtest', ['webdrivertest'], stopServer())
+
+function notImplemented(name) {
+  const thisName = name
+  return () => {
+    console.error(`${thisName} not implemented!!!`)
+  }
 }
 
-const runKarma = (done, singleRun=true) => {
-  const karma = requiret.require('karma')
-  new karma.Server({
-    configFile: __dirname + '/karma.conf.js',
-    singleRun: singleRun
-  }, done).start()
+function stageFiles(settings) {
+  const source = settings.stagingPath + '/**'
+  const destination = settings.finalPath
+  
+  return () => {
+    gulp.srcN(source, 1)
+      .pipe(gulp.dest(destination))
+  }
 }
 
+function clearFiles(settings) {
+  const target = [settings.finalPath, settings.finalPath + '/**']
 
-gulp.task('testclient', ['lintclient'], runKarma)
-//gulp.srcN('client/tests/**/*test.js').
-//pipe(mocha({require: ['babel-core/register', 'client/tests/setup.js']}))
-//.on('error', handleError)
-/*.once('end', cb)
-  .once('error', cb)*/ //for whatever reason, the pipe never seems to finish, so it's hard to identify when
-//the tests have fully run
-
-
-gulp.task('testserver', ['lintserver'], () => {
-  const mocha = requiret.require('gulp-mocha')
-  gulp.srcN('server/tests/**/*test.js').
-    pipe(mocha({require: ['babel-core/register', 'server/tests/setup.js']}))
-    .on('error', handleError)
-  /*.once('end', cb)
-  .once('error', cb)*/ //for whatever reason, the pipe never seems to finish, so it's hard to identify when
-  //the tests have fully run
-})
-
-gulp.task('testprep', ['lintprep'], () => {
-  const mocha = requiret.require('gulp-mocha')
-  gulp.srcN('prep/tests/**/*test.js').
-    pipe(mocha({require: ['babel-core/register']}))
-    .on('error', handleError)
-})
-
-gulp.task('test', ['testclient', 'testserver', 'testprep'])
-
-gulp.task('copydataandfiles', ['cleandata'], () => {
-  gulp.srcN('client/data/**')
-    .pipe(gulp.dest('dist/public/data'))
-  gulp.srcN('client/resources/**')
-    .pipe(gulp.dest('dist/public/'))
-})
-
-
-gulp.task('cleandata', () => {
-  const del = requiret.require('del')
-  //let paths =
-  del.sync(['dist/public/data/**', 'dist/public/data'])
-  //console.log('deleted: \n' + paths.join('\n'))
-})
-
-function runwebpack(configFile, desc, cb) {
-  const webpack = requiret.require('webpack')
-  const gutil = requiret.require('gulp-util')
-  webpack(require(configFile), (err, status) => {
-    if(err) throw new gutil.PluginError(desc, err)
-    gutil.log(`[${desc}]`, status.toString({
-      // output options
-    }))
-    cb()
-  })
+  return () => {
+    const del = requiret.require('del')
+    del.sync(target)
+  }
 }
 
-gulp.task('webpackclient', (cb) => {
-  runwebpack('./webpack.config.js', 'webpackclient', cb)
-})
+function runNodemon(settings) {
+  const script = settings.script
+  const watch = [settings.watch]
 
-gulp.task('webpackserver', (cb) => {
-  runwebpack('./webpack.config.server.js', 'webpackserver', cb)
-})
+  return (cb) => {
+    const nodemon = requiret.require('gulp-nodemon')
+    let taskReportedComplete = false
+    nodemonHandle = nodemon({
+      script,
+      watch
+    })
+      .on('start', () => {
+        if(!taskReportedComplete) {
+          taskReportedComplete = true
+          cb()
+        }
+      })
+      .on('quit', () => {
+        console.log('nodemon quit event emitted')
+      })
+      .on('restart', () => {
+        console.log('nodemon restart event emitted')
+      })
+  }
+}
 
-gulp.task('webpack', ['webpackclient', 'webpackserver', 'sass'])
-
-let clientFileCache = new FileCache //used to limit linting to files that have changed
-gulp.task('lintclient', () => {
-  const eslint = requiret.require('gulp-eslint')
-  // ESLint ignores files with "node_modules" paths.
-  // So, it's best to have gulp ignore the directory as well.
-  // Also, Be sure to return the stream from the task;
-  // Otherwise, the task may end before the stream has finished.
-  return gulp.srcN(['client/**/*.js','!node_modules/**'])
-    .pipe(clientFileCache.filter())
-  // eslint() attaches the lint output to the "eslint" property
-  // of the file object so it can be used by other modules.
-    .pipe(eslint())
-  // eslint.format() outputs the lint results to the console.
-  // Alternatively use eslint.formatEach() (see Docs).
-    .pipe(eslint.format())
-  // To have the process exit with an error code (1) on
-  // lint error, return the stream and pipe to failAfterError last.
-  //      .pipe(eslint.failAfterError())
-    .pipe(clientFileCache.cache())
-})
-
-let serverFileCache = new FileCache
-gulp.task('lintserver', () => {
-  const eslint = requiret.require('gulp-eslint')
-  return gulp.srcN(['server/**/*.js','!**/node_modules/**'])
-    .pipe(serverFileCache.filter())
-    .pipe(eslint())
-    .pipe(eslint.format())
-  //.pipe(eslint.failAfterError())
-    .pipe(serverFileCache.cache())
-})
-
-let prepFileCache = new FileCache
-gulp.task('lintprep', () => {
-  const eslint = requiret.require('gulp-eslint')
-  return gulp.srcN(['prep/**/*.js','!**/node_modules/**'])
-    .pipe(prepFileCache.filter())
-    .pipe(eslint())
-    .pipe(eslint.format())
-  //.pipe(eslint.failAfterError())
-    .pipe(prepFileCache.cache())
-})
-
-gulp.task('lint', ['lintclient', 'lintserver', 'lintprep', 'lintcss'])
-
-gulp.task('watchkarma', () => {
-  runKarma((f)=>f, false)
-})
-
-gulp.task('watch', () => {
-  const browsersynch = requiret.require('browser-sync')
-  const watch = requiret.require('gulp-watch')
-  watch(['client/styles/**/*'], () => gulp.start(['sass']))
-  watch(['client/app/**/*','client/index.html','!node_modules/**'], () => {
-    gulp.start(['clearscreen', 'lintclient', 'webpackclient'])
-  })
-  watch(['dist/public/*'], () => {
-    browsersynch.reload({stream: false})
-  })
-  watch(['client/resources/**'], () => gulp.start(['copydataandfiles']))
-
-})
-
-gulp.task('clearscreen', () => {
-  console.log('\n'.repeat(10))
-  console.log('='.repeat(40))
-})
-
-gulp.task('serve', ['webpack','lint','watch', 'copydataandfiles'], (cb) => {
-  const browsersynch = requiret.require('browser-sync')
-  const nodemon = requiret.require('gulp-nodemon')
-  var called = false
-  return nodemon({
-    script: 'dist/server/server.js',
-    watch: ['server/**/*.js'],
-    tasks: ['webpackserver', 'lintserver']
-  }).on('start', () => {
-    if(!called) { cb()}
-    called=true
-  }).on('restart', () => {
+function stopServer() {
+  return () => {
     setTimeout(() => {
-      browsersynch.reload({stream: false})
-    }, browserRefreshDelay)
-  })
-})
+      nodemonHandle && nodemonHandle.emit('quit')//this stops my child process running under nodemon
+      setTimeout(process.exit, 1000)//this is lame, but I couldn't find a way to get nodemon itself to quit
+    }, 0)
+  }
+}
 
-gulp.task('launchbrowser', ['serve'], () => {
-  const browsersynch = requiret.require('browser-sync')
-  browsersynch.init({
-    reloadDebounce: 2000, //I don't think that these are both necessary
-    reloadThrottle: 1000,
-    proxy: 'http://localhost:8000',
-    port: 8888,
-    host: '192.168.1.11'
-  })
-})
+function runWebpack(settings) {
+  const configFile = settings.webpack
+  const desc = settings.name
 
-gulp.task('default', ['launchbrowser'])
+  return (cb) => {
+    const webpack = requiret.require('webpack')
+    const gutil = requiret.require('gulp-util')
+    webpack(require(configFile), (err, status) => {
+      if(err) throw new gutil.PluginError(desc, err)
+      gutil.log(`[${desc}]`, status.toString({
+        // output options
+      }))
+      cb()
+    })
+  }
+}
 
 
-//webpack streams
+function runSass (settings) {
+  const stylesheets = settings.sass.source
+  const target = settings.sass.target
+  return () => {
+    const sass = requiret.require('gulp-sass')
+    const sourcemaps = requiret.require('gulp-sourcemaps')
 
-/*
-var gulp = require('gulp');
-var webpack = require('webpack-stream');
-gulp.task('default', function() {
-  return gulp.srcN('src/entry.js')
-    .pipe(webpack())
-    .pipe(gulp.dest('dist/'));
-});*/
+    return gulp.srcN(stylesheets, 1)
+      .pipe(sourcemaps.init())
+      .pipe(sass({sourceComments: 'map'}).on('error', sass.logError))
+      .pipe(sourcemaps.write())
+      .pipe(gulp.dest(target))
+  }
+}
+
+function runMocha(settings) {
+  return () => {
+  }
+}
+
+function runKarma(settings) {
+  return () => {
+  }
+}
+

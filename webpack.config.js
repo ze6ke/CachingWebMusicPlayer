@@ -15,7 +15,7 @@ module.exports = Object.assign({}, common,{
   },
   output: {
     filename: '[name].[chunkhash].js',
-    path: path.resolve(__dirname, 'dist/public'),
+    path: path.resolve(__dirname, 'staging/client'),
     sourceMapFilename: 'bundle.map'
   },
   plugins: [

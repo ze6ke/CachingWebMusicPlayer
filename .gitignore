@@ -1,4 +1,5 @@
 coverage/
+staging/
 *.swp
 node_modules
 dist/
