@@ -13,3 +13,5 @@ I've tested it on several browsers:
 - dolphin (Safari 9)--javascript runs even while the screen is locked.  Cache manifests also seem to work.  This means that the app is usable.  I haven't yet tested how it behaves when fully loaded.
 
 This app is in active development.
+
+This app was initially created to help linux users work with their iphones better (it's difficult to connect an iphone to a linux desktop computer).  It was not obvious at the beginning of the project whether it would be feasible.  The limitations of specific browsers make the potential audience virtually non-existant.  Because of that, and the fact that it's a lot of work, I won't invest a tone of energy into making this a glossy app.
