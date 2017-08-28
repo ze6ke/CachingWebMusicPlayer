@@ -5,11 +5,11 @@ run integration tests once--sass, webpack, start server, run webdriver, stop ser
 x-lint and run unit tests
 x-run all tests once
 
-serve for testing watching for changes
-server with browsersync watching for changes
-run unit tests and watch for changes--independent
-lint and watch for changes--independent
-lint, unit test and watch for changes
+serve for integration testing watching for changes
+serve with browsersync watching for changes
+x-run unit tests and watch for changes--independent
+x-lint and watch for changes--independent
+x-lint, unit test and watch for changes--default action
 run integration tests and watch for changes--integration test should watch /dist/** + /*
 run all tests and watch for changes
 serve and run all tests and watch for changes
@@ -38,11 +38,10 @@ const config = {
       source: 'client/styles/**/*.scss',
       target: 'dist/public/'
     },
-    lintjs: {
+    lintJs: {
       source: 'client/**/*.js',
       filecache: new FileCache
     },
-    lintcss: '',
     webpack: './webpack.config.js'
   }, 
   server: {
@@ -53,9 +52,10 @@ const config = {
     script: 'dist/server/server.js',
     mocha: {
       source: 'server/tests/**/*test.js',
-      requires: ['babel-core/register', 'server/tests/setup.js']
+      requires: ['babel-core/register', 'server/tests/setup.js'],
+      watchPath: ['server/**/*.js']
     },
-    lintjs: {
+    lintJs: {
       source: 'server/**/*.js',
       filecache: new FileCache
     },
@@ -63,13 +63,14 @@ const config = {
   },
   prep: {
     stagingPath: 'client/data',
-    lintjs: {
+    lintJs: {
       source: 'prep/**/*.js',
       filecache: new FileCache
     },
     mocha: {
       source: 'prep/tests/**/*test.js',
-      requires: ['babel-core/register', 'server/tests/setup.js']
+      requires: ['babel-core/register', 'server/tests/setup.js'],
+      watchPath: ['prep/**/*.js']
     },
     finalPath: 'dist/public/data'
   },
@@ -90,12 +91,22 @@ gulp.task('unittest-prep', runMocha(config.prep))
 gulp.task('unittest', ['unittest-client', 'unittest-server', 'unittest-prep'])
 
 gulp.task('watchunittest-client', runKarma(config.client, false))
+gulp.task('watchunittest-server', ['unittest-server'], watchMocha(config.server, ['unittest-server']))
+gulp.task('watchunittest-prep', ['unittest-prep'], watchMocha(config.server, ['unittest-prep']))
+gulp.task('watchunittest', ['watchunittest-client', 'watchunittest-server', 'watchunittest-prep'])
 
 gulp.task('lint-css', lintCss(config.client))
 gulp.task('lint-client', lintJs(config.client))
 gulp.task('lint-server', lintJs(config.server))
 gulp.task('lint-prep', lintJs(config.prep))
 gulp.task('lint', ['lint-css', 'lint-client', 'lint-server', 'lint-prep'])
+
+gulp.task('watchlint-client', ['lint-client'], watchLintJs(config.client, ['lint-client']))
+gulp.task('watchlint-server', ['lint-server'], watchLintJs(config.server, ['lint-server']))
+gulp.task('watchlint-prep', ['lint-prep'], watchLintJs(config.server, ['lint-prep']))
+gulp.task('watchlint-css', ['lint-css'], watchLintCss(config.client, ['lint-css']))
+gulp.task('watchlint', ['watchlint-css', 'watchlint-prep', 'watchlint-server', 'watchlint-client']) 
+
 
 gulp.task('clearfiles-client', clearFiles(config.client))
 gulp.task('clearfiles-server', clearFiles(config.server))
@@ -112,11 +123,40 @@ gulp.task('stagefiles', ['stagefiles-resource', 'stagefiles-data', 'stagefiles-s
 
 gulp.task('launchserver', ['stagefiles'], runNodemon(config.server))
 
-gulp.task('integrationtest-subtask', ['launchserver'], notImplemented('integrationtest-subtask'))
+gulp.task('integrationtest-subtask', ['launchserver'], runIntegrationTests(config))
 gulp.task('integrationtest', ['integrationtest-subtask'], stopServer())
 
 gulp.task('test', runAllTests)
 
+gulp.task('default', ['watchunittest', 'watchlint'])
+
+function runIntegrationTests(settings) {
+
+  return (cb) => {
+    const {spawn} = requiret.require('child_process')
+    const webdriverProc = spawn('node', ['integration_tests/index.js'])
+
+    webdriverProc.on('close', cb)
+  }
+}
+
+function watchLintCss(settings, task) {
+  return watch(settings.sass.source, task)
+}
+
+function watchLintJs(settings, task) {
+  return watch(settings.lintJs.source, task)
+}
+
+function watchMocha(settings, task) {
+  return watch(settings.mocha.watchPath, task)
+}
+
+function watch(watchPath, task) {
+  return () => {
+    gulp.watch(watchPath, task)
+  }
+}
 
 function runAllTests()
 {
@@ -143,6 +183,11 @@ function runMocha(settings) {
   }
 }
 
+gulp.task('clearscreen', () => {
+  console.log('\n'.repeat(80))
+  console.log('='.repeat(80))
+})
+
 function runKarma(settings, singleRun = true) {
   const configFile = settings.karma.configFile
 
@@ -157,8 +202,8 @@ function runKarma(settings, singleRun = true) {
 
 
 function lintJs(settings) {
-  const source = settings.lintjs.source
-  const filecache = settings.lintjs.filecache
+  const source = settings.lintJs.source
+  const filecache = settings.lintJs.filecache
 
   return () => {
 
@@ -197,8 +242,7 @@ function lintCss(settings) {
   }
 }
 
-
-function notImplemented(name) {
+function notImplemented(name) { //eslint-disable-line no-unused-vars
   const thisName = name
   return () => {
     console.error(`${thisName} not implemented!!!`)
