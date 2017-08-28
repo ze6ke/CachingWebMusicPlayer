@@ -1,7 +1,7 @@
 /*
 x-lint once--nothing else
 x-run unit tests once
-run integration tests once--sass, webpack, start server, run webdriver, stop server
+x-run integration tests once--sass, webpack, start server, run webdriver, stop server
 x-lint and run unit tests
 x-run all tests once
 
