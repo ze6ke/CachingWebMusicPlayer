@@ -1,7 +1,5 @@
 /*
 
-move clear files task into stage files task
-
 x-lint once--nothing else
 x-run unit tests once
 x-run integration tests once--sass, webpack, start server, run webdriver, stop server
@@ -9,7 +7,7 @@ x-lint and run unit tests
 x-run all tests once
 
 x-serve for integration testing watching for changes
-serve with browsersync watching for changes
+x-serve with browsersync watching for changes
 x-run unit tests and watch for changes--independent
 x-lint and watch for changes--independent
 x-lint, unit test and watch for changes--default action
@@ -39,7 +37,7 @@ const config = {
     },
     sass: {
       source: 'client/styles/**/*.scss',
-      target: 'dist/public/'
+      target: 'staging/client/'
     },
     lintJs: {
       source: 'client/**/*.js',
@@ -54,6 +52,10 @@ const config = {
     stagingPath: 'staging/server',
     finalPath: 'dist/server',
     webpack: './webpack.config.server.js',
+    browserSynch: {
+      refreshDelay: 2000,
+      watchPath: ['dist/**/*', 'dist/public/style.css']
+    },
     mocha: {
       source: 'server/tests/**/*test.js',
       requires: ['babel-core/register', 'server/tests/setup.js'],
@@ -79,11 +81,11 @@ const config = {
       requires: ['babel-core/register', 'server/tests/setup.js'],
       watchPath: ['prep/**/*.js']
     },
-    finalPath: 'dist/public/data'
+    finalPath: 'staging/client/data'
   },
   resources: {
     stagingPath: 'client/resources',
-    finalPath: 'dist/public'
+    finalPath: 'staging/client'
   },
   integration: {
     scriptPath: 'integration_tests/index.js',
@@ -94,6 +96,7 @@ const config = {
 
 requiret.notifications = false 
 let nodemonHandle = null
+let browserSynchHandle = null
 
 gulp.task('unittest-client', runKarma(config.client, true))
 gulp.task('unittest-server', runMocha(config.server))
@@ -125,18 +128,18 @@ gulp.task('webpack-client', runWebpack(config.client))
 gulp.task('webpack-server', runWebpack(config.server))
 gulp.task('sass-client', runSass(config.client))
 
-gulp.task('stagefiles-data', stageFiles(config.prep))
-gulp.task('stagefiles-resource', stageFiles(config.resources))
+gulp.task('prestagefiles-data', stageFiles(config.prep))
+gulp.task('prestagefiles-resource', stageFiles(config.resources))
 //technically, clearfiles-client needs to run before webpack-client and sass-client
 //but, it's fast, so this shouldn't be an issue and the code is much easier
 //to read than the alternatives.
 gulp.task('stagefiles-client', 
-  ['clearfiles-client', 'webpack-client', 'sass-client', 'stagefiles-data', 'stagefiles-resource'], stageFiles(config.client))
+  ['clearfiles-client', 'webpack-client', 'sass-client', 'prestagefiles-data', 'prestagefiles-resource'], stageFiles(config.client))
 gulp.task('stagefiles-server', ['clearfiles-server', 'webpack-server'], stageFiles(config.server))
 gulp.task('stagefiles', ['stagefiles-server', 'stagefiles-client'])
 
 gulp.task('launch-server', ['stagefiles'], runNodemon(config.server))
-gulp.task('watchlaunch-server', ['launch-server'], watchLaunchServer(config.client))
+gulp.task('watchlaunch-server', ['launch-server'], watchLaunchServer(config.client, ['stagefiles-client']))
 
 gulp.task('integrationtest-subtask', runIntegrationTests(config.integration))
 gulp.task('stop-server', stopServer())
@@ -149,10 +152,49 @@ gulp.task('test', runAllTests)
 
 gulp.task('default', ['watchunittest', 'watchlint'])
 
-function watchLaunchServer(clientSettings) {
+gulp.task('launch-browsersynch', ['watchlaunch-server'],launchBrowserSynch())
+gulp.task('reload-browsersynch', reloadBrowserSynch())
+gulp.task('watchbrowsersynch', ['watchlaunch-server', 'launch-browsersynch'], watchBrowserSynch(config.server, ['reload-browsersynch']))
+
+function launchBrowserSynch() {
+  return () => {
+    const browserSynch = requiret.require('browser-sync')
+    browserSynchHandle = browserSynch
+
+    browserSynch.init({
+      reloadDebounce: 2000, //I don't think that these are both necessary
+      reloadThrottle: 1000,
+      proxy: 'http://localhost:8000',
+      port: 8888,
+      host: '192.168.1.11'
+    })
+  }
+}
+
+function watchBrowserSynch(settings, task) {
+  const browserSynchWatchPath = settings.browserSynch.watchPath
+
+  return () => {
+    //the file operations that were getting done right before this were buffering
+    //and triggering a flurry of event calls, this delay minimizes that.
+    //That's also why the watch path was pushed up, because the directory was getting recreated
+    //after the watch was registered and the watcher didn't find the new directory
+    setTimeout( () => {
+      watch(browserSynchWatchPath, task)()
+    }, 1000)
+  }
+}
+
+function reloadBrowserSynch() {
+  return () => {
+    browserSynchHandle && browserSynchHandle.reload({stream: false})
+  }
+}
+
+function watchLaunchServer(clientSettings, task) {
   const clientWatchPath = clientSettings.watchPath
 
-  return watch(clientWatchPath, ['stagefiles-client'])
+  return watch(clientWatchPath, task)
 }
 
 //this is sometimes executed twice, but should generally work
@@ -314,6 +356,7 @@ function clearFiles(settings) {
 function runNodemon(settings) {
   const script = settings.nodemon.script
   const watch = settings.nodemon.watch
+  const browserSynchRefreshDelay = settings.browserSynch.refreshDelay
 
   return (cb) => {
     const nodemon = requiret.require('gulp-nodemon')
@@ -323,6 +366,8 @@ function runNodemon(settings) {
       watch
     })
       .on('start', () => {
+        browserSynchHandle && browserSynchHandle.reload({stream: false})
+
         if(!taskReportedComplete) {
           taskReportedComplete = true
           cb()
@@ -333,6 +378,9 @@ function runNodemon(settings) {
       })
       .on('restart', () => {
         console.log('nodemon restart event emitted')
+        setTimeout( () => {
+          browserSynchHandle && browserSynchHandle.reload({stream: false})
+        }, browserSynchRefreshDelay)
       })
   }
 }
