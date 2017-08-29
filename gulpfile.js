@@ -1,16 +1,19 @@
 /*
+
+move clear files task into stage files task
+
 x-lint once--nothing else
 x-run unit tests once
 x-run integration tests once--sass, webpack, start server, run webdriver, stop server
 x-lint and run unit tests
 x-run all tests once
 
-serve for integration testing watching for changes
+x-serve for integration testing watching for changes
 serve with browsersync watching for changes
 x-run unit tests and watch for changes--independent
 x-lint and watch for changes--independent
 x-lint, unit test and watch for changes--default action
-run integration tests and watch for changes--integration test should watch /dist/** + /*
+x-run integration tests and watch for changes--integration test should watch /dist/** + /*
 run all tests and watch for changes
 serve and run all tests and watch for changes
 
@@ -42,6 +45,8 @@ const config = {
       source: 'client/**/*.js',
       filecache: new FileCache
     },
+    watchPath: ['client/app/**/*.js', 'client/index.html', 
+      'client/styles/**/*.scss', 'client/resources'],
     webpack: './webpack.config.js'
   }, 
   server: {
@@ -49,7 +54,6 @@ const config = {
     stagingPath: 'staging/server',
     finalPath: 'dist/server',
     webpack: './webpack.config.server.js',
-    script: 'dist/server/server.js',
     mocha: {
       source: 'server/tests/**/*test.js',
       requires: ['babel-core/register', 'server/tests/setup.js'],
@@ -59,7 +63,10 @@ const config = {
       source: 'server/**/*.js',
       filecache: new FileCache
     },
-    watch: 'dist/server/server.js'
+    nodemon: {
+      script: 'dist/server/server.js',
+      watch: 'dist/server/server.js'
+    }
   },
   prep: {
     stagingPath: 'client/data',
@@ -77,7 +84,10 @@ const config = {
   resources: {
     stagingPath: 'client/resources',
     finalPath: 'dist/public'
-    
+  },
+  integration: {
+    scriptPath: 'integration_tests/index.js',
+    watchPath: ['integration_tests/index.js', 'dist/**/*']
   }
 }
 
@@ -115,28 +125,61 @@ gulp.task('webpack-client', runWebpack(config.client))
 gulp.task('webpack-server', runWebpack(config.server))
 gulp.task('sass-client', runSass(config.client))
 
-gulp.task('stagefiles-client', ['clearfiles-client', 'webpack-client', 'sass-client'], stageFiles(config.client))
+gulp.task('stagefiles-data', stageFiles(config.prep))
+gulp.task('stagefiles-resource', stageFiles(config.resources))
+//technically, clearfiles-client needs to run before webpack-client and sass-client
+//but, it's fast, so this shouldn't be an issue and the code is much easier
+//to read than the alternatives.
+gulp.task('stagefiles-client', 
+  ['clearfiles-client', 'webpack-client', 'sass-client', 'stagefiles-data', 'stagefiles-resource'], stageFiles(config.client))
 gulp.task('stagefiles-server', ['clearfiles-server', 'webpack-server'], stageFiles(config.server))
-gulp.task('stagefiles-data', ['clearfiles-client'], stageFiles(config.prep))
-gulp.task('stagefiles-resource', ['clearfiles-client'], stageFiles(config.resources))
-gulp.task('stagefiles', ['stagefiles-resource', 'stagefiles-data', 'stagefiles-server', 'stagefiles-client'])
+gulp.task('stagefiles', ['stagefiles-server', 'stagefiles-client'])
 
-gulp.task('launchserver', ['stagefiles'], runNodemon(config.server))
+gulp.task('launch-server', ['stagefiles'], runNodemon(config.server))
+gulp.task('watchlaunch-server', ['launch-server'], watchLaunchServer(config.client))
 
-gulp.task('integrationtest-subtask', ['launchserver'], runIntegrationTests(config))
-gulp.task('integrationtest', ['integrationtest-subtask'], stopServer())
+gulp.task('integrationtest-subtask', runIntegrationTests(config.integration))
+gulp.task('stop-server', stopServer())
+gulp.task('integrationtest', prepRunAndShutdownIntegrationTests())
+
+//this doesn't start the server yet
+gulp.task('watchintegrationtest', ['watchlaunch-server'], watchIntegrationTests(config.integration, ['integrationtest-subtask']))
 
 gulp.task('test', runAllTests)
 
 gulp.task('default', ['watchunittest', 'watchlint'])
 
+function watchLaunchServer(clientSettings) {
+  const clientWatchPath = clientSettings.watchPath
+
+  return watch(clientWatchPath, ['stagefiles-client'])
+}
+
+//this is sometimes executed twice, but should generally work
+function watchIntegrationTests(settings, task) {
+  return watch(settings.watchPath, task)
+}
+
+function prepRunAndShutdownIntegrationTests(settings) {
+
+  return () => {
+    const runSequence = requiret.require('run-sequence')
+
+    runSequence('launch-server',
+      'integrationtest-subtask',
+      'stop-server'
+    )
+  }
+}
+
 function runIntegrationTests(settings) {
+  const scriptPath = settings.scriptPath
 
   return (cb) => {
     const {spawn} = requiret.require('child_process')
-    const webdriverProc = spawn('node', ['integration_tests/index.js'])
+    const webdriverProc = spawn('node', [scriptPath])
 
-    webdriverProc.on('close', cb)
+    webdriverProc.on('close', () => cb())
   }
 }
 
@@ -168,7 +211,7 @@ function runAllTests()
 function runMocha(settings) {
   const source = settings.mocha.source
   const requires = settings.mocha.requires
-  
+
   function handleError(err) {
     //console.log(err)
     this.emit('end')
@@ -252,7 +295,7 @@ function notImplemented(name) { //eslint-disable-line no-unused-vars
 function stageFiles(settings) {
   const source = settings.stagingPath + '/**'
   const destination = settings.finalPath
-  
+
   return () => {
     gulp.srcN(source, 1)
       .pipe(gulp.dest(destination))
@@ -269,8 +312,8 @@ function clearFiles(settings) {
 }
 
 function runNodemon(settings) {
-  const script = settings.script
-  const watch = [settings.watch]
+  const script = settings.nodemon.script
+  const watch = settings.nodemon.watch
 
   return (cb) => {
     const nodemon = requiret.require('gulp-nodemon')
