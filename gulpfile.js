@@ -159,7 +159,7 @@ gulp.task('stop-server', stopServer())
 gulp.task('integrationtest', prepRunAndShutdownIntegrationTests())
 
 //this doesn't start the server yet
-gulp.task('watchintegrationtest', ['watchlaunch-server'], watchIntegrationTests(config.integration, ['integrationtest-subtask']))
+gulp.task('watchintegrationtest', ['watchlaunch-server-nolog'], watchIntegrationTests(config.integration, ['integrationtest-subtask']))
 
 gulp.task('test', runAllTests)
 
