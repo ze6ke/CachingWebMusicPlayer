@@ -169,6 +169,7 @@ gulp.task('launch-browsersynch', ['watchlaunch-server'],launchBrowserSynch())
 gulp.task('reload-browsersynch', reloadBrowserSynch())
 gulp.task('watchbrowsersynch', ['watchlaunch-server', 'launch-browsersynch'], watchBrowserSynch(config.server, ['reload-browsersynch']))
 gulp.task('preplibrary-small', prepLibrarySmall(config.prep))
+gulp.task('pre-commit')
 
 function prepLibrarySmall(settings) {
   const sourcePath = settings.libraryPaths.small
