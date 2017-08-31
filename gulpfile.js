@@ -123,7 +123,7 @@ gulp.task('lint-css', lintCss(config.client))
 gulp.task('lint-client', lintJs(config.client))
 gulp.task('lint-server', lintJs(config.server))
 gulp.task('lint-prep', lintJs(config.prep))
-gulp.task('lint', ['lint-css', 'lint-client', 'lint-server', 'lint-prep'])
+gulp.task('lint', ['lint-client', 'lint-server', 'lint-prep', 'lint-css'])
 
 gulp.task('watchlint-client', ['lint-client'], watchLintJs(config.client, ['lint-client']))
 gulp.task('watchlint-server', ['lint-server'], watchLintJs(config.server, ['lint-server']))
