@@ -16,7 +16,7 @@ module.exports = Object.assign({}, common,{
   output: {
     filename: '[name].[chunkhash].js',
     path: path.resolve(__dirname, 'staging/client'),
-    sourceMapFilename: 'bundle.map'
+    sourceMapFilename: '[name].map'
   },
   plugins: [
     new HtmlWebpackPlugin({

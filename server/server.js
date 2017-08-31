@@ -5,12 +5,11 @@ let app = express()
 //const path = require('path')
 const morgan = require('morgan')
 
-
 //add routes and middelware
 //an extra comment
 
 //app.use(morgan('dev'))
-if(process.env.NODE_ENV !== 'unittest') {
+if(process.env.NODE_ENV !== 'unittest' && process.argv.indexOf('--nolog') === -1) {
   app.use(morgan(':date :method :status :response-time[1]ms\t:url\t\tsize-:res[content-length]\ttype-:res[content-type]'))
 }
 

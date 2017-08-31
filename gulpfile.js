@@ -72,6 +72,12 @@ const config = {
   },
   prep: {
     stagingPath: 'client/data',
+    libraryPaths: {
+      small: 'prep/full/shortLibrary.json',
+      large: 'prep/full/library.json',
+      targetPath: 'prep/data/',
+      targetName: 'library.json'
+    },
     lintJs: {
       source: 'prep/**/*.js',
       filecache: new FileCache
@@ -88,7 +94,12 @@ const config = {
     finalPath: 'staging/client'
   },
   integration: {
-    scriptPath: 'integration_tests/index.js',
+    //scriptPath: 'integration_tests/index.js',
+    mocha: {
+      source: 'integration_tests/index.js',
+      requires: [],
+      watchPath: ['integration_tests/**/*.js']
+    },
     watchPath: ['integration_tests/index.js', 'dist/**/*']
   }
 }
@@ -139,7 +150,9 @@ gulp.task('stagefiles-server', ['clearfiles-server', 'webpack-server'], stageFil
 gulp.task('stagefiles', ['stagefiles-server', 'stagefiles-client'])
 
 gulp.task('launch-server', ['stagefiles'], runNodemon(config.server))
+gulp.task('launch-server-nolog', ['stagefiles'], runNodemon(config.server, false))
 gulp.task('watchlaunch-server', ['launch-server'], watchLaunchServer(config.client, ['stagefiles-client']))
+gulp.task('watchlaunch-server-nolog', ['launch-server-nolog'], watchLaunchServer(config.client, ['stagefiles-client']))
 
 gulp.task('integrationtest-subtask', runIntegrationTests(config.integration))
 gulp.task('stop-server', stopServer())
@@ -155,6 +168,21 @@ gulp.task('default', ['watchunittest', 'watchlint'])
 gulp.task('launch-browsersynch', ['watchlaunch-server'],launchBrowserSynch())
 gulp.task('reload-browsersynch', reloadBrowserSynch())
 gulp.task('watchbrowsersynch', ['watchlaunch-server', 'launch-browsersynch'], watchBrowserSynch(config.server, ['reload-browsersynch']))
+gulp.task('preplibrary-small', prepLibrarySmall(config.prep))
+
+function prepLibrarySmall(settings) {
+  const sourcePath = settings.libraryPaths.small
+  const targetPath = settings.libraryPaths.targetPath
+  const targetName = settings.libraryPaths.targetName
+
+  return () => {
+    const rename = requiret.require('gulp-rename')
+
+    return gulp.src(sourcePath)
+      .pipe(rename(targetName))
+      .pipe(gulp.dest(targetPath))
+  }
+}
 
 function launchBrowserSynch() {
   return () => {
@@ -207,7 +235,7 @@ function prepRunAndShutdownIntegrationTests(settings) {
   return () => {
     const runSequence = requiret.require('run-sequence')
 
-    runSequence('launch-server',
+    runSequence('launch-server-nolog',
       'integrationtest-subtask',
       'stop-server'
     )
@@ -215,7 +243,8 @@ function prepRunAndShutdownIntegrationTests(settings) {
 }
 
 function runIntegrationTests(settings) {
-  const scriptPath = settings.scriptPath
+  return runMocha(settings)
+/*  const scriptPath = settings.scriptPath
 
   return (cb) => {
     const {spawn} = requiret.require('child_process')
@@ -223,6 +252,7 @@ function runIntegrationTests(settings) {
 
     webdriverProc.on('close', () => cb())
   }
+  */
 }
 
 function watchLintCss(settings, task) {
@@ -353,16 +383,18 @@ function clearFiles(settings) {
   }
 }
 
-function runNodemon(settings) {
+function runNodemon(settings, logging=true) {
   const script = settings.nodemon.script
   const watch = settings.nodemon.watch
   const browserSynchRefreshDelay = settings.browserSynch.refreshDelay
+  const args = logging ? [] : ['--nolog']
 
   return (cb) => {
     const nodemon = requiret.require('gulp-nodemon')
     let taskReportedComplete = false
     nodemonHandle = nodemon({
       script,
+      args,
       watch
     })
       .on('start', () => {

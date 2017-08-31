@@ -20,6 +20,7 @@ module.exports = Object.assign({}, common, {
     path: path.resolve(__dirname, 'staging/server'),
     sourceMapFilename: 'server.map'
   },
+  target: 'node',
   node: {
     __dirname: false
   },
