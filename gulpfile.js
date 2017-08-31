@@ -169,7 +169,7 @@ gulp.task('launch-browsersynch', ['watchlaunch-server'],launchBrowserSynch())
 gulp.task('reload-browsersynch', reloadBrowserSynch())
 gulp.task('watchbrowsersynch', ['watchlaunch-server', 'launch-browsersynch'], watchBrowserSynch(config.server, ['reload-browsersynch']))
 gulp.task('preplibrary-small', prepLibrarySmall(config.prep))
-gulp.task('pre-commit')
+gulp.task('pre-commit', ['lint'])
 
 function prepLibrarySmall(settings) {
   const sourcePath = settings.libraryPaths.small
@@ -319,7 +319,7 @@ function runKarma(settings, singleRun = true) {
 
 function lintJs(settings) {
   const source = settings.lintJs.source
-  const filecache = settings.lintJs.filecache
+  //const filecache = settings.lintJs.filecache
 
   return () => {
 
@@ -329,17 +329,17 @@ function lintJs(settings) {
     // Also, Be sure to return the stream from the task;
     // Otherwise, the task may end before the stream has finished.
     return gulp.srcN([source,'!node_modules/**'], 1)
-      .pipe(filecache.filter())
+    //  .pipe(filecache.filter())
     // eslint() attaches the lint output to the "eslint" property
     // of the file object so it can be used by other modules.
       .pipe(eslint())
     // eslint.format() outputs the lint results to the console.
     // Alternatively use eslint.formatEach() (see Docs).
       .pipe(eslint.format())
+    //  .pipe(filecache.cache())
     // To have the process exit with an error code (1) on
     // lint error, return the stream and pipe to failAfterError last.
-    //      .pipe(eslint.failAfterError())
-      .pipe(filecache.cache())
+      .pipe(eslint.failAfterError())
   }
 }
 
