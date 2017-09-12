@@ -1,52 +1,72 @@
-/* globals it, describe, before */
+/* globals it, describe, before, afterEach, after */
 //x-confirm the app loads
-//change song
-//get used space
-//clear store and confirm used space
-//filter songs
-//pause/restart music
+//x-song count is right
+// change song
+// get used space
+// clear store and confirm used space
+// filter songs
+// pause/restart music
 //
-/*
-require('chromedriver')
+// loads songs
+// can select song
+// can forward songs
+// shows disk usage
+//
+//
 
+require('chromedriver')
+const {expect} = require('chai')
 
 const webdriver = require('selenium-webdriver')
+const writeScreenshotIfNeeded = require('./writeScreenshotIfNeeded')
+
 const By = webdriver.By
 const until = webdriver.until
-const driver = new webdriver.Builder()
-  .forBrowser('chrome')
-  .build()
-
-driver.get('http://www.google.com/ncr')
-driver.findElement(By.name('q')).sendKeys('webdriver')
-driver.findElement(By.css('input[value="Google Search"]')).click()
-driver.wait(until.titleIs('webdriver - Google Search'), 1000)
-driver.quit()
-*/
-
-let {expect} = require('chai')
-require('chromedriver')
-
-const webdriver = require('selenium-webdriver')
-//const By = webdriver.By
-//const until = webdriver.until
-const driver = new webdriver.Builder()
-  .forBrowser('chrome')
-  .build()
+let driver 
 
 describe('the app', function() {
   this.timeout(60000)
 
   before(function() {
-    return driver.get('http://localhost:8000/')
+    driver = new webdriver.Builder()
+      .forBrowser('chrome')
+      .build()
   })
-
-  it('has a title', function() {
     
-    return driver.getTitle()
-      .then((title) => {
-        expect(title).to.not.have.lengthOf(0)
-      })
+  after(function() {
+    return driver.quit()
   })
 
+  afterEach(function() {
+    return writeScreenshotIfNeeded(this, driver)
+  }) 
+
+
+  describe('suite 1', function() {
+
+    before(function() {
+      return driver.get('http://localhost:8000/')
+    })
+
+    it('has a title', function() {
+      return driver.getTitle()
+        .then((title) => {
+          expect(title).to.equal('Music Player')
+        })
+    })
+
+    it('loads 20 songs', function() {
+      return driver.wait(until.elementLocated(By.css('span.song-count')))
+        /*.then(()=> {
+          return driver.findElement(By.css('span.song-count')).getText()
+        })
+        .then((text)=>{
+          console.log(text)
+        }) */
+        .then(() => driver.wait(until.elementTextIs(driver.findElement(By.css('span.song-count')), '20')))
+    })
+
+  })
 })
+
+

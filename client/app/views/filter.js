@@ -4,7 +4,7 @@ const Filter = ({changeFilter, songs}) => (
       <span className="filter">
         <input type="text" className="filter-box" onChange={changeFilter} placeholder="filter"/>
         <span className="filter-icon" aria-hidden="true"></span>
-      </span>Songs: {songs.length}
+      </span>Songs: <span className="song-count">{songs.length}</span>
     </form>
   </span>
 )
