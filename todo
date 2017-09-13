@@ -1,20 +1,20 @@
-write integration tests
-open source throttle library
 move to nginx
 create production webpack config
-make the system clear out data in indexedDB that isn't in the data file
-setup the system to be easier to load with playlists
 open source player
 setup wraith
 look for other things to open source
 remove dead code and look to improve comments
 
 sorting
+make the system clear out data in indexedDB that isn't in the data file
+setup the system to be easier to load with playlists
 handle ogg files better (metadata doesn't work)
 shuffle
 support playlists
 
 
+//open source throttle library (p-throttle is better)
+//write integration tests
 //setup integration test suite (nightwatch or selenium directly)
 //clean up karma config
 //setup istanbul for code coverage
