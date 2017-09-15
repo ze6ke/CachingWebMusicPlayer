@@ -35,6 +35,7 @@
     "gulp-eslint": "^3.0.1",
     "gulp-file-cache": "^0.0.1",
     "gulp-mocha": "^4.3.1",
+    "gulp-nginx": "^1.0.0",
     "gulp-nodemon": "^2.2.1",
     "gulp-rename": "^1.2.2",
     "gulp-stylelint": "^3.9.0",

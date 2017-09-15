@@ -68,6 +68,9 @@ const config = {
     nodemon: {
       script: 'dist/server/server.js',
       watch: 'dist/server/server.js'
+    },
+    nginx: {
+      configFile: 'nginx/base.conf'
     }
   },
   prep: {
@@ -170,6 +173,29 @@ gulp.task('reload-browsersynch', reloadBrowserSynch())
 gulp.task('watchbrowsersynch', ['watchlaunch-server', 'launch-browsersynch'], watchBrowserSynch(config.server, ['reload-browsersynch']))
 gulp.task('preplibrary-small', prepLibrarySmall(config.prep))
 gulp.task('pre-commit', ['lint'])
+gulp.task('startnginx', startNginx(config.server))
+gulp.task('stopnginx', stopNginx(config.server))
+
+/* function runNginx(configFile, additionalArgs) {
+  const spawn = requiret.require('child_process').spawn
+  const args = ['-p', '$(pwd)', '-c', configFile].concat(additionalArgs?additionalArgs:[])
+
+  const nginx = spawn('nginx', args, {shell: true}) 
+
+  return new Promise((resolve) => {
+    nginx.on('close', resolve)
+  })
+} */
+
+function startNginx(settings) {
+  const startIt = requiret.require('gulp-nginx').startNginx
+  return () => startIt(settings.nginx.configFile)
+}
+
+function stopNginx(settings) {
+  const stopIt = requiret.require('gulp-nginx').stopNginx
+  return () => stopIt(settings.nginx.configFile)
+}
 
 function prepLibrarySmall(settings) {
   const sourcePath = settings.libraryPaths.small

@@ -3497,6 +3497,10 @@ gulp-mocha@^4.3.1:
     npm-run-path "^2.0.2"
     through2 "^2.0.3"
 
+gulp-nginx@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/gulp-nginx/-/gulp-nginx-1.0.0.tgz#6d6dcc03325b4cea268a8a941d483af1781e3f46"
+
 gulp-nodemon@^2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/gulp-nodemon/-/gulp-nodemon-2.2.1.tgz#d9bf199f5585458159d3d299153e60b46868b6f4"
