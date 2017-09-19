@@ -1,11 +1,6 @@
-move to nginx
-learn redis
-create production webpack config
-open source player
-setup wraith
-look for other things to open source
+setup backstopJS
 remove dead code and look to improve comments
-
+open source throttle library (p-throttle is better)
 sorting
 make the system clear out data in indexedDB that isn't in the data file
 setup the system to be easier to load with playlists
@@ -14,7 +9,10 @@ shuffle
 support playlists
 
 
-//open source throttle library (p-throttle is better)
+//open source player
+//create production webpack config
+//look for other things to open source
+//move to nginx
 //write integration tests
 //setup integration test suite (nightwatch or selenium directly)
 //clean up karma config

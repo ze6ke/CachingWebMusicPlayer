@@ -1,3 +1,5 @@
+nginx/logs/access.log
+nginx/logs/error.log
 coverage/
 staging/
 *.swp

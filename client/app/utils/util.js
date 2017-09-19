@@ -93,6 +93,7 @@ let base64StringsToBlob = (stringArray, type) => {
 }
 
 let promisify = (fn, args) => {
+  //Promise.resolve(fn(...args)) this version might be equivalent
   return new Promise((resolve, reject) => {
     try {
       resolve(fn(...args))
@@ -137,6 +138,7 @@ let throttle = {
   /*this function accepts a function and a minDelay value and returns a new function.  When the new function is called, it will call the underlying
    * function if that function hasn't been called in minDelay ms.  Otherwise, it waits until minDelay ms have passed and calls the function with
    * whatever arguments were last provided (the underlying function needs to be idempotent to get good results).
+   * This function is very similar to debounce.
    * In both cases, it returns a promise that will completed/reject based on the execution of the function
    */
   basic: (fn, minDelay = 0) => {

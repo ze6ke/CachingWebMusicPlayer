@@ -74,7 +74,7 @@ class Songlist {
 
 
   changeCurrentSong (song) {
-    if(!!song && (!(song.constructor) || song.constructor.name !== 'Song')) {
+    if(!!song && (!(song.constructor) /*|| song.constructor.name !== 'Song'*/)) {//minification changes the constructer name and breaks this
       throw {name: 'incorrect type', message: 'Songlist.changeCurrentSong can only accept a Song'}
     }
     this.current && this.current.reset()

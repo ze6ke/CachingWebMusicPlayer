@@ -80,6 +80,7 @@
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
     "react-virtual-list": "^2.2.0",
+    "uglifyjs-webpack-plugin": "^0.4.6",
     "walk": "^2.3.9",
     "webpack-merge": "^4.1.0"
   }

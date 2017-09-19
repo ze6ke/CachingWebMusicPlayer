@@ -10,6 +10,8 @@ import Model from './models/songlist.model.js'
 import functionalityTest from './functionalityTest.js'
 import {isMobile, throttle, displayError} from './utils/util.js'
 
+const libraryPath = 'library.json'
+
 window.React = React
 let header = null
 let headerPlaceholder = null
@@ -30,7 +32,7 @@ functionalityTest()
 
 let model
 const getLibrary = () => {
-  return fetch('data/library.json')
+  return fetch(libraryPath)
     .then((response) => {
       if(response.ok) {
         return response.json()

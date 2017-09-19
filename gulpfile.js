@@ -45,13 +45,14 @@ const config = {
     },
     watchPath: ['client/app/**/*.js', 'client/index.html', 
       'client/styles/**/*.scss', 'client/resources'],
-    webpack: './webpack.config.js'
+    webpackDev: './webpack.config.client.dev.js',
+    webpackProd: './webpack.config.client.prod.js'
   }, 
   server: {
     name: 'server',
     stagingPath: 'staging/server',
     finalPath: 'dist/server',
-    webpack: './webpack.config.server.js',
+    webpackDev: './webpack.config.server.dev.js',
     browserSynch: {
       refreshDelay: 2000,
       watchPath: ['dist/**/*', 'dist/public/style.css']
@@ -90,7 +91,7 @@ const config = {
       requires: ['babel-core/register', 'server/tests/setup.js'],
       watchPath: ['prep/**/*.js']
     },
-    finalPath: 'staging/client/data'
+    finalPath: 'staging/client/'
   },
   resources: {
     stagingPath: 'client/resources',
@@ -138,8 +139,9 @@ gulp.task('watchlint', ['watchlint-css', 'watchlint-prep', 'watchlint-server', '
 gulp.task('clearfiles-client', clearFiles(config.client))
 gulp.task('clearfiles-server', clearFiles(config.server))
 
-gulp.task('webpack-client', runWebpack(config.client))
-gulp.task('webpack-server', runWebpack(config.server))
+gulp.task('webpack-client', runWebpackDev(config.client))
+gulp.task('webpack-server', runWebpackDev(config.server))
+gulp.task('webpack-client-prod', runWebpackProd(config.client))
 gulp.task('sass-client', runSass(config.client))
 
 gulp.task('prestagefiles-data', stageFiles(config.prep))
@@ -147,6 +149,8 @@ gulp.task('prestagefiles-resource', stageFiles(config.resources))
 //technically, clearfiles-client needs to run before webpack-client and sass-client
 //but, it's fast, so this shouldn't be an issue and the code is much easier
 //to read than the alternatives.
+gulp.task('stagefiles-client-prod', 
+  ['clearfiles-client', 'webpack-client-prod', 'sass-client', 'prestagefiles-data', 'prestagefiles-resource'], stageFiles(config.client))
 gulp.task('stagefiles-client', 
   ['clearfiles-client', 'webpack-client', 'sass-client', 'prestagefiles-data', 'prestagefiles-resource'], stageFiles(config.client))
 gulp.task('stagefiles-server', ['clearfiles-server', 'webpack-server'], stageFiles(config.server))
@@ -453,10 +457,21 @@ function stopServer() {
   }
 }
 
-function runWebpack(settings) {
-  const configFile = settings.webpack
+function runWebpackProd(settings) {
+  const configFile = settings.webpackProd
   const desc = settings.name
 
+  return runWebpack(configFile, desc)
+}
+
+function runWebpackDev(settings) {
+  const configFile = settings.webpackDev
+  const desc = settings.name
+
+  return runWebpack(configFile, desc)
+}
+
+function runWebpack(configFile, desc) {
   return (cb) => {
     const webpack = requiret.require('webpack')
     const gutil = requiret.require('gulp-util')
